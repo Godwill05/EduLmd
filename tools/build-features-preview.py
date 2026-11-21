@@ -269,7 +269,10 @@ def _env(ctx):
         'is_null': lambda x: x is None,
         'empty': lambda x: not x,
         'urlencode': str,
-        'max': max, 'min': min, 'abs': abs,
+        'max': max, 'min': min, 'abs': abs, 'round': round,
+        'mb_strtoupper': lambda s: str(s or '').upper(),
+        'mb_substr': lambda s, d, n=None: str(s or '')[d:(d + n) if n else None],
+        'mb_strlen': lambda s: len(str(s or '')),
         'date': lambda *a: '21/11/2026',
         'trim': lambda s, *a: str('' if s is None else s).strip(),
         'strtoupper': lambda s: str('' if s is None else s).upper(),
@@ -568,6 +571,31 @@ def exec_in_ctx(code, ctx):
     code = re.sub(r'\btrue\b', 'True', code)
     code = re.sub(r'\bfalse\b', 'False', code)
     code = re.sub(r'\bnull\b', 'None', code)
+    # Casts PHP -> Python : (string) $x  ->  str($x)
+    code = re.sub(r'\(string\)\s*(\$[\w>\-\[\]\'"]+?)(?=[\s,)])', r'str(\1)', code)
+    code = re.sub(r'\(int\)\s*(\$[\w>\-\[\]\'"]+?)(?=[\s,)])', r'int(\1)', code)
+    code = re.sub(r'\(float\)\s*(\$[\w>\-\[\]\'"]+?)(?=[\s,)])', r'float(\1)', code)
+
+    # Concaténation PHP dans les affectations : on évalue la partie droite
+    # avec l'évaluateur d'expressions (qui gère `.` de niveau 0).
+    lignes = code.split('\n')
+    for idx, ligne in enumerate(lignes):
+        m = re.match(r'^(\s*)(\$\w+(?:\[[^\]]*\])?)\s*=\s*(.+?);\s*$', ligne)
+        if not m or ' . ' not in m.group(3):
+            continue
+        indent, cible, expr = m.group(1), m.group(2), m.group(3)
+        lignes[idx] = f'{indent}{cible} = __expr__({expr!r});'
+    code = '\n'.join(lignes)
+
+
+    # Traduire les opérateurs PHP avant l'exécution
+    code = traduire_coalesce(code)
+    code = traduire_ternaire(code)
+    code = code.replace('??', '')          # résidus éventuels
+    code = re.sub(r'\btrue\b', 'True', code)
+    code = re.sub(r'\bfalse\b', 'False', code)
+    code = re.sub(r'\bnull\b', 'None', code)
+
     code = convertir_accolades(code)
 
     try:
@@ -576,7 +604,8 @@ def exec_in_ctx(code, ctx):
                                      'max': max, 'abs': abs, 'sorted': sorted,
                                      'range': lambda *a: list(range(*a)), 'list': list, 'dict': dict,
                                      'enumerate': enumerate, 'zip': zip}},
-             {'ctx': ctx, 'datetime': datetime, 'date': lambda *a: '21/11/2026',
+             {'ctx': ctx, '__expr__': lambda e: evaluer(e, ctx),
+              'datetime': datetime, 'date': lambda *a: '21/11/2026',
               'strtotime': lambda *a: 0, 'number_format': lambda *a, **k: '0',
               'urlencode': str, 'count': len, 'trim': lambda s, *a: (s or '').strip(),
               'strtoupper': lambda s: (s or '').upper(),
@@ -995,3 +1024,43 @@ if __name__ == '__main__':
         chemin = f'public/preview-{page}.html'
         open(chemin, 'w', encoding='utf-8').write(html)
         print(f'{chemin:45s} {len(html):>7} octets')
+
+
+def ctx_fiche():
+    etudiant = Obj(
+        MATRICULE='20240052', nomEtu='BADA', prenomsEtu='Rachidatou',
+        photo=None, sexeEtu='F', dateNaisEtu='2003-05-14',
+        lieuNaisEtu='Parakou', telEtu='97123456',
+        emailEtu='r.bada@univ.bj', Observation='',
+    )
+
+    inscriptions = [
+        Obj(Libelle_AnEtude='Licence 2', ID_FILIERE='L2', ANNEE_ACAD='2025-2026',
+            LibStatut='Inscrit', attendu=250000, total_paye=150000, reste=100000,
+            nb_paiements=2, frais_paye=250000, reste_paye=100000,
+            taux=60, solde=False),
+        Obj(Libelle_AnEtude='Licence 1', ID_FILIERE='L1', ANNEE_ACAD='2024-2025',
+            LibStatut='Admis', attendu=220000, total_paye=220000, reste=0,
+            nb_paiements=3, frais_paye=220000, reste_paye=0,
+            taux=100, solde=True),
+    ]
+
+    paiements = [
+        Obj(id=91, montantPaye=75000, datePaiement='2026-01-12', modePaiement='Espèces',
+            numeroTranche=2, ANNEE_ACAD='2025-2026', Libelle_AnEtude='Licence 2'),
+        Obj(id=64, montantPaye=75000, datePaiement='2025-11-03', modePaiement='Mobile Money',
+            numeroTranche=1, ANNEE_ACAD='2025-2026', Libelle_AnEtude='Licence 2'),
+    ]
+
+    return dict(
+        BASE_CTX, etudiant=etudiant, inscriptions=inscriptions,
+        derniersPaiements=paiements,
+        totalAttendu=470000, totalPaye=370000, totalReste=100000, solde=False,
+        initiales='BR', tauxGlobal=79,
+    )
+
+
+if __name__ == '__main__' and 'fiche' in __import__('sys').argv:
+    html = construire('fiche-etudiant', 'Fiche étudiant', ctx_fiche())
+    open('public/preview-fiche-etudiant.html', 'w', encoding='utf-8').write(html)
+    print('fiche:', len(html))

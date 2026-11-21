@@ -89,7 +89,7 @@ class SearchController extends Controller
                 'reste' => (int) ($ins->reste_paye ?? 0),
                 'paiements' => (int) ($nbPaiements[$e->MATRICULE] ?? 0),
                 'actions' => [
-                    'fiche' => route('etudiants.index') . '?matricule=' . urlencode($e->MATRICULE),
+                    'fiche' => route('etudiants.fiche', ['matricule' => $e->MATRICULE]),
                     'paiements' => route('paiements.index') . '?matricule=' . urlencode($e->MATRICULE),
                     'parcours' => route('parcours'),
                 ],

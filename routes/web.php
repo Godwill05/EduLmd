@@ -34,6 +34,7 @@ use App\Http\Controllers\PrevisionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\StudentCardController;
 use App\Http\Controllers\SemestreController;
 use App\Http\Controllers\SemestresAnneeEtudeController;
 use App\Http\Controllers\SemestresEtudesController;
@@ -99,6 +100,10 @@ Route::post('/api/actions-groupees/export', [BulkActionController::class, 'expor
     ->middleware('auth')->name('actions-groupees.export');
 Route::post('/api/actions-groupees/impression', [BulkActionController::class, 'impression'])
     ->middleware('auth')->name('actions-groupees.impression');
+
+// Fiche étudiant — cible des liens de la recherche globale
+Route::get('/etudiants/fiche/{matricule}', [StudentCardController::class, 'show'])
+    ->middleware('auth')->name('etudiants.fiche');
 
 // Paiement en un clic — situation et encaissement (JSON)
 Route::get('/api/paiement-rapide/{matricule}', [QuickPaymentController::class, 'situation'])

@@ -145,7 +145,7 @@ Qualité des données
                   <span class="manque"><i class="ri-error-warning-line"></i> sans contact</span>
                 @endif
                 <span class="actions">
-                  <a class="btn btn-sm btn-outline-primary" href="{{ route('etudiants.index') }}?matricule={{ urlencode($e['matricule']) }}" title="Voir la fiche">
+                  <a class="btn btn-sm btn-outline-primary" href="{{ route('etudiants.fiche', ['matricule' => $e['matricule']]) }}" title="Voir la fiche">
                     <i class="ri-user-line"></i>
                   </a>
                   <a class="btn btn-sm btn-outline-secondary" href="{{ route('paiements.index') }}?matricule={{ urlencode($e['matricule']) }}" title="Paiements">
@@ -201,7 +201,7 @@ Qualité des données
                   <td>{{ $e->telEtu ?: '—' }}</td>
                   <td>{{ $e->emailEtu ?: '—' }}</td>
                   <td>
-                    <a class="btn btn-sm btn-outline-primary" href="{{ route('etudiants.index') }}?matricule={{ urlencode($e->MATRICULE) }}">
+                    <a class="btn btn-sm btn-outline-primary" href="{{ route('etudiants.fiche', ['matricule' => $e->MATRICULE]) }}">
                       <i class="ri-edit-line"></i>Compléter
                     </a>
                   </td>

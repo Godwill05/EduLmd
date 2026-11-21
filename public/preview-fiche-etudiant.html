@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>..::LMD Web Solutions | Licence - Master - Doctorat::..</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+  <meta name="csrf-token" content="tok">
+
+  <!-- Favicons -->
+  <link href="favicon.ico" rel="icon">
+  <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Feuille de style unique — Tailwind compilé en local (aucune ressource distante) -->
+  <link href="/assets/css/edulmd.css" rel="stylesheet">
+
+  <!-- Icônes RemixIcon (auto-hébergées) -->
+  <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+
+  <!-- Libs tierces locales -->
+  <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/tom-select/edulmd-tom-select.css">
+  <link rel="stylesheet" href="/assets/vanillajs-datepicker/datepicker-edulmd.min.css">
+  <link rel="stylesheet" href="/assets/jstree/dist/themes/default/style.min.css">
+
+  <script src="/assets/js/jquery-3.7.0.js"></script>
+  <script src="/assets/tom-select/tom-select.complete.js"></script>
+  <script src="/assets/vanillajs-datepicker/datepicker-full.min.js"></script>
+  <script src="/assets/jstree/dist/jstree.min.js"></script>
+
+  
+<style>
+  .fe-hero {
+    display:flex; align-items:center; gap:1.1rem; flex-wrap:wrap;
+    background:#fff; border:1px solid var(--ed-ligne); border-radius:1rem;
+    padding:1.15rem 1.25rem; box-shadow:var(--ed-ombre); margin-bottom:1rem;
+  }
+  .fe-avatar {
+    width:4.2rem; height:4.2rem; border-radius:1rem; flex:0 0 auto;
+    display:grid; place-items:center; overflow:hidden;
+    background:#FCF5F6; color:#822A40; font-size:1.4rem; font-weight:800;
+    border:1px solid #EAD2D8;
+  }
+  .fe-avatar img { width:100%; height:100%; object-fit:cover; }
+  .fe-nom { font-size:1.2rem; font-weight:800; letter-spacing:-.01em; line-height:1.2; }
+  .fe-mat {
+    font-family:ui-monospace,monospace; font-size:.8rem; color:#5C5F66;
+    background:#F4F4F6; padding:.1rem .4rem; border-radius:.3rem;
+  }
+  .fe-meta { font-size:.78rem; color:#8A8D94; display:flex; gap:.7rem; flex-wrap:wrap; margin-top:.3rem; }
+
+  .fe-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(9rem,1fr)); gap:.6rem; margin-bottom:1rem; }
+  .fe-kpi { background:#fff; border:1px solid var(--ed-ligne); border-radius:.8rem; padding:.7rem .85rem; }
+  .fe-kpi .v { font-size:1.15rem; font-weight:800; letter-spacing:-.02em; line-height:1.15; }
+  .fe-kpi .l { font-size:.7rem; font-weight:600; color:#5C5F66; margin-top:.1rem; }
+  .fe-kpi.ok .v { color:#15803D; }
+  .fe-kpi.warn .v { color:#B45309; }
+  .fe-kpi.bad .v { color:#B91C1C; }
+
+  .fe-card { background:#fff; border:1px solid var(--ed-ligne); border-radius:1rem; box-shadow:var(--ed-ombre); overflow:hidden; }
+  .fe-head {
+    display:flex; align-items:center; gap:.5rem; padding:.8rem 1.1rem;
+    border-bottom:1px solid var(--ed-ligne); background:#FCFCFD;
+  }
+  .fe-head h2 { margin:0; font-size:.88rem; font-weight:700; }
+  .fe-head .n {
+    margin-left:auto; font-size:.7rem; font-weight:700; background:#F4F4F6;
+    color:#5C5F66; padding:.1rem .45rem; border-radius:99px;
+  }
+
+  .fe-ins { padding:.85rem 1.1rem; border-bottom:1px solid #F2F2F5; }
+  .fe-ins:last-child { border-bottom:0; }
+  .fe-ins-t { display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; font-size:.84rem; font-weight:700; }
+  .fe-ins-t .badge {
+    font-size:.66rem; font-weight:700; padding:.1rem .4rem; border-radius:99px;
+    background:#F4F4F6; color:#5C5F66;
+  }
+  .fe-ins-t .badge.ok { background:#EAF7EE; color:#15803D; }
+  .fe-ins-t .badge.warn { background:#FEF3E2; color:#B45309; }
+  .fe-ins-nums { display:flex; gap:1.1rem; margin-top:.35rem; font-size:.76rem; color:#5C5F66; flex-wrap:wrap; }
+  .fe-ins-nums b { color:#0B0B0B; font-variant-numeric:tabular-nums; }
+  .fe-barre { height:.35rem; background:#F0F0F3; border-radius:99px; margin-top:.5rem; overflow:hidden; }
+  .fe-barre > i { display:block; height:100%; background:#15803D; border-radius:99px; }
+  .fe-barre > i.partiel { background:#B45309; }
+  .fe-actions { margin-left:auto; }
+
+  .fe-dl { display:grid; grid-template-columns:auto 1fr; gap:.35rem .9rem; padding:.9rem 1.1rem; font-size:.82rem; }
+  .fe-dl dt { color:#8A8D94; font-weight:600; }
+  .fe-dl dd { margin:0; color:#0B0B0B; }
+
+  .fe-vide { padding:1.4rem 1.1rem; text-align:center; font-size:.82rem; color:#8A8D94; }
+
+  .fe-statut {
+    display:inline-flex; align-items:center; gap:.35rem;
+    padding:.3rem .7rem; border-radius:99px; font-size:.76rem; font-weight:700;
+  }
+  .fe-statut.ok { background:#EAF7EE; color:#15803D; }
+  .fe-statut.warn { background:#FEF3E2; color:#B45309; }
+  .fe-statut i { font-size:.95rem; }
+</style>
+
+</head>
+
+<body>
+
+  
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header">
+    <i class="ri-menu-line toggle-sidebar-btn" role="button" tabindex="0" aria-label="Ouvrir / fermer le menu" title="Menu"></i>
+
+    <div class="header-context min-w-0">
+      <div>
+        <div class="header-title truncate">Fiche étudiant</div>
+        <nav aria-label="Fil d'Ariane">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Accueil</a></li>
+            
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <nav class="header-nav" aria-label="Navigation principale">
+      <ul>
+        <li class="nav-item">
+          <button type="button" class="ed-search-trigger" id="edSearchTrigger"
+                  aria-label="Recherche globale (Ctrl+K)" title="Recherche globale — Ctrl+K">
+            <i class="ri-search-line"></i>
+            <span class="ed-search-label">Rechercher…</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-profile flex items-center gap-2" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="avatar-initials" aria-hidden="true"></span>
+            <span class="profile-name hidden md:block">. </span>
+            <i class="ri-arrow-down-s-line hidden md:block text-[0.8rem] text-encre-faint"></i>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end profile">
+            <li class="dropdown-header">
+              <h6></h6>
+              <span class="text-muted text-[0.75rem]"></span>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href="#">
+                <i class="ri-user-line"></i><span>Mon profil</span>
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" href="/logout">
+                <i class="ri-logout-box-line"></i><span>Se déconnecter</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar (claire) ======= -->
+  <aside id="sidebar" class="sidebar" aria-label="Menu de navigation">
+    <div class="sidebar-brand">
+      <a href="#" class="brand-logo" aria-label="EduLMD — Accueil">
+        <img src="/logo.png" alt="Logo EduLMD">
+      </a>
+      <div class="brand-text">
+        <div class="brand-name">EduLMD</div>
+        <div class="brand-sub">LMD Web Solutions</div>
+      </div>
+    </div>
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link " href="#" title="Accueil">
+          <i class="ri-dashboard-line"></i><span>Accueil</span>
+        </a>
+      </li>
+
+      <li class="nav-heading">Paramétrage</li>
+
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" title="Paramètres globaux">
+          <i class="ri-settings-3-line"></i><span>Paramètres globaux</span><i class="ri-arrow-down-s-line ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li><a class="" href="#">Domaines RESAO</a></li>
+          <li><a class="" href="#">Mentions</a></li>
+          <li><a class="" href="#">Spécialités</a></li>
+          <li><a class="" href="#">Grades</a></li>
+          <li><a class="" href="#">Semestres</a></li>
+          <li><a class="" href="#">Constantes</a></li>
+          <li><a class="" href="#">Semestres Etudes</a></li>
+          <li><a class="" href="#">Années Etudes</a></li>
+          <li><a class="" href="#">Filières complètes</a></li>
+          <li><a class="" href="#">Semestre -&gt; Années Etudes</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" title="Paramètres spécifiques">
+          <i class="ri-building-line"></i><span>Paramètres spécifiques</span><i class="ri-arrow-down-s-line ms-auto"></i>
+        </a>
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          
+          <li><a class="" href="#">Universités</a></li>
+          
+          
+          <li><a class="" href="#">UFR/Ecole/Facultés</a></li>
+          
+          <li><a class="" href="#">Année Académique</a></li>
+          <li><a class="" href="#">Passage de promotion</a></li>
+          <li><a class="" href="#">Gestion des salles</a></li>
+          
+          <li><a class="" href="#">Gestion des utilisateurs</a></li>
+          <li><a class="" href="#">Journal d'activité</a></li>
+          
+        </ul>
+      </li>
+
+      <li class="nav-heading">Gestion</li>
+
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#" title="Enregistrements">
+          <i class="ri-book-read-line"></i><span>Enregistrements</span><i class="ri-arrow-down-s-line ms-auto"></i>
+        </a>
+        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li><a class="" href="#">Unité d'Enseignement (UE)</a></li>
+          <li><a class="" href="#">Eléments Constitutifs (ECUE)</a></li>
+          <li><a class="" href="#">Etudiants</a></li>
+          <li><a class="" href="#">Inscriptions</a></li>
+          <li><a class="" href="#">Liste par filière</a></li>
+          <li><a class="" href="#">Passage de promotion</a></li>
+          <li><a class="" href="#">Paiements</a></li>
+          <li><a class="" href="#">Prévisions</a></li>
+          <li><a class="" href="#">Fiches d'engagement</a></li>
+          <li><a class="" href="#">Enseignants</a></li>
+          <li><a class="" href="#">Liste d'émargement</a></li>
+          <li><a class="" href="#">Importer des données</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link " href="#" title="Qualité des données">
+          <i class="ri-shield-check-line"></i><span>Qualité des données</span>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#" title="Opérations">
+          <i class="ri-flashlight-line"></i><span>Opérations</span><i class="ri-arrow-down-s-line ms-auto"></i>
+        </a>
+        <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li><a class="" href="#">Attribuer une UE à un semestre</a></li>
+          <li><a class="" href="#">Affichage des UEs par semestre</a></li>
+          <li><a class="" href="#">Attribuer une ECUE à une UE</a></li>
+          <li><a class="" href="#">Affichage des ECUEs par semestre</a></li>
+          <li><a class="" href="#">Affichage des prévisions</a></li>
+          <li><a class="" href="#">Gestion des évaluations</a></li>
+          <li><a class="" href="#">Gestion des cours</a></li>
+          <li><a class="" href="#">Répartition en salle</a></li>
+          <li><a class="" href="#">Insertion des notes</a></li>
+          <li><a class="" href="#">Affichage des UEs non validées</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-heading">Délibération</li>
+
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#" title="Délibération">
+          <i class="ri-verified-badge-line"></i><span>Délibération</span><i class="ri-arrow-down-s-line ms-auto"></i>
+        </a>
+        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li><a class="" href="#">Parcours d'un étudiant</a></li>
+          <li><a class="" href="#">Récapitulatif des UEs</a></li>
+          <li><a class="" href="#">Récapitulatif du semestre</a></li>
+          <li><a class="" href="#">Récapitulatif Annuel</a></li>
+          <li><a class="" href="#">Récapitulatif du Grade</a></li>
+          <li><a class="" href="#">Relevés par Semestre</a></li>
+          <li><a class="" href="#">Attestations &amp; Diplômes (L3)</a></li>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link " href="#" title="À propos">
+          <i class="ri-information-line"></i><span>À propos</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-user">
+      <span class="avatar-initials" aria-hidden="true"></span>
+      <div class="su-text min-w-0">
+        <div class="su-name"></div>
+        <div class="su-role">Connecté(e)</div>
+      </div>
+    </div>
+  </aside><!-- End Sidebar -->
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+  <main id="main" class="main">
+    <div class="container-fluid">
+      
+    </div>
+    
+<section class="px-6 pb-3 pt-5">
+
+  <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+    <div>
+      <h1 class="text-[1.35rem] font-extrabold tracking-tight text-encre leading-tight">Fiche étudiant</h1>
+      <p class="text-[0.82rem] text-encre-muted mt-1">Identité, parcours et situation financière.</p>
+    </div>
+    <div class="flex gap-2">
+      <a href="#" class="ed-btn ed-btn-secondary ed-btn-sm">
+        <i class="ri-arrow-left-line"></i>Tous les étudiants
+      </a>
+      
+    </div>
+  </div>
+
+  
+
+  
+  <div class="fe-hero">
+    <div class="fe-avatar">
+      
+        BR
+      
+    </div>
+    <div>
+      <div class="fe-nom">BADA Rachidatou</div>
+      <div class="flex items-center gap-2 mt-1">
+        <span class="fe-mat">20240052</span>
+        
+          <span class="text-[0.75rem] text-encre-muted">
+            Féminin
+          </span>
+        
+      </div>
+      <div class="fe-meta">
+        
+          <span><i class="ri-cake-2-line"></i> 2003-05-14</span>
+        
+        
+          <span><i class="ri-map-pin-line"></i> Parakou</span>
+        
+        
+          <span><i class="ri-phone-line"></i> 97123456</span>
+        
+        
+          <span><i class="ri-mail-line"></i> r.bada.bj</span>
+        
+      </div>
+    </div>
+    <div class="ml-auto">
+      <span class="fe-statut warn">
+        <i class="ri-time-line"></i>
+        Reste à payer
+      </span>
+    </div>
+  </div>
+
+  
+  <div class="fe-kpis">
+    <div class="fe-kpi">
+      <div class="v">470000 F</div>
+      <div class="l">Frais attendus</div>
+    </div>
+    <div class="fe-kpi ok">
+      <div class="v">370000 F</div>
+      <div class="l">Encaissé</div>
+    </div>
+    <div class="fe-kpi bad">
+      <div class="v">100000 F</div>
+      <div class="l">Reste à payer</div>
+    </div>
+    <div class="fe-kpi warn">
+      <div class="v">79%</div>
+      <div class="l">Couverture</div>
+    </div>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+
+    
+    <div class="lg:col-span-2 fe-card">
+      <div class="fe-head">
+        <i class="ri-graduation-cap-line text-[#822A40]"></i>
+        <h2>Parcours</h2>
+        <span class="n"> </span>
+      </div>
+
+      
+        <div class="fe-ins">
+          <div class="fe-ins-t">
+            <span>Licence 2</span>
+            <span class="badge">2025-2026</span>
+            
+              <span class="badge">Inscrit</span>
+            
+            <span class="badge warn">
+              Reste à payer
+            </span>
+            <span class="fe-actions">
+              <a class="ed-pay-btn" href="#?matricule=20240052">
+                <i class="ri-file-list-3-line"></i>Paiements
+              </a>
+            </span>
+          </div>
+          <div class="fe-ins-nums">
+            <span>Attendu <b>250000 F</b></span>
+            <span>Encaissé <b>150000 F</b></span>
+            <span><b>2</b> paiement(s)</span>
+          </div>
+          <div class="fe-barre">
+            <i class="partiel" style="width: 60%"></i>
+          </div>
+        </div>
+      
+        <div class="fe-ins">
+          <div class="fe-ins-t">
+            <span>Licence 1</span>
+            <span class="badge">2024-2025</span>
+            
+              <span class="badge">Admis</span>
+            
+            <span class="badge ok">
+              Soldé
+            </span>
+            <span class="fe-actions">
+              <a class="ed-pay-btn" href="#?matricule=20240052">
+                <i class="ri-file-list-3-line"></i>Paiements
+              </a>
+            </span>
+          </div>
+          <div class="fe-ins-nums">
+            <span>Attendu <b>220000 F</b></span>
+            <span>Encaissé <b>220000 F</b></span>
+            <span><b>3</b> paiement(s)</span>
+          </div>
+          <div class="fe-barre">
+            <i class="" style="width: 100%"></i>
+          </div>
+        </div>
+      
+    </div>
+
+    
+    <div class="fe-card">
+      <div class="fe-head">
+        <i class="ri-hand-coin-line text-[#822A40]"></i>
+        <h2>Derniers paiements</h2>
+        <span class="n"></span>
+      </div>
+
+      
+        <div class="fe-ins">
+          <div class="fe-ins-t">
+            <span> F</span>
+            <span class="badge">Tranche 2</span>
+            
+              <span class="badge">Licence 2</span>
+            
+          </div>
+          <div class="fe-ins-nums">
+            <span>2026-01-12</span>
+            <span>Espèces</span>
+            <span>2025-2026</span>
+          </div>
+        </div>
+      
+        <div class="fe-ins">
+          <div class="fe-ins-t">
+            <span> F</span>
+            <span class="badge">Tranche 1</span>
+            
+              <span class="badge">Licence 2</span>
+            
+          </div>
+          <div class="fe-ins-nums">
+            <span>2025-11-03</span>
+            <span>Mobile Money</span>
+            <span>2025-2026</span>
+          </div>
+        </div>
+      
+    </div>
+  </div>
+
+  
+  <div class="fe-card mt-4">
+    <div class="fe-head">
+      <i class="ri-file-user-line text-[#822A40]"></i>
+      <h2>Informations administratives</h2>
+    </div>
+    <dl class="fe-dl">
+      <dt>Matricule</dt><dd>20240052</dd>
+      <dt>Nom</dt><dd>BADA</dd>
+      <dt>Prénoms</dt><dd>Rachidatou</dd>
+      <dt>Date de naissance</dt><dd>2003-05-14</dd>
+      <dt>Lieu de naissance</dt><dd>Parakou</dd>
+      <dt>Sexe</dt><dd>F</dd>
+      <dt>Téléphone</dt><dd>97123456</dd>
+      <dt>Email</dt><dd>r.bada.bj</dd>
+      <dt>Observations</dt><dd>—</dd>
+    </dl>
+  </div>
+
+</section>
+
+  </main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright 2026 | <strong>LMD Web Solutions</strong> | Tous droits réservés.
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top" aria-label="Retour en haut"><i class="ri-arrow-up-line"></i></a>
+
+  <!-- Libs tierces locales -->
+  <script src="/assets/vendor/simple-datatables/simple-datatables.js"></script>
+
+  <!-- Moteur d'interactions EduLMD (remplace Bootstrap JS) -->
+  <script src="/assets/js/edulmd-ui.js"></script>
+
+  <!-- Comportements de l'application -->
+  <script src="/assets/js/edulmd-shell.js"></script>
+  <script>
+    window.EDULMD_SEARCH_URL = "#";
+  </script>
+  <script src="/assets/js/edulmd-search.js"></script>
+  <script>
+    window.EDULMD_PAY_SITUATION = "/api/paiement-rapide";
+    window.EDULMD_PAY_STORE = "/api/paiement-rapide";
+  </script>
+  <script src="/assets/js/edulmd-pay.js"></script>
+  <script>
+    window.EDULMD_BULK_STATUT = "#";
+    window.EDULMD_BULK_EXPORT = "#";
+    window.EDULMD_BULK_PRINT = "#";
+    
+    window.EDULMD_STATUTS = '{}';
+  </script>
+  <script src="/assets/js/edulmd-bulk.js"></script>
+
+  
+  <script src="/assets/vendor/html2pdf/html2pdf.bundle.min.js"></script>
+
+  <script>
+    // Setup global CSRF token pour toutes les requêtes AJAX jQuery
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $(document).ready(function() {
+        document.querySelectorAll('.form-select:not(.no-tomselect)').forEach((el)=>{
+          let settings = {maxOptions:null};
+          new TomSelect(el,settings);
+        });
+    });
+  </script>
+
+  
+  <div class="modal" id="globalConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered max-w-[420px]">
+      <div class="modal-content">
+        <div class="modal-body p-0">
+          
+          <div id="gcm-icon-band" class="text-center py-4" style="background:linear-gradient(135deg,#822A40,#B55168);">
+            <div id="gcm-icon-circle" class="mx-auto flex items-center justify-center rounded-full" style="width:68px;height:68px;background:rgba(255,255,255,0.2);">
+              <i id="gcm-icon" class="ri-question-fill text-white" style="font-size:2rem;"></i>
+            </div>
+          </div>
+          
+          <div class="px-6 pt-6 pb-4 text-center">
+            <h5 id="gcm-title" class="text-[1.05rem] font-bold text-encre mb-2">Confirmation</h5>
+            <p id="gcm-message" class="text-encre-muted text-[0.9rem] leading-relaxed mb-0"></p>
+          </div>
+        </div>
+        <div class="modal-footer justify-center gap-3 border-0 pt-0 pb-6 px-6">
+          <button type="button" class="btn btn-light px-4 fw-semibold" data-bs-dismiss="modal">
+            <i class="ri-close-circle-line me-1"></i>Annuler
+          </button>
+          <button type="button" id="gcm-confirm-btn" class="btn btn-primary px-4 fw-semibold">
+            <i id="gcm-confirm-icon" class="ri-checkbox-circle-line me-1"></i>
+            <span id="gcm-confirm-text">Confirmer</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * confirmAction(options) — Ouvre la modale de confirmation globale
+     */
+    function confirmAction(options) {
+        const o = Object.assign({
+            title:        'Confirmation',
+            message:      'Êtes-vous sûr ?',
+            icon:         'ri-question-fill',
+            gradient:     'linear-gradient(135deg,#822A40,#B55168)',
+            confirmText:  'Confirmer',
+            confirmClass: 'btn-danger',
+            confirmIcon:  'ri-checkbox-circle-line',
+            onConfirm:    function() {}
+        }, options);
+
+        document.getElementById('gcm-title').textContent   = o.title;
+        document.getElementById('gcm-message').innerHTML   = o.message;
+        document.getElementById('gcm-icon').className      = o.icon + ' text-white';
+        document.getElementById('gcm-icon-band').style.background = o.gradient;
+        document.getElementById('gcm-confirm-text').textContent   = o.confirmText;
+        document.getElementById('gcm-confirm-icon').className     = o.confirmIcon + ' me-1';
+
+        const btn = document.getElementById('gcm-confirm-btn');
+        btn.className = 'btn px-4 fw-semibold ' + o.confirmClass;
+
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', function() {
+            const modal = EduUI.Modal.getInstance(document.getElementById('globalConfirmModal'));
+            if (modal) modal.hide();
+            setTimeout(o.onConfirm, 150);
+        });
+
+        EduUI.Modal.getOrCreateInstance(document.getElementById('globalConfirmModal')).show();
+    }
+
+    /**
+     * confirmDelete(formEl, label) — Raccourci pour confirmer la suppression
+     */
+    function confirmDelete(formEl, label) {
+        confirmAction({
+            title:        'Supprimer ' + (label || 'cet élément'),
+            message:      'Cette action est <strong>irréversible</strong>.<br>Voulez-vous vraiment supprimer ' + (label || 'cet élément') + ' ?',
+            icon:         'ri-delete-bin-6-fill',
+            gradient:     'linear-gradient(135deg,#B91C1C,#EF4444)',
+            confirmText:  'Supprimer',
+            confirmClass: 'btn-danger',
+            confirmIcon:  'ri-delete-bin-line',
+            onConfirm:    function() { formEl.submit(); }
+        });
+    }
+  </script>
+
+  
+
+</body>
+
+</html>
