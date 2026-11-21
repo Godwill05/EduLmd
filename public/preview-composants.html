@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="csrf-token" content="test-token">
+<title>Banc d'essai — composants</title>
+<link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/assets/css/edulmd.css" rel="stylesheet">
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; background:#FBFBFC; margin:0; padding:2rem; }
+  .card { background:#fff; border:1px solid #E6E6EA; border-radius:1rem; padding:1rem; margin-bottom:1.5rem; }
+  table { width:100%; border-collapse:collapse; font-size:.85rem; }
+  th, td { padding:.45rem .6rem; border-bottom:1px solid #F0F0F3; text-align:left; }
+  h2 { font-size:.95rem; margin:0 0 .75rem; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Actions groupées — tableau</h2>
+  <table data-ed-bulk id="t">
+    <thead><tr><th>Matricule</th><th>Nom</th><th>Reste</th></tr></thead>
+    <tbody>
+      <tr data-ed-matricule="20240052"><td>20240052</td><td>BADA Rachidatou</td><td>100 000 F</td></tr>
+      <tr data-ed-matricule="20230104"><td>20230104</td><td>DOSSOU Jean</td><td>50 000 F</td></tr>
+      <tr data-ed-matricule="20240222"><td>20240222</td><td>LAWANI Farid</td><td>320 000 F</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Paiement en un clic</h2>
+  <button type="button" class="ed-pay-btn" data-ed-pay="20240052">
+    <i class="ri-hand-coin-line"></i>Encaisser BADA
+  </button>
+</div>
+
+<script>
+  window.EDULMD_SEARCH_URL = '/api/recherche';
+  window.EDULMD_PAY_SITUATION = '/api/paiement-rapide';
+  window.EDULMD_PAY_STORE = '/api/paiement-rapide';
+  window.EDULMD_BULK_STATUT = '/api/actions-groupees/statut';
+  window.EDULMD_BULK_EXPORT = '/api/actions-groupees/export';
+  window.EDULMD_BULK_PRINT = '/api/actions-groupees/impression';
+  window.EDULMD_STATUTS = [
+    { code: 'INS', libelle: 'Inscrit' },
+    { code: 'ADM', libelle: 'Admis' }
+  ];
+</script>
+<script src="/assets/js/edulmd-search.js"></script>
+<script src="/assets/js/edulmd-pay.js"></script>
+<script src="/assets/js/edulmd-bulk.js"></script>
+</body>
+</html>

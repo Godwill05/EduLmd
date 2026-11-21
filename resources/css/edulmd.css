@@ -1583,8 +1583,20 @@ tr.ed-bulk-row > td { background: #FDF6F7 !important; }
   opacity: 0;
   pointer-events: none;
   transition: opacity .18s, transform .18s cubic-bezier(.2,.8,.3,1);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   max-width: calc(100vw - 2rem);
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .ed-bulk-bar {
+    flex-wrap: wrap;
+    border-radius: 1rem;
+    padding: .6rem .8rem;
+    justify-content: center;
+    white-space: normal;
+  }
+  .ed-bulk-action span { display: none; }
+  .ed-bulk-action { padding: .4rem .55rem; }
 }
 .ed-bulk-bar:not([hidden]) {
   opacity: 1;
