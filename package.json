@@ -5,7 +5,8 @@
         "build": "vite build",
         "css:build": "tailwindcss -i resources/css/edulmd.css -o public/assets/css/edulmd.css --minify",
         "css:watch": "tailwindcss -i resources/css/edulmd.css -o public/assets/css/edulmd.css --watch",
-        "css:sync": "npm run css:build && cp public/assets/css/edulmd.css assets/css/edulmd.css && cp public/assets/js/edulmd-ui.js assets/js/edulmd-ui.js && cp public/assets/js/edulmd-shell.js assets/js/edulmd-shell.js"
+        "css:sync": "npm run css:build && node tools/check-collisions.js && cp public/assets/css/edulmd.css assets/css/edulmd.css && cp public/assets/js/edulmd-ui.js assets/js/edulmd-ui.js && cp public/assets/js/edulmd-shell.js assets/js/edulmd-shell.js",
+        "check:collisions": "node tools/check-collisions.js"
     },
     "devDependencies": {
         "autoprefixer": "^10.4.20",

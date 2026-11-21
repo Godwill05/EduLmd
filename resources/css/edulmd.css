@@ -1210,3 +1210,40 @@
 
 /* Les icônes RemixIcon s'alignent comme les Bootstrap Icons */
 [class^="ri-"], [class*=" ri-"] { vertical-align: -0.125em; line-height: 1; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CORRECTIFS DE COLLISION (voir tools/check-collisions.js)
+   Tailwind définit des utilitaires du même nom que les classes Bootstrap
+   utilisées par les vues métier. Les règles ci-dessous rétablissent le
+   comportement attendu. Elles sont placées en fin de feuille et gardent
+   une spécificité supérieure à celle des utilitaires.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* `.table` : Tailwind impose display:table, ce qui cassait nos tableaux
+   (les <th> et <td> perdaient leur mise en forme). On rétablit un vrai
+   tableau HTML classique, prioritaire sur l'utilitaire. */
+table.table,
+.table {
+  display: table;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  color: #3F4147;
+}
+
+/* `.collapse` : l'utilitaire Tailwind `visibility: collapse` rendait
+   INVISIBLES les sous-menus de la sidebar et les blocs repliables.
+   On neutralise explicitement la visibilité. */
+.collapse,
+.collapse.show,
+.nav-content.collapse,
+.nav-content.collapse.show {
+  visibility: visible;
+}
+.collapse:not(.show) {
+  display: none;
+}
+
+/* `.container` : désactivé côté Tailwind (corePlugins), on garde notre
+   définition de la couche de compatibilité. Aucune surcharge nécessaire. */

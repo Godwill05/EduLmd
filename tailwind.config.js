@@ -75,4 +75,19 @@ module.exports = {
     },
   },
   plugins: [],
+  /* ────────────────────────────────────────────────────────────────────
+     CORRECTIF CRITIQUE — collision de noms avec le legacy
+     Tailwind génère `.collapse { visibility: collapse }`, mais les 55 vues
+     métier utilisent `class="collapse"` (sous-menus, alertes, accordéons).
+     Ce nom collisionne : les sous-menus de la sidebar devenaient invisibles.
+     On désactive donc le plugin `visibility` de Tailwind. Le mot-clé
+     `visibility: collapse` n'est de toute façon quasiment jamais utilisé.
+     (`hidden`, `block`, `flex`… sont dans le plugin `display`, conservé.)
+     ──────────────────────────────────────────────────────────────────── */
+  corePlugins: {
+    /* `.collapse` (visibility) rendait invisibles tous les sous-menus. */
+    visibility: false,
+    /* `.container` (width) écrasait notre conteneur de page. */
+    container: false,
+  },
 }
