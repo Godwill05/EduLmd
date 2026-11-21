@@ -7,6 +7,7 @@ use App\Http\Controllers\AttribuerEcueUeController;
 use App\Http\Controllers\AttribuerUeSemestreController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ConstanteController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CoursController;
 use App\Http\Controllers\DomaineResaoController;
 use App\Http\Controllers\ECUEController;
@@ -73,9 +74,7 @@ use Spatie\Permission\Models\Permission;
 |
 */
 
-Route::get('/home', function () {
-    return view('accueil');
-})->middleware('auth')->name('home');
+Route::get('/home', [DashboardController::class, 'index'])->middleware('auth')->name('home');
 Route::view('/not-found', 'errors.not-found')->name('not-found');
 Route::view('/','login')->name('login')->middleware('guest');
 Route::post('/',function(Request $rq){
