@@ -64,13 +64,16 @@ class DashboardController extends Controller
             ->when($anneeEtude, fn($q) => $q->where('ID_FILIERE', $anneeEtude))
             ->count();
 
-        // Étudiants sans aucun paiement enregistré (à relancer)
+        // Étudiants sans aucun paiement enregistré (à relancer).
+        // distinct() évite de construire une sous-requête volumineuse :
+        // on ne veut que la liste des matricules ayant payé au moins une fois.
         $avecPaiement = Paiement::query()
-            ->when($anneeAcad, fn($q) => $q->where('Id_Annee', $anneeAcad))
-            ->when($anneeEtude, fn($q) => $q->where('ID_FILIERE', $anneeEtude))
-            ->select('MATRICULE');
+            ->when($anneeAcad, fn($q) => $q->where('paiements.Id_Annee', $anneeAcad))
+            ->when($anneeEtude, fn($q) => $q->where('paiements.ID_FILIERE', $anneeEtude))
+            ->select('paiements.MATRICULE')
+            ->distinct();
         $nbSansPaiement = (int) $inscriptions()
-            ->whereNotIn('MATRICULE', $avecPaiement)
+            ->whereNotIn('inscriptions.MATRICULE', $avecPaiement)
             ->count();
 
         // Étudiants ayant encore un reste à payer
@@ -193,15 +196,29 @@ class DashboardController extends Controller
             ];
         });
 
-        // Derniers paiements enregistrés
+        // Derniers paiements enregistrés.
+        //
+        // NOTE — ne PAS utiliser ->with(['inscription.etudiant']) ici :
+        // Paiement::inscription() n'est pas une relation Eloquent (la méthode
+        // retourne directement un modèle via ->first()), et ->with() exige
+        // une Relation, d'où l'erreur « Call to undefined method ».
+        // On joint explicitement : une seule requête, pas de N+1.
         $derniersPaiements = Paiement::query()
-            ->with(['inscription.etudiant'])
-            ->when($anneeAcad, fn($q) => $q->where('Id_Annee', $anneeAcad))
-            ->when($anneeEtude, fn($q) => $q->where('ID_FILIERE', $anneeEtude))
-            ->orderByDesc('datePaiement')
-            ->orderByDesc('id')
+            ->leftJoin('etudiant', 'paiements.MATRICULE', '=', 'etudiant.MATRICULE')
+            ->when($anneeAcad, fn($q) => $q->where('paiements.Id_Annee', $anneeAcad))
+            ->when($anneeEtude, fn($q) => $q->where('paiements.ID_FILIERE', $anneeEtude))
+            ->orderByDesc('paiements.datePaiement')
+            ->orderByDesc('paiements.id')
             ->limit(15)
-            ->get();
+            ->get([
+                'paiements.id',
+                'paiements.MATRICULE',
+                'paiements.montantPaye',
+                'paiements.datePaiement',
+                'paiements.modePaiement',
+                'etudiant.nomEtu',
+                'etudiant.prenomsEtu',
+            ]);
 
         return view('dashboard', compact(
             'annees', 'anneeAcad', 'anneeEtude', 'statut',

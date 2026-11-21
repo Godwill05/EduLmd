@@ -412,8 +412,7 @@ Tableau de bord
                   {{ $p->datePaiement ? \Carbon\Carbon::parse($p->datePaiement)->format('d/m/Y') : '—' }}
                 </td>
                 <td class="font-semibold text-encre">
-                  {{ optional(optional($p->inscription)->etudiant)->nomEtu ?? '—' }}
-                  {{ optional(optional($p->inscription)->etudiant)->prenomsEtu }}
+                  {{ $p->nomEtu ?? '—' }} {{ $p->prenomsEtu ?? '' }}
                 </td>
                 <td class="font-mono text-[0.78rem]">{{ $p->MATRICULE }}</td>
                 <td><span class="pill pill-info">{{ $p->modePaiement ?: 'Espèces' }}</span></td>
