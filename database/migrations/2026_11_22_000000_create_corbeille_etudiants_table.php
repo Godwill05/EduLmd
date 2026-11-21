@@ -20,18 +20,20 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('corbeille_etudiants', function (Blueprint $table) {
-            $table->id();
-            $table->string('MATRICULE', 50)->index();
-            $table->string('nom_complet')->nullable();
-            $table->string('motif')->nullable();
-            $table->enum('type', ['doublon', 'manuel'])->default('manuel');
-            $table->string('supprime_par')->nullable();
-            $table->json('donnees');                 // copie complète, restaurable
-            $table->unsignedInteger('nb_inscriptions')->default(0);
-            $table->unsignedInteger('nb_paiements')->default(0);
-            $table->timestamps();
-        });
+if (! \App\Support\Tables::existe('corbeille_etudiants')) {
+                Schema::create('corbeille_etudiants', function (Blueprint $table) {
+                $table->id();
+                $table->string('MATRICULE', 50)->index();
+                $table->string('nom_complet')->nullable();
+                $table->string('motif')->nullable();
+                $table->enum('type', ['doublon', 'manuel'])->default('manuel');
+                $table->string('supprime_par')->nullable();
+                $table->json('donnees');                 // copie complète, restaurable
+                $table->unsignedInteger('nb_inscriptions')->default(0);
+                $table->unsignedInteger('nb_paiements')->default(0);
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()

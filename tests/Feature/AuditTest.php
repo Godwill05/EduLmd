@@ -175,6 +175,77 @@ class AuditTest extends TestCase
     }
 
     /**
+     * La génération du PDF ne doit produire ni page blanche ni page en trop.
+     *
+     * L'attestation tient sur une page paysage et le certificat sur une page
+     * portrait. Un cadre trop haut faisait déborder le pied de page et
+     * Html2Pdf ajoutait une page fantôme (mesure : seuil ~160 mm).
+     */
+    public function test_le_pdf_attestation_et_certificat_tient_sur_deux_pages(): void
+    {
+        if (! class_exists(\Spipu\Html2Pdf\Html2Pdf::class)) {
+            $this->markTestSkipped('Html2Pdf absent.');
+        }
+
+        $row = DB::table('ufr')->join('universites', 'ufr.Univ', '=', 'universites.id')->first();
+        if (! $row) {
+            $this->markTestSkipped('Établissement absent de cette base.');
+        }
+        $univ = [(array) $row];
+
+        $etu = [
+            'nom_complet' => 'DOSSOU Koffi Emmanuel', 'date_nais' => '12/03/2000',
+            'lieu_nais' => 'Porto-Novo', 'matricule' => '10410024',
+            'lieu_delivrance' => 'Porto-Novo', 'date_delivrance' => '21/11/2026',
+            'decision' => 'A obtenu le diplôme de Licence Professionnelle',
+            'cycle' => 'Licence', 'mention' => 'Bien', 'specialite' => 'Génie Logiciel',
+            'session' => 'Juin 2026', 'reference' => 'N° 2026/0123/IUSAA/DA',
+            'arrete_ligne1' => 'Arrêté Ministériel N° 2021-0281/CNE/P/CQR/SE du 9 Novembre 2021',
+            'arrete_ligne2' => 'N° 2334/MERS/DC/SGM/DGES/SA du 22 Novembre 2021',
+            'domaine_arrete' => 'Domaine : Sciences et Technologies',
+        ];
+
+        $attestation = \App\Http\Controllers\AttestationDiplomeController::buildAttestationPageHtml($etu, $univ);
+        $certificat = \App\Http\Controllers\AttestationDiplomeController::buildCertificatPageHtml($etu, $univ);
+
+        // Contenu demandé par l'utilisateur
+        $this->assertStringContainsString('ATTESTATION DE DIPLÔME', $attestation);
+        $this->assertMatchesRegularExpression(
+            '/ATTESTATION DE DIPLÔME/',
+            $attestation
+        );
+        $this->assertMatchesRegularExpression(
+            '/text-align:\s*center[^;]*;?[^<]*<span[^>]*font-size: 21pt/',
+            $attestation,
+            'Le titre doit être centré et agrandi.'
+        );
+        $this->assertStringContainsString('page_footer', $attestation,
+            'Les coordonnées doivent être en pied de page.');
+        // Les « ––– » ne doivent plus être rendus (il n'en reste qu'un commentaire HTML).
+        $this->assertDoesNotMatchRegularExpression(
+            '/<td[^>]*>\s*–––\s*<\/td>/',
+            $attestation,
+            'Le tiret au-dessus du titre a été retiré.'
+        );
+
+        // Les deux documents réunis ne doivent produire qu'une page chacun.
+        try {
+            $pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'A4', 'fr', true, 'UTF-8', [8.5, 8.5, 8.5, 8.5]);
+            $pdf->setTestTdInOnePage(false);
+            $pdf->writeHTML($attestation . $certificat);
+            $brut = $pdf->Output('test.pdf', 'S');
+        } catch (\Throwable $e) {
+            $this->fail('La génération du PDF a échoué : ' . $e->getMessage());
+        }
+
+        // Un PDF valide commence par %PDF ; on compte les objets /Type /Page.
+        $this->assertStringStartsWith('%PDF', $brut);
+        $nbPages = preg_match_all('#/Type\s*/Page[^s]#', $brut);
+        $this->assertSame(2, $nbPages,
+            'Le pack doit produire exactement 2 pages (attestation + certificat), obtenu : ' . $nbPages);
+    }
+
+    /**
      * Un utilisateur ne peut pas modifier un compte d'un niveau égal ou
      * supérieur au sien : c'est ce qui empêche un administrateur de se
      * promouvoir lui-même.

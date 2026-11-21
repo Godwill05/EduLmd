@@ -13,18 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('paiements', function (Blueprint $table) {
-            $table->id();
-            $table->integer('montantPaye');
-            $table->date('datePaiement');
-            $table->string('modePaiement');
-            $table->integer('numeroTranche');
-            $table->string('MATRICULE',25)->collation('latin1_swedish_ci');
-            $table->integer('Id_Annee');
-            $table->string('ID_FILIERE',25)->collation('latin1_swedish_ci');
-            $table->foreign(['MATRICULE','Id_Annee','ID_FILIERE'])->references(['MATRICULE','Id_Annee','ID_FILIERE'])->on('inscriptions');
-            $table->timestamps();
-        });
+if (! \App\Support\Tables::existe('paiements')) {
+                Schema::create('paiements', function (Blueprint $table) {
+                $table->id();
+                $table->integer('montantPaye');
+                $table->date('datePaiement');
+                $table->string('modePaiement');
+                $table->integer('numeroTranche');
+                $table->string('MATRICULE',25)->collation('latin1_swedish_ci');
+                $table->integer('Id_Annee');
+                $table->string('ID_FILIERE',25)->collation('latin1_swedish_ci');
+                $table->foreign(['MATRICULE','Id_Annee','ID_FILIERE'])->references(['MATRICULE','Id_Annee','ID_FILIERE'])->on('inscriptions');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

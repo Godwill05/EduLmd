@@ -23,15 +23,23 @@ class Parametres
     /** @var array<string, string>|null */
     private static ?array $memoire = null;
 
-    /** Toutes les valeurs, indexées par clé. */
+    /**
+     * Toutes les valeurs, indexées par clé.
+     *
+     * La table `parametres_systeme` est la source principale, mais les
+     * coordonnées existent déjà dans la table historique `ufr` (celle que
+     * remplit l'écran « UFR / École / Faculté »). Si la migration n'a pas
+     * encore été jouée — ou si une valeur est vide — on retombe sur `ufr`
+     * pour que la page « À propos » ne soit jamais vide.
+     */
     public static function tous(): array
     {
         if (self::$memoire !== null) {
             return self::$memoire;
         }
 
-        return self::$memoire = Cache::rememberForever(self::CACHE, function () {
-            if (! Schema::hasTable('parametres_systeme')) {
+        $valeurs = Cache::rememberForever(self::CACHE, function () {
+            if (! Tables::existe('parametres_systeme')) {
                 return [];
             }
 
@@ -40,6 +48,49 @@ class Parametres
                 ->map(fn ($v) => (string) $v)
                 ->all();
         });
+
+        return self::$memoire = array_merge(self::depuisUfr(), array_filter(
+            $valeurs,
+            static fn ($v) => $v !== '' && $v !== null
+        ));
+    }
+
+    /**
+     * Coordonnées issues de la table `ufr`, dans le vocabulaire des
+     * paramètres système.
+     *
+     * @return array<string, string>
+     */
+    private static function depuisUfr(): array
+    {
+        try {
+            if (! Tables::existe('ufr')) {
+                return [];
+            }
+
+            $ufr = \Illuminate\Support\Facades\DB::table('ufr')->first();
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        if (! $ufr) {
+            return [];
+        }
+
+        $lire = static fn ($champ) => isset($ufr->{$champ}) && $ufr->{$champ} !== null
+            ? trim((string) $ufr->{$champ})
+            : '';
+
+        return array_filter([
+            'etablissement.nom' => $lire('Ecol_Ufr'),
+            'etablissement.adresse' => $lire('Adres_Post'),
+            'etablissement.ville' => $lire('ville'),
+            'contact.telephone_1' => $lire('Tel'),
+            'contact.email_1' => $lire('mail'),
+            'contact.site_web' => $lire('Site_web'),
+            'direction.recteur' => $lire('directeur'),
+            'direction.rh' => $lire('directeurAdjoint'),
+        ], static fn ($v) => $v !== '');
     }
 
     /** Valeur d'une constante, ou $defaut si elle n'existe pas. */
@@ -67,6 +118,7 @@ class Parametres
     {
         self::$memoire = null;
         Cache::forget(self::CACHE);
+        Tables::oublier();
     }
 
     /**

@@ -25,8 +25,13 @@ class AttestationDiplomeController extends Controller
     private const COULEUR_REF        = '#666666'; // Référence / mentions grises (#666666)
     private const COULEUR_LIEN       = '#0d6efd'; // E-mail / site web
 
-    // Hauteur du cadre vert de l'attestation (A4 paysage)
-    private const HAUTEUR_CADRE_ATTESTATION = '183mm';
+    /* Hauteur du cadre vert de l'attestation (A4 paysage : 210 mm de haut).
+       Réserve de place pour les marges hautes/basses et pour le pied de page
+       collé au bas de la feuille (<page_footer>, réserve « backbottom »).
+       Mesuré sur le contenu réel (mesure bissectée) : à 160 mm le document
+       tient sur une page, à 165 mm Html2Pdf ajoute une page fantôme portant
+       le pied de page. 158 mm garde ~7 mm de sécurité sous le seuil. */
+    private const HAUTEUR_CADRE_ATTESTATION = '158mm';
 
     /**
      * Page principale : sélection de l'année, de la filière et personnalisation des champs.
@@ -199,6 +204,11 @@ class AttestationDiplomeController extends Controller
         try {
             $pdf = new Html2Pdf($orientation, 'A4', 'fr', true, 'UTF-8', $marges);
             $pdf->setTestTdInOnePage(false);
+
+            /* Pas de <!DOCTYPE> ni de <body> autour du contenu : Html2Pdf
+               ouvre alors une page blanche pour chaque enveloppe ajoutée
+               (vérifié : 3 pages au lieu de 1). Le contenu est donc passé
+               tel quel, Html2Pdf l'enveloppe lui-même. */
             $pdf->writeHTML($html);
             $contenu = $pdf->Output($filename, 'S');
 
@@ -347,23 +357,31 @@ class AttestationDiplomeController extends Controller
 
         ob_start();
         ?>
-        <page orientation="paysage" format="A4">
-            <div style="border: 2.5px solid <?= $cCadre ?>; width: 267mm; height: <?= $hCadre ?>; padding: 4mm 6mm; font-family: times, 'Times New Roman', serif;">
-                
-                <!-- EN-TETE -->
+        <page orientation="paysage" format="A4" backtop="8mm" backbottom="14mm">
+            <!-- PIED DE PAGE — <page_footer> colle le bloc au bas de la feuille
+                 (un div en position:absolute débordait du cadre et n'était pas centré) -->
+            <page_footer>
+                <div style="text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35;">
+                    <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
+                </div>
+            </page_footer>
+
+            <div style="border: 2.5px solid <?= $cCadre ?>; width: 267mm; height: <?= $hCadre ?>; padding: 4mm 6mm; font-family: freeserif;">
+
+                <!-- EN-TETE — tailles relevées de 2 pt par rapport au modèle d'origine -->
                 <table style="width: 266mm; border-collapse: collapse;">
                     <tr>
                         <td style="width: 14%; text-align: left; vertical-align: middle;">
                             <img src="<?= $logoUniv ?>" style="width: 78px; height: 78px;" alt="Logo Univ">
                         </td>
-                        <td style="width: 72%; text-align: center; vertical-align: middle; line-height: 1.25;">
-                            <span style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px;">RÉPUBLIQUE DU BÉNIN</span><br>
-                            <span style="font-size: 10pt; font-weight: bold; letter-spacing: 2px;">*****</span><br>
-                            <span style="font-size: 9.5pt; font-weight: bold;">Ministère de l’Enseignement Supérieur et de la Recherche Scientifique</span><br>
-                            <span style="font-size: 11pt; font-weight: bold; color: <?= $cDomaine ?>; margin-top: 1px;">Institut Universitaire Saints Adrien et Anselme</span><br>
-                            <span style="font-size: 9pt; font-weight: bold; color: #111;"><?= htmlspecialchars($etu['arrete_ligne1']) ?></span><br>
-                            <span style="font-size: 9pt; font-weight: bold; color: #111;"><?= htmlspecialchars($etu['arrete_ligne2']) ?></span><br>
-                            <span style="font-size: 9.5pt; font-weight: bold; font-style: italic; text-decoration: underline; color: <?= $cDomaine ?>;"><?= htmlspecialchars($etu['domaine_arrete']) ?></span>
+                        <td style="width: 72%; text-align: center; vertical-align: middle; line-height: 1.3;">
+                            <span style="font-size: 13pt; font-weight: bold; letter-spacing: 0.5px;">RÉPUBLIQUE DU BÉNIN</span><br>
+                            <span style="font-size: 12pt; font-weight: bold; letter-spacing: 2px;">*****</span><br>
+                            <span style="font-size: 11.5pt; font-weight: bold;">Ministère de l’Enseignement Supérieur et de la Recherche Scientifique</span><br>
+                            <span style="font-size: 13pt; font-weight: bold; color: <?= $cDomaine ?>; margin-top: 1px;">Institut Universitaire Saints Adrien et Anselme</span><br>
+                            <span style="font-size: 11pt; font-weight: bold; color: #111;"><?= htmlspecialchars($etu['arrete_ligne1']) ?></span><br>
+                            <span style="font-size: 11pt; font-weight: bold; color: #111;"><?= htmlspecialchars($etu['arrete_ligne2']) ?></span><br>
+                            <span style="font-size: 11.5pt; font-weight: bold; font-style: italic; text-decoration: underline; color: <?= $cDomaine ?>;"><?= htmlspecialchars($etu['domaine_arrete']) ?></span>
                         </td>
                         <td style="width: 14%; text-align: right; vertical-align: middle;">
                             <img src="<?= $logoUfr ?>" style="width: 78px; height: 78px;" alt="Logo UFR">
@@ -371,34 +389,24 @@ class AttestationDiplomeController extends Controller
                     </tr>
                 </table>
 
-                <!-- LIGNE REFERENCE + TIRETS -->
-                <table style="width: 266mm; border-collapse: collapse; margin-top: 1.5mm;">
+                <!-- REFERENCE (les « ––– » ont été retirés : ils faisaient tache à gauche) -->
+                <table style="width: 266mm; border-collapse: collapse; margin-top: 2mm;">
                     <tr>
-                        <td style="width: 30%; text-align: left; font-size: 9pt; font-weight: bold; color: #111;">
-                            –––
-                        </td>
-                        <td style="width: 70%; text-align: right; font-size: 9.5pt; font-weight: bold; color: <?= $cRef ?>;">
+                        <td style="text-align: right; font-size: 11.5pt; font-weight: bold; color: <?= $cRef ?>;">
                             <?= htmlspecialchars($etu['reference']) ?>
                         </td>
                     </tr>
                 </table>
 
-                <!-- TITRE ATTESTATION DE DIPLOME -->
-                <table style="width: 266mm; border-collapse: collapse; margin-top: 1.5mm; margin-bottom: 2mm;">
-                    <tr>
-                        <td style="text-align: center;">
-                            <span style="font-size: 18pt; font-weight: bold; color: <?= $cTitre ?>; letter-spacing: 1px;">
-                                ATTESTATION DE DIPLÔME
-                            </span>
-                        </td>
-                    </tr>
-                </table>
+                <!-- TITRE — centré au milieu de la page, aucun trait au-dessus -->
+                <div style="text-align: center; margin-top: 10mm; margin-bottom: 6mm;">
+                    <span style="font-size: 21pt; font-weight: bold; color: <?= $cTitre ?>; letter-spacing: 1.5px;">
+                        ATTESTATION DE DIPLÔME
+                    </span>
+                </div>
 
-                <!-- TRAIT HORIZONTAL DE SEPARATION DU TITRE -->
-                <hr style="border: none; border-top: 1px solid #777777; margin: 0 0 3mm 0;">
-
-                <!-- CORPS (2 COLONNES) -->
-                <table style="width: 266mm; border-collapse: collapse; font-size: 9pt; line-height: 1.45;">
+                <!-- CORPS — police relevée à 11 pt (9 pt auparavant) -->
+                <table style="width: 266mm; border-collapse: collapse; font-size: 11pt; line-height: 1.5;">
                     <tr>
                         <!-- GAUCHE -->
                         <td style="width: 48%; vertical-align: top; padding-right: 12px; text-align: justify;">
@@ -415,45 +423,36 @@ class AttestationDiplomeController extends Controller
                             <?= htmlspecialchars($etu['decision']) ?><br><br>
                             A participé avec succès aux activités pédagogiques du cycle <b><?= htmlspecialchars($etu['cycle']) ?></b> et est déclaré(e) admis(e) avec la mention <b><?= htmlspecialchars($etu['mention']) ?></b> dans la Spécialité/Option : <b><?= htmlspecialchars($etu['specialite']) ?></b>.<br><br>
                             <span style="color: <?= $cTitre ?>; font-weight: bold;">Session : </span><b><?= htmlspecialchars($etu['session']) ?></b><br><br>
-                            <span style="color: <?= $cRef ?>; font-style: italic; font-size: 8.5pt;">En foi de quoi, la présente attestation de diplôme lui est délivrée pour servir et valoir ce que de droit.</span>
+                            <div style="border-left: 3px solid <?= $cCadre ?>; padding: 2mm 0 2mm 4mm; margin-top: 1mm;">
+                                <span style="font-family: freeserif; font-style: italic; font-size: 11.5pt; color: #1a1a1a; line-height: 1.45;">
+                                    En foi de quoi, la présente attestation de diplôme lui est délivrée pour servir et valoir ce que de droit.
+                                </span>
+                            </div>
                         </td>
                     </tr>
                 </table>
 
                 <!-- SIGNATURES -->
-                <table style="width: 266mm; border-collapse: collapse; margin-top: 4.5mm;">
+                <table style="width: 266mm; border-collapse: collapse; margin-top: 5mm;">
                     <tr>
                         <td style="width: 50%; text-align: center; vertical-align: top;">
-                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 9.5pt;">
+                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 11.5pt;">
                                 Pour le Directeur Académique des Etudes,<br>
                                 Le Directeur Adjoint,
                             </span>
                             <br><br><br><br>
-                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 9pt;">
+                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 11pt;">
                                 <?= htmlspecialchars($nomDirecteurAdjoint) ?>
                             </span>
                         </td>
                         <td style="width: 50%; text-align: center; vertical-align: top;">
-                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 9.5pt;">
+                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 11.5pt;">
                                 Le Président Directeur Général,
                             </span>
                             <br><br><br><br><br>
-                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 9pt;">
+                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 11pt;">
                                 <?= htmlspecialchars($nomPDG) ?>
                             </span>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- TRAIT HORIZONTAL AVANT COORDONNEES -->
-                <hr style="border: none; border-top: 1px solid #777777; margin: 3.5mm 0 2mm 0;">
-
-                <!-- COORDONNEES -->
-                <table style="width: 266mm; border-collapse: collapse;">
-                    <tr>
-                        <td style="text-align: center; font-size: 8.5pt; color: #111; line-height: 1.3;">
-                            <b>Tél : <?= htmlspecialchars($tel) ?></b><br>
-                            E-mail: <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web: <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
                         </td>
                     </tr>
                 </table>
@@ -492,8 +491,14 @@ class AttestationDiplomeController extends Controller
 
         ob_start();
         ?>
-        <page orientation="portrait" format="A4">
-            <div style="font-family: times, 'Times New Roman', serif;">
+        <page orientation="portrait" format="A4" backtop="8mm" backbottom="14mm">
+            <page_footer>
+                <div style="text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35;">
+                    <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
+                </div>
+            </page_footer>
+
+            <div style="font-family: freeserif;">
                 
                 <!-- EN-TETE -->
                 <table style="width: 100%; border-collapse: collapse;">
@@ -502,13 +507,13 @@ class AttestationDiplomeController extends Controller
                             <img src="<?= $logoUniv ?>" style="width: 75px; height: 75px;" alt="Logo Univ">
                         </td>
                         <td style="width: 72%; text-align: center; vertical-align: middle; line-height: 1.25;">
-                            <span style="font-size: 11pt; font-weight: bold; letter-spacing: 0.5px;">RÉPUBLIQUE DU BÉNIN</span><br>
-                            <span style="font-size: 10pt; font-weight: bold; letter-spacing: 2px;">*****</span><br>
-                            <span style="font-size: 9.5pt; font-weight: bold; line-height: 1.2;">Ministère de l’Enseignement Supérieur et de la Recherche Scientifique</span><br>
-                            <span style="font-size: 11pt; font-weight: bold; color: <?= $cDomaine ?>; margin-top: 1mm;">Institut Universitaire Saints Adrien et Anselme</span><br>
-                            <span style="font-size: 8.5pt; font-weight: bold; color: #111; margin-top: 1mm;"><?= htmlspecialchars($etu['arrete_ligne1']) ?></span><br>
-                            <span style="font-size: 8.5pt; font-weight: bold; color: #111;"><?= htmlspecialchars($etu['arrete_ligne2']) ?></span><br>
-                            <span style="font-size: 9.5pt; font-weight: bold; font-style: italic; text-decoration: underline; color: <?= $cDomaine ?>; margin-top: 1mm;"><?= htmlspecialchars($etu['domaine_arrete']) ?></span>
+                            <span style="font-size: 13pt; font-weight: bold; letter-spacing: 0.5px;">RÉPUBLIQUE DU BÉNIN</span><br>
+                            <span style="font-size: 12pt; font-weight: bold; letter-spacing: 2px;">*****</span><br>
+                            <span style="font-size: 11.5pt; font-weight: bold; line-height: 1.25;">Ministère de l’Enseignement Supérieur et de la Recherche Scientifique</span><br>
+                            <span style="font-size: 13pt; font-weight: bold; color: <?= $cDomaine ?>; margin-top: 1mm;">Institut Universitaire Saints Adrien et Anselme</span><br>
+                            <span style="font-size: 10.5pt; font-weight: bold; color: #111; margin-top: 1mm;"><?= htmlspecialchars($etu['arrete_ligne1']) ?></span><br>
+                            <span style="font-size: 10.5pt; font-weight: bold; color: #111;"><?= htmlspecialchars($etu['arrete_ligne2']) ?></span><br>
+                            <span style="font-size: 11.5pt; font-weight: bold; font-style: italic; text-decoration: underline; color: <?= $cDomaine ?>; margin-top: 1mm;"><?= htmlspecialchars($etu['domaine_arrete']) ?></span>
                         </td>
                         <td style="width: 14%; text-align: right; vertical-align: middle;">
                             <img src="<?= $logoUfr ?>" style="width: 75px; height: 75px;" alt="Logo UFR">
@@ -519,29 +524,26 @@ class AttestationDiplomeController extends Controller
                 <!-- REFERENCE -->
                 <table style="width: 100%; border-collapse: collapse; margin-top: 3mm;">
                     <tr>
-                        <td style="text-align: right; font-size: 9.5pt; font-weight: bold; color: <?= $cRef ?>;">
+                        <td style="text-align: right; font-size: 11.5pt; font-weight: bold; color: <?= $cRef ?>;">
                             <?= htmlspecialchars($etu['reference']) ?>
                         </td>
                     </tr>
                 </table>
 
                 <!-- TITRE CERTIFICAT D'AUTHENTICITE -->
-                <div style="text-align: center; margin-top: 4mm; margin-bottom: 3mm;">
-                    <span style="font-size: 18pt; font-weight: bold; color: <?= $cTitreCert ?>; letter-spacing: 1px;">
+                <div style="text-align: center; margin-top: 10mm; margin-bottom: 7mm;">
+                    <span style="font-size: 21pt; font-weight: bold; color: <?= $cTitreCert ?>; letter-spacing: 1.5px;">
                         CERTIFICAT D'AUTHENTICITÉ
                     </span>
                 </div>
 
-                <!-- TRAIT HORIZONTAL DE SEPARATION -->
-                <hr style="border: none; border-top: 1px solid #333333; margin: 0 0 5mm 0;">
-
                 <!-- PHRASE INTRODUCTIVE -->
-                <div style="text-align: justify; font-size: 9.5pt; line-height: 1.45; margin-bottom: 5mm;">
+                <div style="text-align: justify; font-size: 11.5pt; line-height: 1.5; margin-bottom: 5mm;">
                     Nous, soussigné(e) <b><i><?= htmlspecialchars($nomPDG) ?></i></b>, Président Directeur Général de l’Institut Universitaire Saints Adrien et Anselme (IUSAA), certifions par la présente que le document ci-dessous référencé est authentique et correspond aux registres officiels de notre établissement :
                 </div>
 
                 <!-- TABLEAU DETAILS EN 2 COLONNES -->
-                <table style="width: 100%; border-collapse: collapse; font-size: 9pt; line-height: 1.5; margin-bottom: 5mm;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 11pt; line-height: 1.6; margin-bottom: 5mm;">
                     <tr>
                         <td style="width: 48%; vertical-align: top; padding-right: 10px;">
                             <span style="color: <?= $cTitre ?>; font-weight: bold;">Type de document : </span><b>Attestation de diplôme</b><br><br>
@@ -558,12 +560,12 @@ class AttestationDiplomeController extends Controller
                 </table>
 
                 <!-- TEXTE LEGAL -->
-                <div style="text-align: justify; font-size: 9pt; color: <?= $cRef ?>; font-style: italic; line-height: 1.45; margin-bottom: 5mm;">
+                <div style="text-align: justify; font-size: 11pt; color: #333; font-style: italic; line-height: 1.5; margin-bottom: 5mm;">
                     En foi de quoi, le présent certificat est délivré à l'intéressé(e) pour servir et valoir ce que de droit, notamment pour toute vérification auprès de tiers (employeur, établissement d'accueil, autorité administrative).
                 </div>
 
                 <!-- DATE ET LIEU -->
-                <div style="font-size: 9.5pt; line-height: 1.5; margin-bottom: 6mm;">
+                <div style="font-size: 11.5pt; line-height: 1.6; margin-bottom: 6mm;">
                     <span style="color: <?= $cTitre ?>; font-weight: bold;">Fait à : </span><b><?= htmlspecialchars($etu['lieu_delivrance']) ?></b><br>
                     <span style="color: <?= $cTitre ?>; font-weight: bold;">Le : </span><b><?= htmlspecialchars($etu['date_delivrance']) ?></b>
                 </div>
@@ -572,35 +574,26 @@ class AttestationDiplomeController extends Controller
                 <table style="width: 100%; border-collapse: collapse; margin-top: 8mm; margin-bottom: 12mm;">
                     <tr>
                         <td style="width: 50%; text-align: center; vertical-align: top;">
-                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 10pt;">
+                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 12pt;">
                                 Pour le Directeur Académique des Etudes,<br>
                                 Le Directeur Adjoint,
                             </span>
                             <br><br><br><br>
-                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 9.5pt;">
+                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 11.5pt;">
                                 <?= htmlspecialchars($nomDirecteurAdjoint) ?>
                             </span>
                         </td>
                         <td style="width: 50%; text-align: center; vertical-align: top;">
-                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 10pt;">
+                            <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 12pt;">
                                 Le Président Directeur Général,
                             </span>
                             <br><br><br><br><br>
-                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 9.5pt;">
+                            <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 11.5pt;">
                                 <?= htmlspecialchars($nomPDG) ?>
                             </span>
                         </td>
                     </tr>
                 </table>
-
-                <!-- TRAIT HORIZONTAL AVANT COORDONNEES -->
-                <hr style="border: none; border-top: 1px solid #333333; margin: 0 0 4mm 0;">
-
-                <!-- COORDONNEES -->
-                <div style="text-align: center; font-size: 8.5pt; color: #111; line-height: 1.35;">
-                    <b>Tél : <?= htmlspecialchars($tel) ?></b><br>
-                    E-mail: <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web: <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
-                </div>
 
             </div>
         </page>

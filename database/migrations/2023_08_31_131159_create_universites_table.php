@@ -13,16 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('universites', function (Blueprint $table) {
-            $table->id();
-            $table->string('nom');
-            $table->string('adressePostale');
-            $table->string('telephone');
-            $table->string('email');
-            $table->string('siteWeb');
-            $table->string('observations');
-            $table->timestamps();
-        });
+if (! \App\Support\Tables::existe('universites')) {
+                Schema::create('universites', function (Blueprint $table) {
+                $table->id();
+                $table->string('nom');
+                $table->string('adressePostale');
+                $table->string('telephone');
+                $table->string('email');
+                $table->string('siteWeb');
+                $table->string('observations');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

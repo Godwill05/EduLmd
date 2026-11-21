@@ -16,6 +16,10 @@ class CreateAuditsTable extends Migration
         $connection = config('audit.drivers.database.connection', config('database.default'));
         $table = config('audit.drivers.database.table', 'audits');
 
+        if (\App\Support\Tables::existe($table, $connection)) {
+            return;
+        }
+
         Schema::connection($connection)->create($table, function (Blueprint $table) {
 
             $morphPrefix = config('audit.user.morph_prefix', 'user');

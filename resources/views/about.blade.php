@@ -38,11 +38,39 @@
   @php($peutModifier = auth()->user()?->can('Modifier les paramètres système'))
 
   @if (empty($groupes))
-    <div class="ed-card">
-      <div class="ed-eval-empty">
-        <i class="ri-database-2-line"></i>
-        <p>Les paramètres système ne sont pas encore initialisés.</p>
-        <span class="ed-cmdk-tip">Exécutez <code>php artisan migrate</code> pour créer la table.</span>
+    {{-- La table parametres_systeme n'existe pas encore, mais les
+         coordonnées existent dans `ufr` : on les affiche quand même. --}}
+    <div class="ed-card mb-3">
+      <div class="ed-card-head">
+        <h2 class="ed-card-title mb-0"><i class="ri-building-2-line me-1"></i>Établissement</h2>
+      </div>
+      <div class="row g-3 p-3">
+        @foreach ([
+          ['Nom', \App\Support\Parametres::get('etablissement.nom')],
+          ['Adresse', \App\Support\Parametres::get('etablissement.adresse')],
+          ['Ville', \App\Support\Parametres::get('etablissement.ville')],
+          ['Téléphone', \App\Support\Parametres::get('contact.telephone_1')],
+          ['E-mail', \App\Support\Parametres::get('contact.email_1')],
+          ['Site web', \App\Support\Parametres::get('contact.site_web')],
+          ['Directeur', \App\Support\Parametres::get('direction.recteur')],
+          ['RH', \App\Support\Parametres::get('direction.rh')],
+        ] as [$libelle, $valeur])
+          <div class="col-lg-6">
+            <div class="form-label fw-semibold mb-1">{{ $libelle }}</div>
+            <div class="form-control bg-light">{{ $valeur ?: '—' }}</div>
+          </div>
+        @endforeach
+      </div>
+      <div class="p-3 pt-0">
+        <div class="alert alert-info mb-0 d-flex align-items-start gap-2">
+          <i class="ri-information-line mt-1"></i>
+          <div>
+            Ces valeurs sont lues dans la table <code>ufr</code>. Pour les rendre
+            modifiables depuis cette page, jouez la migration :
+            <code>php artisan migrate</code> (elle s'ajoute aux tables existantes,
+            elle ne les recrée pas).
+          </div>
+        </div>
       </div>
     </div>
   @else
