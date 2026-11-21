@@ -219,14 +219,21 @@ class AuditTest extends TestCase
             $attestation,
             'Le titre doit être centré et agrandi.'
         );
-        // Coordonnées en pied : un bloc de largeur EXPLICITE est indispensable.
-        // Sans largeur, html2pdf cale le texte sur la largeur du contenu qui
-        // précède et le pied part à gauche (mesuré : centre 66 mm au lieu de
-        // 148,5). Un tableau, même à 100 %, donne le même décalage.
+        // Les coordonnées sont DANS le cadre, centrées, séparées par un filet.
+        // p align=center est le seul conteneur que html2pdf centre à cet
+        // endroit : un div à largeur explicite part à gauche (66 à 94 mm) et
+        // un tableau tombe à 31 mm. Mesuré à 148,3 mm sur une page de 297.
         $this->assertMatchesRegularExpression(
-            '/<div style="width: 280mm; text-align: center;[^"]*">\s*<b>Tél/',
+            '/<p align="center"[^>]*border-top:[^>]*>\s*<b>Tél/',
             $attestation,
-            'Le pied de page doit être un bloc de largeur explicite pour être centré.'
+            'Le pied doit être un p align=center dans le cadre, avec un filet.'
+        );
+        // Le pied doit se trouver AVANT la fermeture du cadre, sinon il sort.
+        $fermetureCadre = strrpos($attestation, '</div>');
+        $positionPied = strpos($attestation, 'align="center"');
+        $this->assertTrue(
+            $positionPied !== false && $positionPied < $fermetureCadre,
+            'Le pied de page doit être placé à l\'intérieur du cadre.'
         );
         // Les « ––– » ne doivent plus être rendus (il n'en reste qu'un commentaire HTML).
         $this->assertDoesNotMatchRegularExpression(
@@ -252,6 +259,20 @@ class AuditTest extends TestCase
             $brut = $pdf->Output('test.pdf', 'S');
         } catch (\Throwable $e) {
             $this->fail('La génération du PDF a échoué : ' . $e->getMessage());
+        }
+
+        // L'attestation doit tenir sur une page À ELLE SEULE, même imprimée
+        // indépendamment du pack (exigence : une seule page).
+        try {
+            $pdfSeul = new \Spipu\Html2Pdf\Html2Pdf('L', 'A4', 'fr', true, 'UTF-8', [8.5, 8.5, 8.5, 8.5]);
+            $pdfSeul->setTestTdInOnePage(false);
+            $pdfSeul->writeHTML($attestation);
+            $brutSeul = $pdfSeul->Output('attestation.pdf', 'S');
+            $pagesSeule = preg_match_all('#/Type\s*/Page[^s]#', $brutSeul);
+            $this->assertSame(1, $pagesSeule,
+                'L\'attestation doit tenir sur exactement 1 page, obtenu : ' . $pagesSeule);
+        } catch (\Throwable $e) {
+            $this->fail('La génération de l\'attestation seule a échoué : ' . $e->getMessage());
         }
 
         // Un PDF valide commence par %PDF ; on compte les objets /Type /Page.

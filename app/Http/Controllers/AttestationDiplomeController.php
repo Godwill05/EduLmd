@@ -357,7 +357,7 @@ class AttestationDiplomeController extends Controller
 
         ob_start();
         ?>
-        <page orientation="paysage" format="A4" backtop="6mm" backbottom="0mm">
+        <page orientation="paysage" format="A4" backtop="4mm" backbottom="0mm">
             <!-- MISE EN PAGE — mesurée sur le PDF produit, ne pas improviser.
                  Cadre : 253 mm de large. Page 297 mm, marges 8,5 mm. À 259 mm
                  le bord droit tombait à 294 mm et le cadre était décentré de
@@ -397,7 +397,7 @@ class AttestationDiplomeController extends Controller
                 </table>
 
                 <!-- TITRE — centré au milieu de la page, aucun trait au-dessus -->
-                <div style="text-align: center; margin-top: 10mm; margin-bottom: 6mm;">
+                <div style="text-align: center; margin-top: 6mm; margin-bottom: 3mm;">
                     <span style="font-size: 21pt; font-weight: bold; color: <?= $cTitre ?>; letter-spacing: 1.5px;">
                         ATTESTATION DE DIPLÔME
                     </span>
@@ -431,7 +431,7 @@ class AttestationDiplomeController extends Controller
                 </table>
 
                 <!-- SIGNATURES -->
-                <table style="width: 100%; border-collapse: collapse; margin-top: 5mm;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 3mm;">
                     <tr>
                         <td style="width: 50%; text-align: center; vertical-align: top;">
                             <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 11.5pt;">
@@ -447,7 +447,7 @@ class AttestationDiplomeController extends Controller
                             <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 11.5pt;">
                                 Le Président Directeur Général,
                             </span>
-                            <br><br><br><br><br>
+                            <br><br><br><br>
                             <span style="color: <?= $cNomSign ?>; font-weight: bold; font-style: italic; font-size: 11pt;">
                                 <?= htmlspecialchars($nomPDG) ?>
                             </span>
@@ -455,15 +455,16 @@ class AttestationDiplomeController extends Controller
                     </tr>
                 </table>
 
-            </div>
 
-            <!-- PIED DE PAGE — sous le cadre, centré sur la page.
-                 LARGEUR EXPLICITE 280 mm OBLIGATOIRE : sans elle, html2pdf se
-                 cale sur la largeur du contenu précédent et le texte part à
-                 gauche (mesuré : centre à 66 mm au lieu de 148,5). Un tableau,
-                 même à 100 %, donne le même décalage : ne pas en remettre. -->
-            <div style="width: 280mm; text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35; margin-top: 14mm;">
-                <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
+                <!-- PIED DE PAGE — DANS le cadre, séparé par un filet.
+                     p align=center est le seul conteneur que html2pdf centre
+                     correctement à cet endroit : mesuré à 148,3 mm sur une page
+                     de 297. Un div à largeur explicite (même 280 mm) part à
+                     gauche (66 à 94 mm) et un tableau tombe à 31 mm. -->
+                <p align="center" style="text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.25; margin: 3mm 0 0 0; border-top: 1px solid <?= $cCadre ?>; padding-top: 1.8mm;">
+                    <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
+                </p>
+
             </div>
         </page>
         <?php
