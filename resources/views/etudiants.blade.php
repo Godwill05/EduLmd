@@ -124,7 +124,10 @@ Etudiants
             </form>
         </div>
         <div class="card p-2">
-            <table class="table table-striped datatable">
+            <table class="table table-striped" data-ed-bulk id="tableEtudiantsBulk">
+                {{-- Pas de classe `datatable` ici : Simple-DataTables reconstruit les
+                     lignes et perdrait les cases de sélection. La recherche de la
+                     barre d'outils filtre nativement cette table. --}}
                 <thead>
                     <th>Photo</th>
                     <th>Matricule</th>
@@ -134,7 +137,7 @@ Etudiants
                 </thead>
                 <tbody>
                     @foreach ($items as $item)
-                        <tr>
+                        <tr data-ed-matricule="{{ $item->MATRICULE }}">
                             @empty($item->photo)
                             @if ($item->sexeEtu=='M')
                             <td><a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#imgPm{{$loop->iteration}}"><img src="./storage/assets/img/etudiants/M.png" alt=""  class="avatar imhvr"></a></td>
@@ -154,6 +157,7 @@ Etudiants
                                     @method('DELETE')
                                     <button type="button" class="btn" title="Voir"><i class=" ri-eye-line" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"></i></button>
                                     <button type="button" class="btn" title="Modifier" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class=" ri-pencil-line text-secondary"></i></button>
+                                    <button type="button" class="btn" title="Encaisser un paiement" data-ed-pay="{{$item->MATRICULE}}"><i class=" ri-hand-coin-line text-success"></i></button>
                                     <button type="submit" title="Supprimer" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$item->nomEtu}} {{$item->prenomsEtu}}?')" class="btn"><i class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </td>

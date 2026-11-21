@@ -5,6 +5,14 @@ Liste des étudiants par filière
 @endsection
 
 @section('content')
+@if (!empty($anneeAcademiqueId))
+<script>
+  window.EDULMD_BULK_CONTEXTE = {
+    idAnnee: @json($anneeAcademiqueId),
+    idFiliere: @json($codeFiliere ?? null)
+  };
+</script>
+@endif
 <section class="section">
     <div class="container-fluid">
         @if (session()->has('succes'))
@@ -120,7 +128,7 @@ Liste des étudiants par filière
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle mb-0" id="tableEtudiants" style="font-size: 0.9rem;">
+                        <table class="table table-striped table-hover align-middle mb-0" id="tableEtudiants" data-ed-bulk style="font-size: 0.9rem;">
                             <thead class="table-dark text-center">
                                 <tr>
                                     <th style="width: 5%;">N°</th>
@@ -130,6 +138,7 @@ Liste des étudiants par filière
                                     <th style="width: 22%; text-align: left;">Date &amp; Lieu de Naissance</th>
                                     <th style="width: 11%;">Nationalité</th>
                                     <th style="width: 12%;">Téléphone</th>
+                                    <th style="width: 9%;">Paiement</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -147,7 +156,7 @@ Liste des étudiants par filière
                                         $nat = $etu?->nationalite?->libelleNationalite ?? $etu?->codeNationalite ?? '-';
                                         $tel = trim($etu->telEtu ?? '-') ?: '-';
                                     @endphp
-                                    <tr>
+                                    <tr data-ed-matricule="{{ $ins->MATRICULE }}">
                                         <td class="text-center fw-bold">{{ $loop->iteration }}</td>
                                         <td class="text-center font-monospace fw-bold text-secondary">{{ $ins->MATRICULE }}</td>
                                         <td class="fw-semibold text-dark text-start">
@@ -176,6 +185,11 @@ Liste des étudiants par filière
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="ed-pay-btn" data-ed-pay="{{ $ins->MATRICULE }}" title="Encaisser un paiement">
+                                                <i class="ri-hand-coin-line"></i>Encaisser
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach

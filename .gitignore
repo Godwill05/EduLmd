@@ -16,3 +16,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# Python (outils de prévisualisation)
+__pycache__/
+*.pyc

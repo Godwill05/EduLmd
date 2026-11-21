@@ -67,6 +67,14 @@
 
     <nav class="header-nav" aria-label="Navigation principale">
       <ul>
+        <li class="nav-item">
+          <button type="button" class="ed-search-trigger" id="edSearchTrigger"
+                  aria-label="Recherche globale (Ctrl+K)" title="Recherche globale — Ctrl+K">
+            <i class="ri-search-line"></i>
+            <span class="ed-search-label">Rechercher…</span>
+            <kbd>Ctrl K</kbd>
+          </button>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link nav-profile flex items-center gap-2" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="avatar-initials" aria-hidden="true">{{ substr(Auth::user()->firstname, 0, 1) }}{{ substr(Auth::user()->lastname, 0, 1) }}</span>
@@ -137,10 +145,10 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link {{ $sectionOpen(['universites','etablissements','annees-academiques','passage-promotion','salles','utilisateurs','audits']) ? '' : 'collapsed' }}" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" title="Paramètres spécifiques">
+        <a class="nav-link {{ $sectionOpen(['universites','etablissements','annees-academiques','passage-promotion','salles','utilisateurs','audits','journal-activite']) ? '' : 'collapsed' }}" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" title="Paramètres spécifiques">
           <i class="ri-building-line"></i><span>Paramètres spécifiques</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
-        <ul id="forms-nav" class="nav-content collapse {{ $sectionOpen(['universites','etablissements','annees-academiques','passage-promotion','salles','utilisateurs','audits']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+        <ul id="forms-nav" class="nav-content collapse {{ $sectionOpen(['universites','etablissements','annees-academiques','passage-promotion','salles','utilisateurs','audits','journal-activite']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           @can('Gérer les universités')
           <li><a class="{{ $isActive('universites') }}" href="{{ route('universites.index') }}">Universités</a></li>
           @endcan
@@ -152,7 +160,7 @@
           <li><a class="{{ $isActive('salles') }}" href="{{ route('salles.index') }}">Gestion des salles</a></li>
           @can('Gérer les utilisateurs')
           <li><a class="{{ $isActive('utilisateurs') }}" href="{{ route('utilisateurs.index') }}">Gestion des utilisateurs</a></li>
-          <li><a class="{{ $isActive('audits') }}" href="{{ route('audits') }}">Audit des actions des utilisateurs</a></li>
+          <li><a class="{{ $isActive('journal-activite') }}" href="{{ route('journal-activite.index') }}">Journal d'activité</a></li>
           @endcan
         </ul>
       </li>
@@ -160,10 +168,10 @@
       <li class="nav-heading">Gestion</li>
 
       <li class="nav-item">
-        <a class="nav-link {{ $sectionOpen(['ue','ecue','etudiants','inscriptions','liste-etudiants','paiements','previsions','engagement','enseignants','listeEmargement']) ? '' : 'collapsed' }}" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#" title="Enregistrements">
+        <a class="nav-link {{ $sectionOpen(['ue','ecue','etudiants','inscriptions','liste-etudiants','paiements','previsions','engagement','enseignants','listeEmargement','qualite-donnees','imports']) ? '' : 'collapsed' }}" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#" title="Enregistrements">
           <i class="ri-book-read-line"></i><span>Enregistrements</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
-        <ul id="tables-nav" class="nav-content collapse {{ $sectionOpen(['ue','ecue','etudiants','inscriptions','liste-etudiants','paiements','previsions','engagement','enseignants','listeEmargement']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
+        <ul id="tables-nav" class="nav-content collapse {{ $sectionOpen(['ue','ecue','etudiants','inscriptions','liste-etudiants','paiements','previsions','engagement','enseignants','listeEmargement','qualite-donnees','imports']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           <li><a class="{{ $isActive('ue') }}" href="{{ route('ue.index') }}">Unité d'Enseignement (UE)</a></li>
           <li><a class="{{ $isActive('ecue') }}" href="{{ route('ecue.index') }}">Eléments Constitutifs (ECUE)</a></li>
           <li><a class="{{ $isActive('etudiants') }}" href="{{ route('etudiants.index') }}">Etudiants</a></li>
@@ -175,7 +183,14 @@
           <li><a class="{{ $isActive('engagement') }}" href="{{ route('engagement.index') }}">Fiches d'engagement</a></li>
           <li><a class="{{ $isActive('enseignants') }}" href="{{ route('enseignants.index') }}">Enseignants</a></li>
           <li><a class="{{ $isActive('listeEmargement') }}" href="{{ route('listeEmargement') }}">Liste d'émargement</a></li>
+          <li><a class="{{ $isActive('imports') }}" href="{{ route('imports.index') }}">Importer des données</a></li>
         </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link {{ $isActive('qualite-donnees') }}" href="{{ route('qualite-donnees.index') }}" title="Qualité des données">
+          <i class="ri-shield-check-line"></i><span>Qualité des données</span>
+        </a>
       </li>
 
       <li class="nav-item">
@@ -262,6 +277,32 @@
 
   <!-- Comportements de l'application -->
   <script src="{{ asset('/assets/js/edulmd-shell.js') }}"></script>
+  <script>
+    window.EDULMD_SEARCH_URL = "{{ route('recherche.etudiants') }}";
+  </script>
+  <script src="{{ asset('/assets/js/edulmd-search.js') }}"></script>
+  <script>
+    window.EDULMD_PAY_SITUATION = "{{ url('/api/paiement-rapide') }}";
+    window.EDULMD_PAY_STORE = "{{ url('/api/paiement-rapide') }}";
+  </script>
+  <script src="{{ asset('/assets/js/edulmd-pay.js') }}"></script>
+  <script>
+    window.EDULMD_BULK_STATUT = "{{ route('actions-groupees.statut') }}";
+    window.EDULMD_BULK_EXPORT = "{{ route('actions-groupees.export') }}";
+    window.EDULMD_BULK_PRINT = "{{ route('actions-groupees.impression') }}";
+    @php
+      /* Statuts mis en cache : évite une requête sur chaque page. */
+      $edStatuts = \Illuminate\Support\Facades\Cache::remember('edulmd.statuts', 3600, function () {
+          return \App\Models\Statut::orderBy('LibStatut')
+              ->get(['codeStatut', 'LibStatut'])
+              ->map(fn($s) => ['code' => $s->codeStatut, 'libelle' => $s->LibStatut])
+              ->values()
+              ->all();
+      });
+    @endphp
+    window.EDULMD_STATUTS = @json($edStatuts);
+  </script>
+  <script src="{{ asset('/assets/js/edulmd-bulk.js') }}"></script>
 
   {{-- html2pdf.js — copie locale --}}
   <script src="{{ asset('/assets/vendor/html2pdf/html2pdf.bundle.min.js') }}"></script>

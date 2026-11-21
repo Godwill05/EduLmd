@@ -7,7 +7,12 @@ use App\Http\Controllers\AttribuerEcueUeController;
 use App\Http\Controllers\AttribuerUeSemestreController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ConstanteController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\BulkActionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\DataQualityController;
+use App\Http\Controllers\QuickPaymentController;
 use App\Http\Controllers\CoursController;
 use App\Http\Controllers\DomaineResaoController;
 use App\Http\Controllers\ECUEController;
@@ -28,6 +33,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PrevisionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SalleController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SemestreController;
 use App\Http\Controllers\SemestresAnneeEtudeController;
 use App\Http\Controllers\SemestresEtudesController;
@@ -75,6 +81,45 @@ use Spatie\Permission\Models\Permission;
 */
 
 Route::get('/home', [DashboardController::class, 'index'])->middleware('auth')->name('home');
+
+// Import Excel/CSV : analyse, aperçu, puis confirmation
+Route::get('/imports', [ImportController::class, 'index'])
+    ->middleware('auth')->name('imports.index');
+Route::post('/imports/analyser', [ImportController::class, 'analyser'])
+    ->middleware('auth')->name('imports.analyser');
+Route::get('/imports/apercu', [ImportController::class, 'apercu'])
+    ->middleware('auth')->name('imports.apercu');
+Route::post('/imports/confirmer', [ImportController::class, 'confirmer'])
+    ->middleware('auth')->name('imports.confirmer');
+
+// Actions groupées (changer statut / exporter / imprimer)
+Route::post('/api/actions-groupees/statut', [BulkActionController::class, 'changerStatut'])
+    ->middleware('auth')->name('actions-groupees.statut');
+Route::post('/api/actions-groupees/export', [BulkActionController::class, 'exporter'])
+    ->middleware('auth')->name('actions-groupees.export');
+Route::post('/api/actions-groupees/impression', [BulkActionController::class, 'impression'])
+    ->middleware('auth')->name('actions-groupees.impression');
+
+// Paiement en un clic — situation et encaissement (JSON)
+Route::get('/api/paiement-rapide/{matricule}', [QuickPaymentController::class, 'situation'])
+    ->middleware('auth')->name('paiement-rapide.situation');
+Route::post('/api/paiement-rapide', [QuickPaymentController::class, 'store'])
+    ->middleware('auth')->name('paiement-rapide.store');
+
+// Qualité des données : doublons, champs manquants, inscriptions sans paiement
+Route::get('/qualite-donnees', [DataQualityController::class, 'index'])
+    ->middleware('auth')
+    ->name('qualite-donnees.index');
+
+// Journal d'activité lisible (table `audits`)
+Route::get('/journal-activite', [ActivityLogController::class, 'index'])
+    ->middleware(['auth', 'can:Gérer les utilisateurs'])
+    ->name('journal-activite.index');
+
+// Recherche globale (palette Ctrl+K) — JSON
+Route::get('/api/recherche', [SearchController::class, 'etudiants'])
+    ->middleware('auth')
+    ->name('recherche.etudiants');
 Route::view('/not-found', 'errors.not-found')->name('not-found');
 Route::view('/','login')->name('login')->middleware('guest');
 Route::post('/',function(Request $rq){
@@ -205,7 +250,8 @@ Route::middleware('auth')->group(function(){
     Route::post('/manage-logo_ufr/{id}',[EtablissementController::class,'manageLogo'])->name('manageLogo_ufr')->middleware('can:Gérer les établissements');
     Route::post('/manage-photo-etudiant/{id}',[EtudiantController::class,'managePhoto'])->name('managePhotoEtudiant');
     Route::resource('/etablissements',EtablissementController::class)->middleware('can:Gérer les établissements');
-    Route::view('/audits','audits')->name('audits')->middleware('can:Gérer les utilisateurs');
+    // L'ancien lien de menu pointe désormais vers le journal d'activité lisible
+    Route::get('/audits', fn() => redirect()->route('journal-activite.index'))->name('audits')->middleware('can:Gérer les utilisateurs');
     Route::resource('/ecue',ECUEController::class);
     Route::resource('/evaluations',EvaluationController::class);
     Route::resource('/cours',CoursController::class);
