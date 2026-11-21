@@ -52,9 +52,9 @@ Semestres
                                     <form action="{{ route('semestres.destroy', $semestre->numeroSemestre) }}" method="post">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class="bi bi-pencil text-secondary"></i></button>
+                                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class=" ri-pencil-line text-secondary"></i></button>
 
-                                        <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$semestre->Lib_Semestre}}?')" class="btn"><i class="bi bi-trash text-danger"></i></button>
+                                        <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$semestre->Lib_Semestre}}?')" class="btn"><i class=" ri-delete-bin-line text-danger"></i></button>
                                     </form>
                                 </td>
                             </tr>

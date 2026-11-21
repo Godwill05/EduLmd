@@ -14,31 +14,24 @@
   <link href="{{ asset('favicon.ico') }}" rel="icon">
   <link href="{{ asset('/assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
 
-  <!-- Vendor CSS Files (100 % locaux — aucune ressource distante) -->
-  <link href="{{ asset('/assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('/assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ asset('/assets/vendor/boxicons/css/boxicons.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('/assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
-  <link href="{{ asset('/assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+  <!-- Feuille de style unique — Tailwind compilé en local (aucune ressource distante) -->
+  <link href="{{ asset('/assets/css/edulmd.css') }}" rel="stylesheet">
 
-  <!-- Base historique (conservée pour compatibilité) + Design System EduLMD -->
-  <link href="{{ asset('/assets/css/style.css') }}" rel="stylesheet">
-  <link href="{{ asset('/assets/css/fastbootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('/assets/tom-select/tom-select.bootstrap5.css') }}" rel="stylesheet" />
-  <link href="{{ asset('/assets/css/edulmd-design.css') }}" rel="stylesheet">
+  <!-- Icônes RemixIcon (auto-hébergées) -->
+  <link href="{{ asset('/assets/vendor/remixicon/remixicon.css') }}" rel="stylesheet">
+
+  <!-- Libs tierces locales -->
+  <link href="{{ asset('/assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{ asset('/assets/tom-select/edulmd-tom-select.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/vanillajs-datepicker/datepicker-edulmd.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('/assets/jstree/dist/themes/default/style.min.css') }}">
 
   <script src="{{ asset('/assets/js/jquery-3.7.0.js') }}"></script>
   <script src="{{ asset('/assets/tom-select/tom-select.complete.js') }}"></script>
-
-  {{-- DatePicker --}}
-  <link rel="stylesheet" href="{{ asset('/assets/vanillajs-datepicker/datepicker-bs5.min.css') }}">
   <script src="{{ asset('/assets/vanillajs-datepicker/datepicker-full.min.js') }}"></script>
-
-  {{-- JSTree --}}
-  <link rel="stylesheet" href="{{ asset('/assets/jstree/dist/themes/default/style.min.css') }}" />
   <script src="{{ asset('/assets/jstree/dist/jstree.min.js') }}"></script>
-  @yield('css')
 
+  @yield('css')
 </head>
 
 <body>
@@ -55,12 +48,12 @@
   @endphp
 
   <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-    <i class="bi bi-list toggle-sidebar-btn" role="button" tabindex="0" aria-label="Ouvrir / fermer le menu" title="Menu"></i>
+  <header id="header" class="header">
+    <i class="ri-menu-line toggle-sidebar-btn" role="button" tabindex="0" aria-label="Ouvrir / fermer le menu" title="Menu"></i>
 
-    <div class="header-context ms-2">
+    <div class="header-context min-w-0">
       <div>
-        <div class="header-title">@yield('title')</div>
+        <div class="header-title truncate">@yield('title')</div>
         <nav aria-label="Fil d'Ariane">
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('home') }}">Accueil</a></li>
@@ -72,30 +65,30 @@
       </div>
     </div>
 
-    <nav class="header-nav ms-auto" aria-label="Navigation principale">
-      <ul class="d-flex align-items-center mb-0">
-        <li class="nav-item dropdown pe-3">
-          <a class="nav-link nav-profile d-flex align-items-center" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <nav class="header-nav" aria-label="Navigation principale">
+      <ul>
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-profile flex items-center gap-2" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="avatar-initials" aria-hidden="true">{{ substr(Auth::user()->firstname, 0, 1) }}{{ substr(Auth::user()->lastname, 0, 1) }}</span>
-            <span class="profile-name ps-2 d-none d-md-block">{{ substr(Auth::user()->firstname, 0, 1) }}. {{ Auth::user()->lastname }}</span>
-            <i class="bi bi-chevron-down ms-1 d-none d-md-block" style="font-size:0.75rem;color:var(--ed-faint);"></i>
+            <span class="profile-name hidden md:block">{{ substr(Auth::user()->firstname, 0, 1) }}. {{ Auth::user()->lastname }}</span>
+            <i class="ri-arrow-down-s-line hidden md:block text-[0.8rem] text-encre-faint"></i>
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <ul class="dropdown-menu dropdown-menu-end profile">
             <li class="dropdown-header">
               <h6>{{ Auth::user()->fullname() }}</h6>
-              <span class="text-muted" style="font-size:0.78rem;">{{ Auth::user()->email ?? '' }}</span>
+              <span class="text-muted text-[0.75rem]">{{ Auth::user()->email ?? '' }}</span>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="{{ route('profile') }}">
-                <i class="bi bi-person"></i><span>Mon profil</span>
+              <a class="dropdown-item" href="{{ route('profile') }}">
+                <i class="ri-user-line"></i><span>Mon profil</span>
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="/logout">
-                <i class="bi bi-box-arrow-right"></i><span>Se déconnecter</span>
+              <a class="dropdown-item" href="/logout">
+                <i class="ri-logout-box-line"></i><span>Se déconnecter</span>
               </a>
             </li>
           </ul>
@@ -104,7 +97,7 @@
     </nav>
   </header><!-- End Header -->
 
-  <!-- ======= Sidebar ======= -->
+  <!-- ======= Sidebar (claire) ======= -->
   <aside id="sidebar" class="sidebar" aria-label="Menu de navigation">
     <div class="sidebar-brand">
       <a href="{{ route('home') }}" class="brand-logo" aria-label="EduLMD — Accueil">
@@ -119,7 +112,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
       <li class="nav-item">
         <a class="nav-link {{ $routeName === 'home' ? 'active' : '' }}" href="{{ route('home') }}" title="Accueil">
-          <i class="bi bi-speedometer2"></i><span>Accueil</span>
+          <i class="ri-dashboard-line"></i><span>Accueil</span>
         </a>
       </li>
 
@@ -127,7 +120,7 @@
 
       <li class="nav-item">
         <a class="nav-link {{ $sectionOpen(['domainesresao','mentions','specialites','grades','semestres','constantes','annees-etudes','filieres','attribuer-semestres-anneeEtude']) ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#" title="Paramètres globaux">
-          <i class="bi bi-sliders"></i><span>Paramètres globaux</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="ri-settings-3-line"></i><span>Paramètres globaux</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
         <ul id="components-nav" class="nav-content collapse {{ $sectionOpen(['domainesresao','mentions','specialites','grades','semestres','constantes','annees-etudes','filieres','attribuer-semestres-anneeEtude']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           <li><a class="{{ $isActive('domainesresao') }}" href="{{ route('domainesresao.index') }}">Domaines RESAO</a></li>
@@ -145,7 +138,7 @@
 
       <li class="nav-item">
         <a class="nav-link {{ $sectionOpen(['universites','etablissements','annees-academiques','passage-promotion','salles','utilisateurs','audits']) ? '' : 'collapsed' }}" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#" title="Paramètres spécifiques">
-          <i class="bi bi-building-gear"></i><span>Paramètres spécifiques</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="ri-building-line"></i><span>Paramètres spécifiques</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
         <ul id="forms-nav" class="nav-content collapse {{ $sectionOpen(['universites','etablissements','annees-academiques','passage-promotion','salles','utilisateurs','audits']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           @can('Gérer les universités')
@@ -168,11 +161,11 @@
 
       <li class="nav-item">
         <a class="nav-link {{ $sectionOpen(['ue','ecue','etudiants','inscriptions','liste-etudiants','paiements','previsions','engagement','enseignants','listeEmargement']) ? '' : 'collapsed' }}" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#" title="Enregistrements">
-          <i class="bi bi-journal-check"></i><span>Enregistrements</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="ri-book-read-line"></i><span>Enregistrements</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
         <ul id="tables-nav" class="nav-content collapse {{ $sectionOpen(['ue','ecue','etudiants','inscriptions','liste-etudiants','paiements','previsions','engagement','enseignants','listeEmargement']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           <li><a class="{{ $isActive('ue') }}" href="{{ route('ue.index') }}">Unité d'Enseignement (UE)</a></li>
-          <li><a class="{{ $isActive('ecue') }}" href="{{ route('ecue.index') }}">Eléments Constitutifs d'Unité d'Enseignement (ECUE)</a></li>
+          <li><a class="{{ $isActive('ecue') }}" href="{{ route('ecue.index') }}">Eléments Constitutifs (ECUE)</a></li>
           <li><a class="{{ $isActive('etudiants') }}" href="{{ route('etudiants.index') }}">Etudiants</a></li>
           <li><a class="{{ $isActive('inscriptions') }}" href="{{ route('inscriptions.index') }}">Inscriptions</a></li>
           <li><a class="{{ $isActive('liste-etudiants') }}" href="{{ route('liste-etudiants.index') }}">Liste par filière</a></li>
@@ -187,7 +180,7 @@
 
       <li class="nav-item">
         <a class="nav-link {{ $sectionOpen(['attribuer-ue-semestre','afficherUeSemestre','attribuer-ecue-ue','afficherECUEsSemestre','afficher-previsions','evaluations','cours','repartition-salle','afficherNotes','afficherUesNonValidees']) ? '' : 'collapsed' }}" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#" title="Opérations">
-          <i class="bi bi-lightning-charge"></i><span>Opérations</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="ri-flashlight-line"></i><span>Opérations</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
         <ul id="charts-nav" class="nav-content collapse {{ $sectionOpen(['attribuer-ue-semestre','afficherUeSemestre','attribuer-ecue-ue','afficherECUEsSemestre','afficher-previsions','evaluations','cours','repartition-salle','afficherNotes','afficherUesNonValidees']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           <li><a class="{{ $isActive('attribuer-ue-semestre') }}" href="{{ route('attribuer-ue-semestre.index') }}">Attribuer une UE à un semestre</a></li>
@@ -207,7 +200,7 @@
 
       <li class="nav-item">
         <a class="nav-link {{ $sectionOpen(['parcours','recapitulatif','releveNotes','attestations-diplomes']) ? '' : 'collapsed' }}" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#" title="Délibération">
-          <i class="bi bi-patch-check"></i><span>Délibération</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="ri-verified-badge-line"></i><span>Délibération</span><i class="ri-arrow-down-s-line ms-auto"></i>
         </a>
         <ul id="icons-nav" class="nav-content collapse {{ $sectionOpen(['parcours','recapitulatif','releveNotes','attestations-diplomes']) ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
           <li><a class="{{ $isActive('parcours') }}" href="{{ route('parcours') }}">Parcours d'un étudiant</a></li>
@@ -222,14 +215,14 @@
 
       <li class="nav-item">
         <a class="nav-link {{ $isActive('about-us') }}" href="{{ route('about-us') }}" title="À propos">
-          <i class="bi bi-info-circle"></i><span>À propos</span>
+          <i class="ri-information-line"></i><span>À propos</span>
         </a>
       </li>
     </ul>
 
     <div class="sidebar-user">
       <span class="avatar-initials" aria-hidden="true">{{ substr(Auth::user()->firstname, 0, 1) }}{{ substr(Auth::user()->lastname, 0, 1) }}</span>
-      <div class="su-text" style="min-width:0;">
+      <div class="su-text min-w-0">
         <div class="su-name">{{ Auth::user()->fullname() }}</div>
         <div class="su-role">Connecté(e)</div>
       </div>
@@ -241,12 +234,10 @@
   <main id="main" class="main">
     <div class="container-fluid">
       @if (session()->has('greetings'))
-      <div class="row mb-3">
-        <div class="col-12">
-          <div class="alert alert-success d-flex align-items-center gap-2 mb-0" role="status">
-            <i class="bi bi-check-circle-fill"></i>
-            <span>{{ session('greetings') }}</span>
-          </div>
+      <div class="mb-4">
+        <div class="alert alert-success flex items-center gap-2 mb-0" role="status">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>{{ session('greetings') }}</span>
         </div>
       </div>
       @endif
@@ -261,16 +252,20 @@
     </div>
   </footer><!-- End Footer -->
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Retour en haut"><i class="bi bi-arrow-up-short"></i></a>
+  <a href="#" class="back-to-top" aria-label="Retour en haut"><i class="ri-arrow-up-line"></i></a>
 
-  <!-- Vendor JS Files -->
-  <script src="{{ asset('/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+  <!-- Libs tierces locales -->
   <script src="{{ asset('/assets/vendor/simple-datatables/simple-datatables.js') }}"></script>
 
-  <!-- Template Main JS File -->
-  <script src="{{ asset('/assets/js/main.js') }}"></script>
-  {{-- html2pdf.js — copie locale (plus de dépendance CDN) --}}
+  <!-- Moteur d'interactions EduLMD (remplace Bootstrap JS) -->
+  <script src="{{ asset('/assets/js/edulmd-ui.js') }}"></script>
+
+  <!-- Comportements de l'application -->
+  <script src="{{ asset('/assets/js/edulmd-shell.js') }}"></script>
+
+  {{-- html2pdf.js — copie locale --}}
   <script src="{{ asset('/assets/vendor/html2pdf/html2pdf.bundle.min.js') }}"></script>
+
   <script>
     // Setup global CSRF token pour toutes les requêtes AJAX jQuery
     $.ajaxSetup({
@@ -285,52 +280,34 @@
           new TomSelect(el,settings);
         });
     });
-
-    // Fermeture de la sidebar mobile (voile + Échap + redimensionnement)
-    (function () {
-        var backdrop = document.getElementById('sidebarBackdrop');
-        function closeSidebar() { document.body.classList.remove('toggle-sidebar'); }
-        if (backdrop) backdrop.addEventListener('click', closeSidebar);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeSidebar();
-        });
-        window.addEventListener('resize', function () {
-            if (window.innerWidth >= 1200) closeSidebar();
-        });
-        // Navigation au clavier du bouton menu
-        var toggle = document.querySelector('.toggle-sidebar-btn');
-        if (toggle) toggle.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle.click(); }
-        });
-    })();
   </script>
 
   {{-- ═══════════════════════════════════════════════════════════════
        MODALE DE CONFIRMATION GLOBALE — Réutilisable sur toutes pages
        Usage JS: confirmAction({ title, message, icon, iconColor, confirmText, confirmClass, onConfirm })
   ═══════════════════════════════════════════════════════════════════ --}}
-  <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
-      <div class="modal-content border-0 shadow-lg" style="border-radius:1.25rem;overflow:hidden;">
+  <div class="modal" id="globalConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered max-w-[420px]">
+      <div class="modal-content">
         <div class="modal-body p-0">
           {{-- Bande colorée icône --}}
-          <div id="gcm-icon-band" class="text-center py-4" style="background:linear-gradient(135deg,#4f46e5,#7c3aed);">
-            <div id="gcm-icon-circle" style="width:68px;height:68px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto;">
-              <i id="gcm-icon" class="bi bi-question-circle-fill" style="font-size:2rem;color:#fff;"></i>
+          <div id="gcm-icon-band" class="text-center py-4" style="background:linear-gradient(135deg,#822A40,#B55168);">
+            <div id="gcm-icon-circle" class="mx-auto flex items-center justify-center rounded-full" style="width:68px;height:68px;background:rgba(255,255,255,0.2);">
+              <i id="gcm-icon" class="ri-question-fill text-white" style="font-size:2rem;"></i>
             </div>
           </div>
           {{-- Contenu --}}
-          <div class="px-4 pt-4 pb-3 text-center">
-            <h5 id="gcm-title" class="fw-bold mb-2" style="font-size:1.1rem;">Confirmation</h5>
-            <p id="gcm-message" class="text-muted mb-0" style="font-size:0.92rem;line-height:1.5;"></p>
+          <div class="px-6 pt-6 pb-4 text-center">
+            <h5 id="gcm-title" class="text-[1.05rem] font-bold text-encre mb-2">Confirmation</h5>
+            <p id="gcm-message" class="text-encre-muted text-[0.9rem] leading-relaxed mb-0"></p>
           </div>
         </div>
-        <div class="modal-footer border-0 pt-0 pb-4 px-4 justify-content-center gap-3">
-          <button type="button" class="btn btn-light px-4 fw-semibold" data-bs-dismiss="modal" style="border-radius:.75rem;">
-            <i class="bi bi-x-circle me-1"></i>Annuler
+        <div class="modal-footer justify-center gap-3 border-0 pt-0 pb-6 px-6">
+          <button type="button" class="btn btn-light px-4 fw-semibold" data-bs-dismiss="modal">
+            <i class="ri-close-circle-line me-1"></i>Annuler
           </button>
-          <button type="button" id="gcm-confirm-btn" class="btn btn-primary px-4 fw-semibold" style="border-radius:.75rem;">
-            <i id="gcm-confirm-icon" class="bi bi-check-circle me-1"></i>
+          <button type="button" id="gcm-confirm-btn" class="btn btn-primary px-4 fw-semibold">
+            <i id="gcm-confirm-icon" class="ri-checkbox-circle-line me-1"></i>
             <span id="gcm-confirm-text">Confirmer</span>
           </button>
         </div>
@@ -341,68 +318,52 @@
   <script>
     /**
      * confirmAction(options) — Ouvre la modale de confirmation globale
-     * @param {Object} options
-     *   title        {string}   Titre (défaut: "Confirmation")
-     *   message      {string}   Corps du message
-     *   icon         {string}   Classe Bootstrap Icons (défaut: "bi-question-circle-fill")
-     *   gradient     {string}   CSS gradient bande (défaut: indigo)
-     *   confirmText  {string}   Texte du bouton OK (défaut: "Confirmer")
-     *   confirmClass {string}   Classe btn du bouton OK (défaut: "btn-danger")
-     *   confirmIcon  {string}   Icône bouton OK (défaut: "bi-check-circle")
-     *   onConfirm    {Function} Callback au clic Confirmer
      */
     function confirmAction(options) {
         const o = Object.assign({
             title:        'Confirmation',
             message:      'Êtes-vous sûr ?',
-            icon:         'bi-question-circle-fill',
-            gradient:     'linear-gradient(135deg,#4f46e5,#7c3aed)',
+            icon:         'ri-question-fill',
+            gradient:     'linear-gradient(135deg,#822A40,#B55168)',
             confirmText:  'Confirmer',
             confirmClass: 'btn-danger',
-            confirmIcon:  'bi-check-circle',
+            confirmIcon:  'ri-checkbox-circle-line',
             onConfirm:    function() {}
         }, options);
 
-        // Remplir
         document.getElementById('gcm-title').textContent   = o.title;
         document.getElementById('gcm-message').innerHTML   = o.message;
-        document.getElementById('gcm-icon').className      = 'bi ' + o.icon;
+        document.getElementById('gcm-icon').className      = o.icon + ' text-white';
         document.getElementById('gcm-icon-band').style.background = o.gradient;
         document.getElementById('gcm-confirm-text').textContent   = o.confirmText;
-        document.getElementById('gcm-confirm-icon').className     = 'bi ' + o.confirmIcon + ' me-1';
+        document.getElementById('gcm-confirm-icon').className     = o.confirmIcon + ' me-1';
 
-        // Bouton confirmer : reset classes
         const btn = document.getElementById('gcm-confirm-btn');
         btn.className = 'btn px-4 fw-semibold ' + o.confirmClass;
-        btn.style.borderRadius = '.75rem';
 
-        // Handler unique (évite les doubles clics)
         const newBtn = btn.cloneNode(true);
         btn.parentNode.replaceChild(newBtn, btn);
         newBtn.addEventListener('click', function() {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('globalConfirmModal'));
+            const modal = EduUI.Modal.getInstance(document.getElementById('globalConfirmModal'));
             if (modal) modal.hide();
             setTimeout(o.onConfirm, 150);
         });
 
-        // Ouvrir
-        new bootstrap.Modal(document.getElementById('globalConfirmModal')).show();
+        EduUI.Modal.getOrCreateInstance(document.getElementById('globalConfirmModal')).show();
     }
 
     /**
-     * confirmDelete(formEl, label) — Raccourci pour confirmer la suppression d'un formulaire
-     * @param {HTMLElement} formEl  Le formulaire à soumettre
-     * @param {string}      label   Ce qu'on supprime (ex: "ce paiement de 50 000 F")
+     * confirmDelete(formEl, label) — Raccourci pour confirmer la suppression
      */
     function confirmDelete(formEl, label) {
         confirmAction({
             title:        'Supprimer ' + (label || 'cet élément'),
             message:      'Cette action est <strong>irréversible</strong>.<br>Voulez-vous vraiment supprimer ' + (label || 'cet élément') + ' ?',
-            icon:         'bi-trash3-fill',
-            gradient:     'linear-gradient(135deg,#c62828,#ef5350)',
+            icon:         'ri-delete-bin-6-fill',
+            gradient:     'linear-gradient(135deg,#B91C1C,#EF4444)',
             confirmText:  'Supprimer',
             confirmClass: 'btn-danger',
-            confirmIcon:  'bi-trash3',
+            confirmIcon:  'ri-delete-bin-line',
             onConfirm:    function() { formEl.submit(); }
         });
     }

@@ -50,7 +50,7 @@ Récapitulatif Annuel & Relevé de notes
     @if (session()->has('succes'))
     <div class="row">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-1"></i> {{ session('succes') }}
+            <i class=" ri-checkbox-circle-line me-1"></i> {{ session('succes') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -58,7 +58,7 @@ Récapitulatif Annuel & Relevé de notes
     @if (session()->has('echec'))
     <div class="row">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-1"></i> {{ session('echec') }}
+            <i class=" ri-alert-line me-1"></i> {{ session('echec') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -73,7 +73,7 @@ Récapitulatif Annuel & Relevé de notes
                     <div class="col-lg-4 col-md-6 col-12">
                         <div class="form-group">
                             <label class="form-label fw-semibold" for="anneeEtude">
-                                <i class="bi bi-journal-bookmark me-1 text-primary"></i>Année d'étude <span class="text-danger">*</span>
+                                <i class=" ri-bookmark-line me-1 text-primary"></i>Année d'étude <span class="text-danger">*</span>
                             </label>
                             <select name="anneeEtude" id="anneeEtude" class="form-control form-control-sm form-select" required onchange="chargerEtudiants()">
                                 <option value="">Sélectionner une année d'étude...</option>
@@ -88,7 +88,7 @@ Récapitulatif Annuel & Relevé de notes
                     <div class="col-lg-4 col-md-6 col-12">
                         <div class="form-group">
                             <label class="form-label fw-semibold" for="anneeAcademique">
-                                <i class="bi bi-calendar3 me-1 text-primary"></i>Année académique <span class="text-danger">*</span>
+                                <i class=" ri-calendar-line me-1 text-primary"></i>Année académique <span class="text-danger">*</span>
                             </label>
                             <select name="anneeAcademique" id="anneeAcademique" class="form-control form-control-sm form-select" required onchange="chargerEtudiants()">
                                 <option value="">Sélectionner l'année académique...</option>
@@ -103,7 +103,7 @@ Récapitulatif Annuel & Relevé de notes
                     <div class="col-lg-4 col-md-12 col-12">
                         <div class="form-group">
                             <label for="typeEtudiant" class="form-label fw-semibold">
-                                <i class="bi bi-tags me-1 text-primary"></i>Type d'étudiant
+                                <i class=" ri-price-tag-3-line me-1 text-primary"></i>Type d'étudiant
                             </label>
                             <select name="typeEtudiant" id="typeEtudiant" class="form-control form-control-sm form-select" onchange="chargerEtudiants()">
                                 <option value="">Tous les statuts</option>
@@ -120,18 +120,18 @@ Récapitulatif Annuel & Relevé de notes
                         <div class="card border rounded-3 bg-light-subtle shadow-none mb-0" id="zone-etudiants-card">
                             <div class="card-header bg-white py-2 px-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
                                 <div class="d-flex align-items-center gap-2">
-                                    <i class="bi bi-people-fill text-primary fs-5"></i>
+                                    <i class=" ri-team-fill text-primary fs-5"></i>
                                     <span class="fw-bold text-dark">Étudiants de la filière</span>
                                     <span class="badge rounded-pill bg-light text-secondary border px-2 py-1" id="badge-selection" style="font-size: 0.78rem;">
-                                        <i class="bi bi-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i>Tous désélectionnés (Mode PV global)
+                                        <i class=" ri-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i>Tous désélectionnés (Mode PV global)
                                     </span>
                                 </div>
                                 <div class="d-flex align-items-center gap-2" id="zone-actions" style="display: none !important;">
                                     <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" id="btn-select-all" title="Cocher tous les étudiants affichés">
-                                        <i class="bi bi-check2-all me-1"></i>Tout cocher
+                                        <i class=" ri-check-double-line me-1"></i>Tout cocher
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2" id="btn-deselect-all" title="Décocher tous les étudiants">
-                                        <i class="bi bi-x-circle me-1"></i>Tout décocher
+                                        <i class=" ri-close-circle-line me-1"></i>Tout décocher
                                     </button>
                                 </div>
                             </div>
@@ -140,18 +140,18 @@ Récapitulatif Annuel & Relevé de notes
                                 <div id="search-container" class="mb-3" style="display: none;">
                                     <div class="input-group input-group-sm">
                                         <span class="input-group-text bg-white border-end-0">
-                                            <i class="bi bi-search text-muted"></i>
+                                            <i class=" ri-search-line text-muted"></i>
                                         </span>
                                         <input type="text" id="student-search-input" class="form-control border-start-0" placeholder="Filtrer par nom, prénom ou matricule...">
                                         <button class="btn btn-outline-secondary" type="button" id="btn-clear-search" title="Effacer la recherche">
-                                            <i class="bi bi-x"></i>
+                                            <i class=" ri-close-line"></i>
                                         </button>
                                     </div>
                                 </div>
 
                                 {{-- État initial avant sélection --}}
                                 <div id="students-placeholder" class="text-center py-4 text-muted bg-white border border-dashed rounded-3">
-                                    <i class="bi bi-mortarboard fs-1 text-primary opacity-50 d-block mb-1"></i>
+                                    <i class=" ri-graduation-cap-line fs-1 text-primary opacity-50 d-block mb-1"></i>
                                     <p class="mb-1 fw-semibold text-dark">Sélection des étudiants</p>
                                     <small>Choisissez d'abord une <b>Année d'étude</b> et une <b>Année académique</b> ci-dessus pour charger la liste des étudiants.</small>
                                 </div>
@@ -164,7 +164,7 @@ Récapitulatif Annuel & Relevé de notes
 
                                 {{-- État aucun étudiant trouvé --}}
                                 <div id="students-empty" class="text-center py-4 bg-white border rounded-3 text-warning" style="display: none;">
-                                    <i class="bi bi-exclamation-circle fs-3 d-block mb-1"></i>
+                                    <i class=" ri-error-warning-line fs-3 d-block mb-1"></i>
                                     <span class="fw-semibold">Aucun étudiant inscrit trouvé pour cette filière et cette année académique.</span>
                                 </div>
 
@@ -176,7 +176,7 @@ Récapitulatif Annuel & Relevé de notes
                                 {{-- Pied de la zone avec explication contextuelle --}}
                                 <div class="mt-3 pt-2 border-top d-flex flex-wrap justify-content-between align-items-center text-muted" style="font-size: 0.82rem;">
                                     <div class="d-flex align-items-center gap-1">
-                                        <i class="bi bi-info-circle-fill text-primary"></i>
+                                        <i class=" ri-information-fill text-primary"></i>
                                         <span id="instruction-text">
                                             Laissez <b>tous désélectionnés</b> pour imprimer le <b>Procès-Verbal annuel global</b>. Cochez un ou plusieurs étudiants pour générer leur(s) <b>relevé(s) annuel(s) de notes</b>.
                                         </span>
@@ -193,19 +193,19 @@ Récapitulatif Annuel & Relevé de notes
                 {{-- Boutons d'actions --}}
                 <div class="text-end mt-4 d-flex flex-wrap justify-content-end align-items-center gap-2">
                     <button class="btn btn-sm btn-primary px-3" type="button" onclick="afficher()">
-                        <i class="bi bi-eye me-1"></i>Afficher
+                        <i class=" ri-eye-line me-1"></i>Afficher
                     </button>
                     <button type="submit" class="btn btn-sm btn-secondary px-3" value="Session normale" name="btn" id="btn-session-normale">
-                        <i class="bi bi-printer me-1"></i><span class="btn-lbl">Session normale</span>
+                        <i class=" ri-printer-line me-1"></i><span class="btn-lbl">Session normale</span>
                     </button>
                     <button type="submit" class="btn btn-sm text-light px-3" style="background-color: #20c997;" value="Rattrapages" name="btn" id="btn-rattrapages">
-                        <i class="bi bi-printer me-1"></i><span class="btn-lbl">Rattrapages</span>
+                        <i class=" ri-printer-line me-1"></i><span class="btn-lbl">Rattrapages</span>
                     </button>
                     <button type="submit" class="btn btn-sm btn-dark px-3" name="btn" value="Reprises" id="btn-reprises">
-                        <i class="bi bi-printer me-1"></i><span class="btn-lbl">Reprises</span>
+                        <i class=" ri-printer-line me-1"></i><span class="btn-lbl">Reprises</span>
                     </button>
                     <button type="button" class="btn btn-sm btn-success px-3" onclick="$('#recapAnnuel').attr('action','/export-resultats-annuel');$('#recapAnnuel').submit();$('#recapAnnuel').attr('action','/impression-annuel')">
-                        <i class="bi bi-file-earmark-excel me-1"></i>Exporter en format Excel
+                        <i class=" ri-file-excel-2-line me-1"></i>Exporter en format Excel
                     </button>
                 </div>
             </form>
@@ -309,7 +309,7 @@ Récapitulatif Annuel & Relevé de notes
                         $('<small>', {
                             class: 'text-muted font-monospace',
                             style: 'font-size: 0.78rem;'
-                        }).html('<i class="bi bi-upc-scan me-1"></i>' + matricule)
+                        }).html('<i class=" ri-scan-line me-1"></i>' + matricule)
                     );
 
                     label.append(checkbox, infoDiv);
@@ -328,7 +328,7 @@ Récapitulatif Annuel & Relevé de notes
             },
             error: function() {
                 $('#students-loading').hide();
-                $('#students-empty').html('<i class="bi bi-x-circle text-danger me-1"></i> Erreur lors du chargement des étudiants.').show();
+                $('#students-empty').html('<i class=" ri-close-circle-line text-danger me-1"></i> Erreur lors du chargement des étudiants.').show();
                 mettreAJourBadge(0);
             }
         });
@@ -359,21 +359,21 @@ Récapitulatif Annuel & Relevé de notes
         if (count === 0) {
             badge.removeClass('bg-primary text-white bg-success-subtle text-success')
                  .addClass('bg-light text-secondary')
-                 .html('<i class="bi bi-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i>Tous désélectionnés (Mode PV global)');
+                 .html('<i class=" ri-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i>Tous désélectionnés (Mode PV global)');
             btnNormale.text('Session normale');
             btnRattr.text('Rattrapages');
             btnRepr.text('Reprises');
         } else if (count === 1) {
             badge.removeClass('bg-light text-secondary')
                  .addClass('bg-primary text-white')
-                 .html('<i class="bi bi-check-circle-fill me-1"></i>1 étudiant sélectionné (Mode Relevé)');
+                 .html('<i class=" ri-checkbox-circle-fill me-1"></i>1 étudiant sélectionné (Mode Relevé)');
             btnNormale.text('Session normale (Relevé)');
             btnRattr.text('Rattrapages (Relevé)');
             btnRepr.text('Reprises (Relevé)');
         } else {
             badge.removeClass('bg-light text-secondary')
                  .addClass('bg-primary text-white')
-                 .html('<i class="bi bi-check-circle-fill me-1"></i>' + count + ' étudiants sélectionnés (Mode Relevés)');
+                 .html('<i class=" ri-checkbox-circle-fill me-1"></i>' + count + ' étudiants sélectionnés (Mode Relevés)');
             btnNormale.text('Session normale (Relevés)');
             btnRattr.text('Rattrapages (Relevés)');
             btnRepr.text('Reprises (Relevés)');
@@ -431,7 +431,7 @@ Récapitulatif Annuel & Relevé de notes
                 $('#afficher').html(response);
             },
             error: function(xhr) {
-                $('#afficher').html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-1"></i> Erreur lors du chargement des données.</div>');
+                $('#afficher').html('<div class="alert alert-danger"><i class=" ri-alert-line me-1"></i> Erreur lors du chargement des données.</div>');
             }
         });
     }

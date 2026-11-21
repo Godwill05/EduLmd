@@ -233,9 +233,9 @@ Cours
                                     @csrf
                                     @method('DELETE')
 
-                                    <a class="btn" href="{{ route('cours.edit', $cours->numeroProg) }}"><i class="bi bi-pencil text-secondary"></i></a>
+                                    <a class="btn" href="{{ route('cours.edit', $cours->numeroProg) }}"><i class=" ri-pencil-line text-secondary"></i></a>
 
-                                    <button type="submit"  onclick="return confirm('Etes vous sûr de vouloir supprimer ce cours?')" class="btn"><i class="bi bi-trash text-danger"></i></button>
+                                    <button type="submit"  onclick="return confirm('Etes vous sûr de vouloir supprimer ce cours?')" class="btn"><i class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </td>
                         </tr>

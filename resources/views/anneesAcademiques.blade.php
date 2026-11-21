@@ -23,7 +23,7 @@ Années académiques
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h4 class="fw-bold mb-0">Gestion des années académiques</h4>
             <a href="{{ route('passage-promotion.index') }}" class="btn btn-success shadow-sm">
-                <i class="bi bi-arrow-up-right-circle me-1"></i> Passage de promotion des étudiants
+                <i class=" ri-arrow-right-up-line me-1"></i> Passage de promotion des étudiants
             </a>
         </div>
     </div>
@@ -104,9 +104,9 @@ Années académiques
                                 <form action="{{ route('annees-academiques.destroy', $item->id_Annee_Acad) }}" method="post">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class="bi bi-pencil text-secondary"></i></button>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class=" ri-pencil-line text-secondary"></i></button>
 
-                                    <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$item->lib_domaine}}?')" class="btn"><i class="bi bi-trash text-danger"></i></button>
+                                    <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$item->lib_domaine}}?')" class="btn"><i class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </td>
                         </tr>

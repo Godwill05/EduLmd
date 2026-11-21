@@ -38,7 +38,7 @@ Passage de promotion des étudiants
     @if (session()->has('succes'))
     <div class="row">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="bi bi-check-circle me-1"></i> {{ session('succes') }}
+            <i class=" ri-checkbox-circle-line me-1"></i> {{ session('succes') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -46,7 +46,7 @@ Passage de promotion des étudiants
     @if (session()->has('echec'))
     <div class="row">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-triangle me-1"></i> {{ session('echec') }}
+            <i class=" ri-alert-line me-1"></i> {{ session('echec') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -57,7 +57,7 @@ Passage de promotion des étudiants
         <div class="col-12 d-flex justify-content-between align-items-center">
             <div>
                 <h4 class="fw-bold mb-1">
-                    <i class="bi bi-arrow-up-right-circle text-primary me-2"></i>Passage de promotion des étudiants
+                    <i class=" ri-arrow-right-up-line text-primary me-2"></i>Passage de promotion des étudiants
                 </h4>
                 <p class="text-muted mb-0 small">
                     Transfert automatique d'un niveau vers le niveau supérieur (Licence 1 &rarr; Licence 2, Licence 2 &rarr; Licence 3).
@@ -65,10 +65,10 @@ Passage de promotion des étudiants
             </div>
             <div>
                 <a href="{{ route('annees-academiques.index') }}" class="btn btn-outline-secondary btn-sm me-1">
-                    <i class="bi bi-calendar3 me-1"></i> Années académiques
+                    <i class=" ri-calendar-line me-1"></i> Années académiques
                 </a>
                 <a href="{{ route('inscriptions.index') }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-card-checklist me-1"></i> Inscriptions
+                    <i class=" ri-file-list-3-line me-1"></i> Inscriptions
                 </a>
             </div>
         </div>
@@ -81,7 +81,7 @@ Passage de promotion des étudiants
                 <div class="row g-3 align-items-end">
                     <div class="col-lg-5 col-md-5 col-12">
                         <label class="form-label fw-semibold" for="source_year">
-                            <i class="bi bi-box-arrow-right text-danger me-1"></i> 1. Année académique d'origine (Passée) <span class="text-danger">*</span>
+                            <i class=" ri-logout-box-line text-danger me-1"></i> 1. Année académique d'origine (Passée) <span class="text-danger">*</span>
                         </label>
                         <select name="source_year" id="source_year" class="form-select" required>
                             <option value="">Sélectionner l'année source...</option>
@@ -95,7 +95,7 @@ Passage de promotion des étudiants
 
                     <div class="col-lg-5 col-md-5 col-12">
                         <label class="form-label fw-semibold" for="target_year">
-                            <i class="bi bi-box-arrow-in-right text-success me-1"></i> 2. Année académique de destination (Nouvelle) <span class="text-danger">*</span>
+                            <i class=" ri-login-box-line text-success me-1"></i> 2. Année académique de destination (Nouvelle) <span class="text-danger">*</span>
                         </label>
                         <select name="target_year" id="target_year" class="form-select" required>
                             <option value="">Sélectionner la nouvelle année...</option>
@@ -109,7 +109,7 @@ Passage de promotion des étudiants
 
                     <div class="col-lg-2 col-md-2 col-12">
                         <button type="submit" class="btn btn-primary w-100">
-                            <i class="bi bi-search me-1"></i> Charger
+                            <i class=" ri-search-line me-1"></i> Charger
                         </button>
                     </div>
                 </div>
@@ -120,7 +120,7 @@ Passage de promotion des étudiants
     @if ($sourceYear && $targetYear)
         @if ($sourceYear->id_Annee_Acad == $targetYear->id_Annee_Acad)
             <div class="alert alert-warning">
-                <i class="bi bi-exclamation-circle me-1"></i>
+                <i class=" ri-error-warning-line me-1"></i>
                 Veuillez sélectionner deux années académiques différentes (ex: 2023-2024 vers 2024-2025).
             </div>
         @else
@@ -132,7 +132,7 @@ Passage de promotion des étudiants
                             <p>Total inscrits ({{ $sourceYear->ANNEE_ACAD }})</p>
                             <h3>{{ $stats['total_source'] }}</h3>
                         </div>
-                        <i class="bi bi-people stat-icon"></i>
+                        <i class=" ri-team-line stat-icon"></i>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12">
@@ -141,7 +141,7 @@ Passage de promotion des étudiants
                             <p>Prêts pour passage en L2 / L3</p>
                             <h3>{{ $stats['eligible'] }}</h3>
                         </div>
-                        <i class="bi bi-arrow-up-circle stat-icon"></i>
+                        <i class=" ri-arrow-up-circle-line stat-icon"></i>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12">
@@ -150,7 +150,7 @@ Passage de promotion des étudiants
                             <p>Déjà inscrits ({{ $targetYear->ANNEE_ACAD }})</p>
                             <h3>{{ $stats['already_transferred'] }}</h3>
                         </div>
-                        <i class="bi bi-check-all stat-icon"></i>
+                        <i class=" ri-check-double-line stat-icon"></i>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12">
@@ -159,7 +159,7 @@ Passage de promotion des étudiants
                             <p>Fin de cycle / Non transférés</p>
                             <h3>{{ $stats['end_of_cycle'] + $stats['no_next_class'] }}</h3>
                         </div>
-                        <i class="bi bi-mortarboard stat-icon"></i>
+                        <i class=" ri-graduation-cap-line stat-icon"></i>
                     </div>
                 </div>
             </div>
@@ -168,7 +168,7 @@ Passage de promotion des étudiants
             @if ($ueStats['target_count'] == 0)
             <div class="alert alert-warning border border-warning shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
-                    <i class="bi bi-exclamation-triangle-fill fs-4 text-warning me-2 align-middle"></i>
+                    <i class=" ri-alert-fill fs-4 text-warning me-2 align-middle"></i>
                     <strong>Attention : Aucune UE n'est encore attribuée à l'année {{ $targetYear->ANNEE_ACAD }}.</strong>
                     <div class="small text-muted mt-1">
                         Pour que les relevés et récapitulatifs fonctionnent, les UEs ({{ $ueStats['source_count'] }}) et ECUEs de l'année précédente doivent être reconduites.
@@ -179,14 +179,14 @@ Passage de promotion des étudiants
                     <input type="hidden" name="source_year" value="{{ $sourceYear->id_Annee_Acad }}">
                     <input type="hidden" name="target_year" value="{{ $targetYear->id_Annee_Acad }}">
                     <button type="submit" class="btn btn-warning fw-bold shadow-sm" onclick="return confirm('Confirmez-vous l\'attribution automatique de toutes les UEs et ECUEs vers {{ $targetYear->ANNEE_ACAD }} ?');">
-                        <i class="bi bi-arrow-repeat me-1"></i> Attribuer automatiquement les UEs maintenant ({{ $ueStats['source_count'] }} UEs)
+                        <i class=" ri-loop-right-line me-1"></i> Attribuer automatiquement les UEs maintenant ({{ $ueStats['source_count'] }} UEs)
                     </button>
                 </form>
             </div>
             @else
             <div class="alert alert-success border border-success shadow-sm d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 py-2">
                 <div class="small">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    <i class=" ri-checkbox-circle-fill text-success me-1"></i>
                     <strong>Maquette pédagogique prête :</strong> {{ $ueStats['target_count'] }} UEs et {{ $ueStats['target_ecue_count'] }} ECUEs sont déjà attribuées à l'année <strong>{{ $targetYear->ANNEE_ACAD }}</strong>.
                 </div>
                 <form action="{{ route('passage-promotion.reconduire-ues') }}" method="POST" class="d-inline">
@@ -194,7 +194,7 @@ Passage de promotion des étudiants
                     <input type="hidden" name="source_year" value="{{ $sourceYear->id_Annee_Acad }}">
                     <input type="hidden" name="target_year" value="{{ $targetYear->id_Annee_Acad }}">
                     <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Voulez-vous synchroniser/mettre à jour les UEs vers {{ $targetYear->ANNEE_ACAD }} ?');">
-                        <i class="bi bi-arrow-repeat me-1"></i> Synchroniser les UEs ({{ $ueStats['source_count'] }})
+                        <i class=" ri-loop-right-line me-1"></i> Synchroniser les UEs ({{ $ueStats['source_count'] }})
                     </button>
                 </form>
             </div>
@@ -204,14 +204,14 @@ Passage de promotion des étudiants
             <div class="card p-3 shadow-sm mb-3">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div class="small text-muted">
-                        <i class="bi bi-shield-check text-success me-1"></i>
+                        <i class=" ri-shield-check-line text-success me-1"></i>
                         
                     </div>
 
                     <div class="d-flex gap-2">
                         {{-- Bouton Annuler le transfert / Revenir en arrière --}}
                         <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRollback">
-                            <i class="bi bi-arrow-counterclockwise me-1"></i> Revenir en arrière sur le transfert
+                            <i class=" ri-arrow-go-back-line me-1"></i> Revenir en arrière sur le transfert
                         </button>
                     </div>
                 </div>
@@ -237,7 +237,7 @@ Passage de promotion des étudiants
                         <div class="d-flex align-items-center gap-2">
                             @if ($stats['eligible'] > 0)
                             <button type="submit" class="btn btn-success" onclick="return confirm('Confirmez-vous le transfert des étudiants sélectionnés vers l\'année {{ $targetYear->ANNEE_ACAD }} ?');">
-                                <i class="bi bi-arrow-up-right-square me-1"></i> Transférer la sélection vers {{ $targetYear->ANNEE_ACAD }} ({{ $stats['eligible'] }})
+                                <i class=" ri-external-link-line me-1"></i> Transférer la sélection vers {{ $targetYear->ANNEE_ACAD }} ({{ $stats['eligible'] }})
                             </button>
                             @else
                             <button type="button" class="btn btn-secondary" disabled>
@@ -251,7 +251,7 @@ Passage de promotion des étudiants
                     <div class="form-check form-switch mb-3 bg-light p-2 rounded border">
                         <input class="form-check-input ms-0 me-2" type="checkbox" name="reconduire_ues" value="1" id="reconduire_ues" checked>
                         <label class="form-check-label fw-semibold small" for="reconduire_ues">
-                            <i class="bi bi-book-half text-primary me-1"></i> Attribuer / Reconduire automatiquement les UEs et ECUEs de {{ $sourceYear->ANNEE_ACAD }} vers {{ $targetYear->ANNEE_ACAD }}
+                            <i class=" ri-book-2-line text-primary me-1"></i> Attribuer / Reconduire automatiquement les UEs et ECUEs de {{ $sourceYear->ANNEE_ACAD }} vers {{ $targetYear->ANNEE_ACAD }}
                         </label>
                     </div>
 
@@ -300,7 +300,7 @@ Passage de promotion des étudiants
                                     <td>
                                         @if ($stu['next_code'])
                                         <span class="badge bg-success-subtle text-success border border-success fw-bold">
-                                            <i class="bi bi-arrow-right me-1"></i>{{ $stu['next_label'] }}
+                                            <i class=" ri-arrow-right-line me-1"></i>{{ $stu['next_label'] }}
                                         </span>
                                         @else
                                         <span class="text-muted small">&mdash;</span>
@@ -315,7 +315,7 @@ Passage de promotion des étudiants
                                 @empty
                                 <tr>
                                     <td colspan="6" class="text-center py-4 text-muted">
-                                        <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                        <i class=" ri-inbox-line fs-3 d-block mb-2"></i>
                                         Aucun étudiant inscrit trouvé pour l'année <strong>{{ $sourceYear->ANNEE_ACAD }}</strong>.
                                     </td>
                                 </tr>
@@ -337,13 +337,13 @@ Passage de promotion des étudiants
 
                             <div class="modal-header bg-danger text-white">
                                 <h5 class="modal-title" id="modalRollbackLabel">
-                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Annuler le transfert d'étudiants
+                                    <i class=" ri-arrow-go-back-line me-1"></i> Annuler le transfert d'étudiants
                                 </h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                    <i class=" ri-alert-fill me-1"></i>
                                     <strong>Attention :</strong> Cette action supprimera les inscriptions automatiques créées pour l'année <strong>{{ $targetYear->ANNEE_ACAD }}</strong>.
                                 </div>
                                 <p>
@@ -361,7 +361,7 @@ Passage de promotion des étudiants
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                                 <button type="submit" class="btn btn-danger">
-                                    <i class="bi bi-trash me-1"></i> Confirmer l'annulation du transfert
+                                    <i class=" ri-delete-bin-line me-1"></i> Confirmer l'annulation du transfert
                                 </button>
                             </div>
                         </form>
@@ -371,7 +371,7 @@ Passage de promotion des étudiants
         @endif
     @else
         <div class="alert alert-info py-4 text-center shadow-sm">
-            <i class="bi bi-info-circle fs-2 d-block mb-2 text-primary"></i>
+            <i class=" ri-information-line fs-2 d-block mb-2 text-primary"></i>
             <h5>Sélectionnez deux années académiques ci-dessus</h5>
             <p class="text-muted mb-0 small">
                 Choisissez l'année d'origine (ex: <em>2023-2024</em>) et la nouvelle année de destination (ex: <em>2024-2025</em>) puis cliquez sur <strong>Charger</strong>.

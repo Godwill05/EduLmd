@@ -5,7 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reçu de paiement</title>
-  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* Styles de base locaux (remplace l'ancien import Bootstrap, rendu identique) */
+    .container { width: 100%; max-width: 1140px; margin: 0 auto; padding: 0 12px; }
+    .table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+    .table th, .table td { padding: 0.25rem 0.5rem; vertical-align: top; }
+    .table-bordered th, .table-bordered td { border: 1px solid #0B0B0C; }
+    .border-dark { border-color: #0B0B0C !important; }
+    .border { border: 1px solid #0B0B0C; }
+    .border-1 { border-width: 1px; }
+    body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; font-size: 14px; color: #212529; }
+  </style>
   <style>
     *
 

@@ -120,11 +120,11 @@ Enseignants
                                 <form action="{{ route('enseignants.destroy', $item->numeroProf) }}" method="post">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn"><i class="bi bi-eye" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"></i></button>
+                                    <button type="button" class="btn"><i class=" ri-eye-line" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"></i></button>
 
-                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class="bi bi-pencil text-secondary"></i></button>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}"><i class=" ri-pencil-line text-secondary"></i></button>
 
-                                    <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$item->nomEtu}} {{$item->prenomsEtu}}?')" class="btn"><i class="bi bi-trash text-danger"></i></button>
+                                    <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$item->nomEtu}} {{$item->prenomsEtu}}?')" class="btn"><i class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -264,10 +264,7 @@ Enseignants
 @endsection
 @section('js')
 <script>
-    $(document).ready(function() {
-        $('select').select2({
-            theme: "bootstrap-5",
-        });
-    });
+    // Les listes déroulantes sont enrichies par TomSelect (initialisé dans le layout).
+    // L'ancien appel select2 + thème Bootstrap dépendait d'une librairie non chargée : retiré.
   </script>
 @endsection

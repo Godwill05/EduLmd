@@ -22,7 +22,7 @@
                 <form action="{{ route('previsions.destroy',$prevision->id) }}" method="post" id="form-del-displayprev-{{$prevision->id}}">
                     @csrf
                     @method('DELETE')
-                    <button type="button" class="btn" onclick="confirmDelete(document.getElementById('form-del-displayprev-{{$prevision->id}}'), 'cette prévision de <strong>{{ number_format($prevision->montant_a_payer, 0, \',\', \' \') }} F CFA</strong>')"><i class="text-danger bi bi-trash"></i></button>
+                    <button type="button" class="btn" onclick="confirmDelete(document.getElementById('form-del-displayprev-{{$prevision->id}}'), 'cette prévision de <strong>{{ number_format($prevision->montant_a_payer, 0, \',\', \' \') }} F CFA</strong>')"><i class="text-danger ri-delete-bin-line"></i></button>
                 </form>
             </td>
         </tr>

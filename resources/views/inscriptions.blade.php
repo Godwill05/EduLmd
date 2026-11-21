@@ -180,7 +180,7 @@ Inscriptions
                                 <form action="{{ route('inscriptions.destroy') }}" method="post" id="form-del-ins-{{$loop->iteration}}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn"  data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"><i title="Voir" class="bi bi-eye"></i></button>
+                                    <button type="button" class="btn"  data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"><i title="Voir" class=" ri-eye-line"></i></button>
                                     {{-- On se base UNIQUEMENT sur reste_paye, jamais sur S_Finance,
                                          qui peut être désynchronisé (colonne redondante/legacy). --}}
                                     @if ($item->reste_paye > 0)
@@ -194,21 +194,21 @@ Inscriptions
                                         data-bs-anneeEtude="{{$item->ID_FILIERE}}"
                                         data-bs-montantPaye="{{$item->reste_paye}}"
                                         title="Enregistrer paiement">
-                                        <i class="text-green-500 bi bi-cash"></i>
+                                        <i class="text-green-500 ri-hand-coin-line"></i>
                                     </button>
                                     @elseif($item->frais_paye > 0)
                                     <span>Soldé!</span>
                                     @else
                                     <span class="text-muted">—</span>
                                     @endif
-                                    <a class="btn" href="{{ route('inscriptions.edit') }}?m={{$item->MATRICULE}}&aa={{$item->Id_Annee}}&ae={{$item->ID_FILIERE}}"><i title="Modifier" class="bi bi-pencil text-secondary"></i></a>
-                                    <button type="button" onclick="downloadpdf({{$item->MATRICULE}},{{$item->Id_Annee}},'{{$item->ID_FILIERE}}','{{\App\Models\AnneeAcademique::find($item->Id_Annee)?->ANNEE_ACAD ?? ''}}')" class="btn" title="Carte étudiant"><i class="bi bi-person-vcard"></i></button>
-                                    <a href="{{ route('engagement.imprimer', ['matricule' => $item->MATRICULE, 'annee' => $item->Id_Annee, 'filiere' => $item->ID_FILIERE]) }}" target="_blank" class="btn" title="Fiche d'engagement"><i class="bi bi-file-earmark-text text-primary"></i></a>
+                                    <a class="btn" href="{{ route('inscriptions.edit') }}?m={{$item->MATRICULE}}&aa={{$item->Id_Annee}}&ae={{$item->ID_FILIERE}}"><i title="Modifier" class=" ri-pencil-line text-secondary"></i></a>
+                                    <button type="button" onclick="downloadpdf({{$item->MATRICULE}},{{$item->Id_Annee}},'{{$item->ID_FILIERE}}','{{\App\Models\AnneeAcademique::find($item->Id_Annee)?->ANNEE_ACAD ?? ''}}')" class="btn" title="Carte étudiant"><i class=" ri-id-card-line"></i></button>
+                                    <a href="{{ route('engagement.imprimer', ['matricule' => $item->MATRICULE, 'annee' => $item->Id_Annee, 'filiere' => $item->ID_FILIERE]) }}" target="_blank" class="btn" title="Fiche d'engagement"><i class=" ri-file-text-line text-primary"></i></a>
                                     <input type="hidden" name="matricule" value="{{$item->MATRICULE}}">
                                     <input type="hidden" name="anneeAcademique" value="{{$item->Id_Annee}}">
                                     <input type="hidden" name="anneeEtude" value="{{$item->ID_FILIERE}}">
 
-                                    <button type="button" onclick="confirmDelete(document.getElementById('form-del-ins-{{$loop->iteration}}'), 'l\'inscription en <strong>{{$item->ID_FILIERE}}</strong> de <strong>{{$item->etudiant ? $item->etudiant->nomEtu . ' ' . $item->etudiant->prenomsEtu : 'l\'étudiant'}}</strong>')" class="btn"><i title="Supprimer" class="bi bi-trash text-danger"></i></button>
+                                    <button type="button" onclick="confirmDelete(document.getElementById('form-del-ins-{{$loop->iteration}}'), 'l\'inscription en <strong>{{$item->ID_FILIERE}}</strong> de <strong>{{$item->etudiant ? $item->etudiant->nomEtu . ' ' . $item->etudiant->prenomsEtu : 'l\'étudiant'}}</strong>')" class="btn"><i title="Supprimer" class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -415,11 +415,11 @@ Inscriptions
         confirmAction({
             title: 'Télécharger la carte étudiant',
             message: 'Voulez-vous générer et télécharger la carte d\'étudiant pour le matricule <strong>' + param + '</strong> ?',
-            icon: 'bi-person-vcard-fill',
+            icon: 'ri-id-card-fill',
             gradient: 'linear-gradient(135deg,#1a73e8,#4285f4)',
             confirmText: 'Télécharger',
             confirmClass: 'btn-primary',
-            confirmIcon: 'bi-download',
+            confirmIcon: 'ri-download-2-line',
             onConfirm: function() {
                 $.ajax({
                     url:'/carte-etudiant/'+param+'/'+param1+'/'+param2,

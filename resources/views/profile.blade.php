@@ -17,7 +17,7 @@ Profil
         <div class="card">
           <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-            <i class="bi bi-person-circle display-1"></i>
+            <i class=" ri-account-circle-line display-1"></i>
             {{-- <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle"> --}}
             <h2>{{Auth::user()->firstname}} {{Auth::user()->lastname}}</h2>
             {{-- <h3>{{Auth::user()->login}}</h3> --}}

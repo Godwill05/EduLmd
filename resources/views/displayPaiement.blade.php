@@ -1,6 +1,6 @@
 @if ($paiements->isEmpty())
     <div class="alert alert-info text-center my-3 border-0 shadow-sm">
-        <i class="bi bi-info-circle fs-5 me-2 align-middle"></i>
+        <i class=" ri-information-line fs-5 me-2 align-middle"></i>
         <span>Aucun paiement trouvé pour les critères sélectionnés.</span>
     </div>
 @else
@@ -46,7 +46,7 @@
             <td>
                 @if($reste !== null)
                     @if($reste <= 0)
-                        <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Soldé</span>
+                        <span class="badge bg-success"><i class=" ri-checkbox-circle-line me-1"></i>Soldé</span>
                     @else
                         <span class="badge bg-warning text-dark">Reste : {{ number_format($reste, 0, ',', ' ') }} F</span>
                     @endif
@@ -60,7 +60,7 @@
                 <button class="btn btn-sm btn-outline-secondary me-1" type="button"
                     data-bs-toggle="modal" data-bs-target="#{{ $modalId }}"
                     title="Modifier">
-                    <i class="bi bi-pencil"></i>
+                    <i class=" ri-pencil-line"></i>
                 </button>
                 <form action="{{ route('paiements.destroy', $paiement->id) }}" method="post" class="d-inline" id="form-del-pmt-{{ $paiement->id }}">
                     @csrf
@@ -68,7 +68,7 @@
                     <button class="btn btn-sm btn-outline-danger" type="button"
                         onclick="confirmDelete(document.getElementById('form-del-pmt-{{ $paiement->id }}'), 'ce paiement de <strong>{{ $fmtMontant }} F CFA</strong>')"
                         title="Supprimer">
-                        <i class="bi bi-trash"></i>
+                        <i class=" ri-delete-bin-line"></i>
                     </button>
                 </form>
             </td>
@@ -80,7 +80,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="{{ $modalId }}_label">
-                            <i class="bi bi-pencil-square me-2 text-primary"></i>Modifier le paiement
+                            <i class=" ri-edit-line me-2 text-primary"></i>Modifier le paiement
                             <small class="text-muted ms-2">— {{ $paiement->MATRICULE }}</small>
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -129,10 +129,10 @@
                             </div>
                             <div class="mt-4 d-flex justify-content-end gap-2">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    <i class="bi bi-x-circle me-1"></i>Fermer
+                                    <i class=" ri-close-circle-line me-1"></i>Fermer
                                 </button>
                                 <button class="btn btn-primary" type="submit">
-                                    <i class="bi bi-check-circle me-1"></i>Enregistrer
+                                    <i class=" ri-checkbox-circle-line me-1"></i>Enregistrer
                                 </button>
                             </div>
                         </form>

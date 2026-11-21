@@ -27,7 +27,7 @@
                     <form action="{{ route('inscriptions.destroy') }}" method="post" id="form-del-displayins-{{$loop->iteration}}">
                         @csrf
                         @method('DELETE')
-                        <button type="button" class="btn"  data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"><i title="Voir" class="bi bi-eye"></i></button>
+                        <button type="button" class="btn"  data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"><i title="Voir" class=" ri-eye-line"></i></button>
                         @if ($item->reste_paye > 0)
                         <button
                             type="button"
@@ -39,21 +39,21 @@
                             data-bs-anneeEtude="{{$item->ID_FILIERE}}"
                             data-bs-montantPaye="{{$item->reste_paye}}"
                             title="Enregistrer paiement">
-                            <i class="text-green-500 bi bi-cash"></i>
+                            <i class="text-green-500 ri-hand-coin-line"></i>
                         </button>
                         @elseif($item->frais_paye > 0)
                         <span>Soldé!</span>
                         @else
                         <span class="text-muted">—</span>
                         @endif
-                        <a class="btn" href="{{ route('inscriptions.edit') }}?m={{$item->MATRICULE}}&aa={{$item->Id_Annee}}&ae={{$item->ID_FILIERE}}"><i title="Modifier" class="bi bi-pencil text-secondary"></i></a>
-                        <button type="button" onclick="downloadpdf({{$item->MATRICULE}},{{$item->Id_Annee}},'{{$item->ID_FILIERE}}','{{\App\Models\AnneeAcademique::find($item->Id_Annee)->ANNEE_ACAD}}')" class="btn" title="Carte étudiant"><i class="bi bi-person-vcard"></i></button>
-                        <a href="{{ route('engagement.imprimer', ['matricule' => $item->MATRICULE, 'annee' => $item->Id_Annee, 'filiere' => $item->ID_FILIERE]) }}" target="_blank" class="btn" title="Fiche d'engagement"><i class="bi bi-file-earmark-text text-primary"></i></a>
+                        <a class="btn" href="{{ route('inscriptions.edit') }}?m={{$item->MATRICULE}}&aa={{$item->Id_Annee}}&ae={{$item->ID_FILIERE}}"><i title="Modifier" class=" ri-pencil-line text-secondary"></i></a>
+                        <button type="button" onclick="downloadpdf({{$item->MATRICULE}},{{$item->Id_Annee}},'{{$item->ID_FILIERE}}','{{\App\Models\AnneeAcademique::find($item->Id_Annee)->ANNEE_ACAD}}')" class="btn" title="Carte étudiant"><i class=" ri-id-card-line"></i></button>
+                        <a href="{{ route('engagement.imprimer', ['matricule' => $item->MATRICULE, 'annee' => $item->Id_Annee, 'filiere' => $item->ID_FILIERE]) }}" target="_blank" class="btn" title="Fiche d'engagement"><i class=" ri-file-text-line text-primary"></i></a>
                         <input type="hidden" name="matricule" value="{{$item->MATRICULE}}">
                         <input type="hidden" name="anneeAcademique" value="{{$item->Id_Annee}}">
                         <input type="hidden" name="anneeEtude" value="{{$item->ID_FILIERE}}">
 
-                        <button type="button" onclick="confirmDelete(document.getElementById('form-del-displayins-{{$loop->iteration}}'), 'l\'inscription en <strong>{{$item->ID_FILIERE}}</strong> de <strong>{{$item->etudiant ? $item->etudiant->nomEtu . ' ' . $item->etudiant->prenomsEtu : 'l\'étudiant'}}</strong>')" class="btn"><i title="Supprimer" class="bi bi-trash text-danger"></i></button>
+                        <button type="button" onclick="confirmDelete(document.getElementById('form-del-displayins-{{$loop->iteration}}'), 'l\'inscription en <strong>{{$item->ID_FILIERE}}</strong> de <strong>{{$item->etudiant ? $item->etudiant->nomEtu . ' ' . $item->etudiant->prenomsEtu : 'l\'étudiant'}}</strong>')" class="btn"><i title="Supprimer" class=" ri-delete-bin-line text-danger"></i></button>
                     </form>
                 </td>
             </tr>

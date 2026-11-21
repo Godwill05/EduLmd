@@ -66,8 +66,8 @@ Permissions
                                 <form action="{{ route('permissions.destroy', $item->id) }}" method="post">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn" title="Voir" type="button" data-bs-toggle="modal" data-bs-target="#permissionUsers{{$loop->iteration}}"><i class="bi bi-eye text-dark"></i></button>
-                                    <button class="btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette permission ?')"><i class="bi bi-trash text-danger"></i></button>
+                                    <button class="btn" title="Voir" type="button" data-bs-toggle="modal" data-bs-target="#permissionUsers{{$loop->iteration}}"><i class=" ri-eye-line text-dark"></i></button>
+                                    <button class="btn" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette permission ?')"><i class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </td>
                         </tr>

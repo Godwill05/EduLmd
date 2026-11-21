@@ -10,7 +10,7 @@ Liste des étudiants par filière
         @if (session()->has('succes'))
             <div class="row">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="bi bi-check-circle me-1"></i> {{ session('succes') }}
+                    <i class=" ri-checkbox-circle-line me-1"></i> {{ session('succes') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
@@ -18,7 +18,7 @@ Liste des étudiants par filière
         @if (session()->has('echec'))
             <div class="row">
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="bi bi-exclamation-triangle me-1"></i> {{ session('echec') }}
+                    <i class=" ri-alert-line me-1"></i> {{ session('echec') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
@@ -54,11 +54,11 @@ Liste des étudiants par filière
                     <div class="col-md-3 col-sm-12 text-md-end text-start">
                         <div class="btn-group w-100" role="group">
                             <button type="submit" class="btn btn-sm btn-primary">
-                                <i class="bi bi-search"></i> Afficher
+                                <i class=" ri-search-line"></i> Afficher
                             </button>
                             @if ($selectedFiliere && $inscriptions->isNotEmpty())
                                 <button type="button" class="btn btn-sm btn-success" onclick="imprimerListePdf()">
-                                    <i class="bi bi-printer"></i> Imprimer PDF
+                                    <i class=" ri-printer-line"></i> Imprimer PDF
                                 </button>
                             @endif
                         </div>
@@ -77,7 +77,7 @@ Liste des étudiants par filière
         @if ($selectedFiliere)
             @if ($inscriptions->isEmpty())
                 <div class="alert alert-info shadow-sm">
-                    <i class="bi bi-info-circle me-1"></i> Aucun étudiant inscrit trouvé pour la filière <b>{{ $selectedFiliere->Libelle_AnEtude }}</b> pour l'année <b>{{ $selectedAnnee?->ANNEE_ACAD }}</b>.
+                    <i class=" ri-information-line me-1"></i> Aucun étudiant inscrit trouvé pour la filière <b>{{ $selectedFiliere->Libelle_AnEtude }}</b> pour l'année <b>{{ $selectedAnnee?->ANNEE_ACAD }}</b>.
                 </div>
             @else
                 <!-- Statistiques rapides -->
@@ -114,7 +114,7 @@ Liste des étudiants par filière
                         <div class="d-flex align-items-center gap-2">
                             <input type="text" id="filtreRecherche" class="form-control form-control-sm" placeholder="Recherche rapide..." style="max-width: 240px;" onkeyup="filtrerTableau()">
                             <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exporterCsv()" title="Télécharger en CSV / Excel">
-                                <i class="bi bi-file-earmark-spreadsheet"></i> Exporter CSV
+                                <i class=" ri-file-excel-line"></i> Exporter CSV
                             </button>
                         </div>
                     </div>
@@ -171,7 +171,7 @@ Liste des étudiants par filière
                                         <td class="text-center">
                                             @if ($tel !== '-')
                                                 <a href="tel:{{ $tel }}" class="text-decoration-none text-dark">
-                                                    <i class="bi bi-telephone me-1 text-muted"></i>{{ $tel }}
+                                                    <i class=" ri-phone-line me-1 text-muted"></i>{{ $tel }}
                                                 </a>
                                             @else
                                                 <span class="text-muted">-</span>
@@ -186,7 +186,7 @@ Liste des étudiants par filière
             @endif
         @else
             <div class="alert alert-secondary text-center p-5 shadow-sm">
-                <i class="bi bi-people fs-1 text-muted d-block mb-2"></i>
+                <i class=" ri-team-line fs-1 text-muted d-block mb-2"></i>
                 <h5 class="fw-bold">Sélectionnez une année académique et une filière</h5>
                 <p class="text-muted mb-0">La liste complète des étudiants inscrits s'affichera triée rigoureusement par ordre alphabétique de nom.</p>
             </div>

@@ -3,120 +3,122 @@
 Accueil
 @endsection
 @section('content')
-<section class="section">
-    <div class="container-fluid">
+<section class="px-6 pb-2 pt-5">
 
-        {{-- Bannière de bienvenue --}}
-        <div class="welcome-banner mb-4">
-            <h2>Bonjour, {{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h2>
-            <p>Bienvenue sur EduLMD — {{ \Carbon\Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY') }}. Voici un aperçu de votre activité.</p>
-        </div>
+    {{-- Bannière de bienvenue --}}
+    <div class="welcome-banner mb-6">
+        <h2>Bonjour, {{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</h2>
+        <p>Bienvenue sur EduLMD — {{ \Carbon\Carbon::now()->locale('fr')->isoFormat('dddd D MMMM YYYY') }}. Voici un aperçu de votre activité.</p>
+    </div>
 
-        {{-- Indicateurs clés --}}
-        <div class="row g-3 mb-4">
-            <div class="col-xl-3 col-md-6 col-12">
-                <a href="{{ route('etudiants.index') }}" class="kpi-card text-decoration-none">
-                    <span class="kpi-icon indigo"><i class="bi bi-people"></i></span>
-                    <span>
-                        <span class="kpi-value d-block">{{ \App\Models\Etudiant::count() }}</span>
-                        <span class="kpi-label">Étudiants</span>
-                    </span>
-                    <i class="bi bi-arrow-right kpi-arrow"></i>
-                </a>
+    {{-- Indicateurs clés --}}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-7">
+        <a href="{{ route('etudiants.index') }}" class="kpi-card text-decoration-none">
+            <div class="kpi-top">
+                <span class="kpi-icon bordeaux"><i class="ri-team-line"></i></span>
+                <i class="ri-arrow-right-line kpi-arrow"></i>
             </div>
-            <div class="col-xl-3 col-md-6 col-12">
-                <a href="{{ route('inscriptions.index') }}" class="kpi-card text-decoration-none">
-                    <span class="kpi-icon emerald"><i class="bi bi-clipboard2-check"></i></span>
-                    <span>
-                        <span class="kpi-value d-block">{{ \App\Models\Inscription::count() }}</span>
-                        <span class="kpi-label">Inscriptions</span>
-                    </span>
-                    <i class="bi bi-arrow-right kpi-arrow"></i>
-                </a>
+            <div class="kpi-value">{{ number_format(\App\Models\Etudiant::count(), 0, ',', ' ') }}</div>
+            <div class="kpi-label">Étudiants</div>
+        </a>
+        <a href="{{ route('inscriptions.index') }}" class="kpi-card text-decoration-none">
+            <div class="kpi-top">
+                <span class="kpi-icon bleu"><i class="ri-file-list-3-line"></i></span>
+                <i class="ri-arrow-right-line kpi-arrow"></i>
             </div>
-            <div class="col-xl-3 col-md-6 col-12">
-                <a href="{{ route('enseignants.index') }}" class="kpi-card text-decoration-none">
-                    <span class="kpi-icon amber"><i class="bi bi-person-badge"></i></span>
-                    <span>
-                        <span class="kpi-value d-block">{{ \App\Models\Enseignant::count() }}</span>
-                        <span class="kpi-label">Enseignants</span>
-                    </span>
-                    <i class="bi bi-arrow-right kpi-arrow"></i>
-                </a>
+            <div class="kpi-value">{{ number_format(\App\Models\Inscription::count(), 0, ',', ' ') }}</div>
+            <div class="kpi-label">Inscriptions</div>
+        </a>
+        <a href="{{ route('enseignants.index') }}" class="kpi-card text-decoration-none">
+            <div class="kpi-top">
+                <span class="kpi-icon sombre"><i class="ri-id-card-line"></i></span>
+                <i class="ri-arrow-right-line kpi-arrow"></i>
             </div>
-            <div class="col-xl-3 col-md-6 col-12">
-                <a href="{{ route('ue.index') }}" class="kpi-card text-decoration-none">
-                    <span class="kpi-icon violet"><i class="bi bi-journal-bookmark"></i></span>
-                    <span>
-                        <span class="kpi-value d-block">{{ \App\Models\Ue::count() }}</span>
-                        <span class="kpi-label">Unités d'enseignement</span>
-                    </span>
-                    <i class="bi bi-arrow-right kpi-arrow"></i>
-                </a>
+            <div class="kpi-value">{{ number_format(\App\Models\Enseignant::count(), 0, ',', ' ') }}</div>
+            <div class="kpi-label">Enseignants</div>
+        </a>
+        <a href="{{ route('ue.index') }}" class="kpi-card text-decoration-none">
+            <div class="kpi-top">
+                <span class="kpi-icon vert"><i class="ri-book-read-line"></i></span>
+                <i class="ri-arrow-right-line kpi-arrow"></i>
             </div>
-        </div>
+            <div class="kpi-value">{{ number_format(\App\Models\Ue::count(), 0, ',', ' ') }}</div>
+            <div class="kpi-label">Unités d'enseignement</div>
+        </a>
+    </div>
 
-        {{-- Accès rapides --}}
-        <h5 class="fw-bold mb-3" style="color:var(--ed-ink);">Accès rapides</h5>
-        <div class="row g-3">
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('paiements.index') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon emerald" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-cash-coin"></i></span>
-                    <span class="qc-title">Paiements</span>
-                    <span class="qc-desc">Enregistrer et suivre les règlements des étudiants.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('evaluations.index') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon sky" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-calendar3-event"></i></span>
-                    <span class="qc-title">Évaluations</span>
-                    <span class="qc-desc">Planifier les compositions et examens.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('afficherNotes') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon indigo" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-pencil-square"></i></span>
-                    <span class="qc-title">Insertion des notes</span>
-                    <span class="qc-desc">Saisir et importer les notes par évaluation.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('cours.index') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon amber" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-book"></i></span>
-                    <span class="qc-title">Cours</span>
-                    <span class="qc-desc">Gérer les cours et leur programmation.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('ecue.index') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon violet" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-journal-text"></i></span>
-                    <span class="qc-title">ECUE</span>
-                    <span class="qc-desc">Éléments constitutifs des unités d'enseignement.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('previsions.index') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon rose" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-graph-up-arrow"></i></span>
-                    <span class="qc-title">Prévisions</span>
-                    <span class="qc-desc">Échéanciers et prévisions de paiement.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('recapitulatifGrade') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon indigo" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-award"></i></span>
-                    <span class="qc-title">Délibération</span>
-                    <span class="qc-desc">Récapitulatifs, relevés et attestations.</span>
-                </a>
-            </div>
-            <div class="col-xl-3 col-md-4 col-sm-6 col-12">
-                <a href="{{ route('parcours') }}" class="quick-card text-decoration-none">
-                    <span class="kpi-icon sky" style="width:44px;height:44px;font-size:1.15rem;"><i class="bi bi-signpost-2"></i></span>
-                    <span class="qc-title">Parcours étudiant</span>
-                    <span class="qc-desc">Consulter le parcours complet d'un étudiant.</span>
-                </a>
-            </div>
-        </div>
+    {{-- Accès rapides --}}
+    <div class="flex items-center justify-between mb-3">
+        <h2 class="text-[1rem] font-bold text-encre tracking-tight">Accès rapides</h2>
+        <span class="text-[0.75rem] text-encre-faint">Raccourcis vers les opérations courantes</span>
+    </div>
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
+        <a href="{{ route('paiements.index') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon bordeaux"><i class="ri-hand-coin-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Paiements</span>
+                <span class="qc-desc block">Enregistrer et suivre les règlements.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('evaluations.index') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon bleu"><i class="ri-calendar-event-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Évaluations</span>
+                <span class="qc-desc block">Planifier les compositions et examens.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('afficherNotes') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon sombre"><i class="ri-edit-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Insertion des notes</span>
+                <span class="qc-desc block">Saisir et importer les notes.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('cours.index') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon bordeaux"><i class="ri-book-2-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Cours</span>
+                <span class="qc-desc block">Gérer les cours et leur programmation.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('ecue.index') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon bleu"><i class="ri-file-text-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">ECUE</span>
+                <span class="qc-desc block">Éléments constitutifs des UE.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('previsions.index') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon sombre"><i class="ri-line-chart-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Prévisions</span>
+                <span class="qc-desc block">Échéanciers de paiement.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('recapitulatifGrade') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon bordeaux"><i class="ri-award-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Délibération</span>
+                <span class="qc-desc block">Récapitulatifs et relevés.</span>
+            </span>
+        </a>
+
+        <a href="{{ route('parcours') }}" class="quick-card text-decoration-none">
+            <span class="qc-icon bleu"><i class="ri-signpost-line"></i></span>
+            <span class="min-w-0">
+                <span class="qc-title block">Parcours étudiant</span>
+                <span class="qc-desc block">Consulter le parcours complet.</span>
+            </span>
+        </a>
 
     </div>
+
 </section>
 @endsection

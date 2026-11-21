@@ -45,7 +45,7 @@
 
 @if (empty($groupes))
 <div class="alert alert-warning text-center py-4">
-    <i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>
+    <i class=" ri-alert-line fs-3 d-block mb-2"></i>
     Aucun étudiant trouvé correspondant aux critères sélectionnés.
 </div>
 @else
@@ -53,14 +53,14 @@
 <div class="card mb-4 border shadow-sm">
     <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
         <h5 class="mb-0 fw-bold text-dark">
-            <i class="bi bi-mortarboard text-primary me-2"></i>{{ $grp['filiere']->Libelle_AnEtude }}
+            <i class=" ri-graduation-cap-line text-primary me-2"></i>{{ $grp['filiere']->Libelle_AnEtude }}
         </h5>
         <div>
             <span class="badge bg-success-subtle text-success border border-success me-1">
-                <i class="bi bi-check-circle me-1"></i>{{ $grp['totaux']['nb_en_regle'] }} en règle
+                <i class=" ri-checkbox-circle-line me-1"></i>{{ $grp['totaux']['nb_en_regle'] }} en règle
             </span>
             <span class="badge bg-danger-subtle text-danger border border-danger me-1">
-                <i class="bi bi-x-circle me-1"></i>{{ $grp['totaux']['nb_en_retard'] }} en retard
+                <i class=" ri-close-circle-line me-1"></i>{{ $grp['totaux']['nb_en_retard'] }} en retard
             </span>
             @if ($grp['totaux']['nb_sans_echeancier'] > 0)
             <span class="badge bg-secondary-subtle text-secondary border me-1">
@@ -91,7 +91,7 @@
                         {{ $item['nom'] }} {{ $item['prenoms'] }}
                         @if ($item['nb_echeances'] > 0)
                         <span class="badge bg-light text-muted border ms-1" title="{{ $item['nb_echeances'] }} tranche(s) prévue(s)">
-                            <i class="bi bi-calendar3 me-1"></i>{{ $item['nb_echeances'] }} tranches
+                            <i class=" ri-calendar-line me-1"></i>{{ $item['nb_echeances'] }} tranches
                         </span>
                         @endif
                     </td>
@@ -114,13 +114,13 @@
                     </td>
                     <td>
                         @if ($item['statut'] === 'solde')
-                            <span class="badge bg-success"><i class="bi bi-check-all me-1"></i>Soldé</span>
+                            <span class="badge bg-success"><i class=" ri-check-double-line me-1"></i>Soldé</span>
                         @elseif ($item['statut'] === 'en_regle')
-                            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>En règle</span>
+                            <span class="badge bg-success"><i class=" ri-checkbox-circle-line me-1"></i>En règle</span>
                         @elseif ($item['statut'] === 'en_retard')
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i>En retard</span>
+                            <span class="badge bg-danger"><i class=" ri-alert-line me-1"></i>En retard</span>
                         @else
-                            <span class="badge bg-secondary"><i class="bi bi-dash-circle me-1"></i>Sans échéancier</span>
+                            <span class="badge bg-secondary"><i class=" ri-subtract-line me-1"></i>Sans échéancier</span>
                         @endif
                     </td>
                 </tr>
@@ -144,7 +144,7 @@
 <!-- Tableau récapitulatif global -->
 <div class="card border-dark shadow-sm mt-4">
     <div class="card-header bg-dark text-white fw-bold py-2">
-        <i class="bi bi-pie-chart-fill me-2"></i>RÉCAPITULATIF GLOBAL (Situation arrêtée au {{ \Carbon\Carbon::parse($dateEcheance)->format('d/m/Y') }})
+        <i class=" ri-pie-chart-fill me-2"></i>RÉCAPITULATIF GLOBAL (Situation arrêtée au {{ \Carbon\Carbon::parse($dateEcheance)->format('d/m/Y') }})
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
@@ -170,10 +170,10 @@
                     </tr>
                     <tr class="bg-light small">
                         <td colspan="6" class="py-2">
-                            <span class="badge bg-success fs-7 me-2"><i class="bi bi-check-circle me-1"></i>{{ $totauxGlobaux['nb_en_regle'] }} En règle / Soldés</span>
-                            <span class="badge bg-danger fs-7 me-2"><i class="bi bi-x-circle me-1"></i>{{ $totauxGlobaux['nb_en_retard'] }} En retard</span>
+                            <span class="badge bg-success fs-7 me-2"><i class=" ri-checkbox-circle-line me-1"></i>{{ $totauxGlobaux['nb_en_regle'] }} En règle / Soldés</span>
+                            <span class="badge bg-danger fs-7 me-2"><i class=" ri-close-circle-line me-1"></i>{{ $totauxGlobaux['nb_en_retard'] }} En retard</span>
                             @if ($totauxGlobaux['nb_sans_echeancier'] > 0)
-                            <span class="badge bg-secondary fs-7"><i class="bi bi-dash-circle me-1"></i>{{ $totauxGlobaux['nb_sans_echeancier'] }} Sans échéancier</span>
+                            <span class="badge bg-secondary fs-7"><i class=" ri-subtract-line me-1"></i>{{ $totauxGlobaux['nb_sans_echeancier'] }} Sans échéancier</span>
                             @endif
                         </td>
                     </tr>

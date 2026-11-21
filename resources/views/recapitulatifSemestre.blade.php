@@ -101,7 +101,7 @@ Récapitulatif du semestre
     @if (session()->has('succes'))
     <div class="row">
         <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>{{ session('succes') }}
+            <i class=" ri-checkbox-circle-fill me-2"></i>{{ session('succes') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -109,7 +109,7 @@ Récapitulatif du semestre
     @if (session()->has('echec'))
     <div class="row">
         <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('echec') }}
+            <i class=" ri-alert-fill me-2"></i>{{ session('echec') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -120,7 +120,7 @@ Récapitulatif du semestre
             <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom flex-wrap gap-2">
                 <div>
                     <h5 class="mb-0 text-primary fw-bold">
-                        <i class="bi bi-mortarboard-fill me-2"></i>Délibération & Relevés de notes semestriels
+                        <i class=" ri-graduation-cap-fill me-2"></i>Délibération & Relevés de notes semestriels
                     </h5>
                     <small class="text-muted">Sélectionnez les filtres pour générer le Procès-Verbal semestriel ou les relevés individuels des étudiants.</small>
                 </div>
@@ -133,7 +133,7 @@ Récapitulatif du semestre
                     <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             <label class="form-label fw-semibold text-secondary small mb-1" for="anneeEtude">
-                                <i class="bi bi-calendar3 me-1 text-primary"></i>Année d'étude <span class="text-danger">*</span>
+                                <i class=" ri-calendar-line me-1 text-primary"></i>Année d'étude <span class="text-danger">*</span>
                             </label>
                             <select name="anneeEtude" id="anneeEtude" class="form-control form-control-sm form-select" onchange="chargerSemestres()" required>
                                 <option value="">Sélectionner une année d'étude...</option>
@@ -148,7 +148,7 @@ Récapitulatif du semestre
                     <div class="col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             <label class="form-label fw-semibold text-secondary small mb-1" for="anneeAcademique">
-                                <i class="bi bi-clock-history me-1 text-primary"></i>Année académique <span class="text-danger">*</span>
+                                <i class=" ri-history-line me-1 text-primary"></i>Année académique <span class="text-danger">*</span>
                             </label>
                             <select name="anneeAcademique" id="anneeAcademique" class="form-control form-control-sm form-select" onchange="chargerEtudiants()" required>
                                 <option value="">Sélectionner l'année académique...</option>
@@ -163,7 +163,7 @@ Récapitulatif du semestre
                     <div class="col-lg-4 col-md-12 col-sm-12">
                         <div class="form-group">
                             <label class="form-label fw-semibold text-secondary small mb-1" for="semestreEtude">
-                                <i class="bi bi-journal-bookmark me-1 text-primary"></i>Semestre d'étude <span class="text-danger">*</span>
+                                <i class=" ri-bookmark-line me-1 text-primary"></i>Semestre d'étude <span class="text-danger">*</span>
                             </label>
                             <select name="semestreEtude" id="semestreEtude" class="form-control form-control-sm select-semestre-custom" required>
                                 <option value="">Sélectionner d'abord une année d'étude...</option>
@@ -178,19 +178,19 @@ Récapitulatif du semestre
                             <div class="card-header bg-white border-bottom py-2 px-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div class="d-flex align-items-center gap-3 flex-wrap">
                                     <span class="fw-bold text-dark d-flex align-items-center" style="font-size: 0.95rem;">
-                                        <i class="bi bi-people-fill text-primary me-2"></i>Étudiants de la filière
+                                        <i class=" ri-team-fill text-primary me-2"></i>Étudiants de la filière
                                     </span>
 
                                     <!-- Sélecteur de document (PV vs Relevés) -->
                                     <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Type de document">
                                         <input type="radio" class="btn-check" name="type_document" id="doc_pv" value="pv" checked autocomplete="off">
                                         <label class="btn btn-outline-primary fw-bold px-3 py-1" for="doc_pv" id="lbl_doc_pv" title="Générer le Procès-Verbal semestriel">
-                                            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Procès-Verbal (PV)
+                                            <i class=" ri-file-excel-line me-1"></i> Procès-Verbal (PV)
                                         </label>
 
                                         <input type="radio" class="btn-check" name="type_document" id="doc_releve" value="releve" autocomplete="off">
                                         <label class="btn btn-outline-success fw-bold px-3 py-1" for="doc_releve" id="lbl_doc_releve" title="Générer les relevés individuels de notes">
-                                            <i class="bi bi-file-earmark-person me-1"></i> Relevés de notes
+                                            <i class=" ri-file-user-line me-1"></i> Relevés de notes
                                         </label>
                                     </div>
 
@@ -201,7 +201,7 @@ Récapitulatif du semestre
 
                                 <div class="d-flex align-items-center gap-2">
                                     <span id="badge-selection" class="badge bg-light text-secondary border px-3 py-2 badge-mode shadow-sm">
-                                        <i class="bi bi-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i>En attente de sélection...
+                                        <i class=" ri-circle-fill text-secondary me-1" style="font-size: 0.5rem;"></i>En attente de sélection...
                                     </span>
                                 </div>
                             </div>
@@ -210,7 +210,7 @@ Récapitulatif du semestre
                             <div class="px-3 pt-2 bg-white" id="zone-explication" style="display: none;">
                                 <div class="alert alert-primary py-2 px-3 mb-0 small d-flex align-items-center justify-content-between gap-2 shadow-none border" id="mode-info-pv">
                                     <div class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-info-circle-fill text-primary fs-5 flex-shrink-0"></i>
+                                        <i class=" ri-information-fill text-primary fs-5 flex-shrink-0"></i>
                                         <div>
                                             <strong>Mode Procès-Verbal (PV) :</strong> Tous les étudiants <strong>cochés</strong> figureront sur le PV. <strong>Décochez</strong> un étudiant pour l'exclure du PV.
                                         </div>
@@ -220,7 +220,7 @@ Récapitulatif du semestre
 
                                 <div class="alert alert-success py-2 px-3 mb-0 small d-flex align-items-center justify-content-between gap-2 shadow-none border" id="mode-info-releve" style="display: none;">
                                     <div class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-check-circle-fill text-success fs-5 flex-shrink-0"></i>
+                                        <i class=" ri-checkbox-circle-fill text-success fs-5 flex-shrink-0"></i>
                                         <div>
                                             <strong>Mode Relevés de notes :</strong> Cochez <strong>uniquement</strong> les étudiants dont vous souhaitez imprimer le relevé individuel de notes.
                                         </div>
@@ -233,19 +233,19 @@ Récapitulatif du semestre
                             <div class="p-2 border-bottom bg-white d-flex flex-wrap align-items-center justify-content-between gap-2" id="zone-actions" style="display: none !important;">
                                 <div class="input-group input-group-sm" style="max-width: 320px;" id="search-container">
                                     <span class="input-group-text bg-light border-end-0">
-                                        <i class="bi bi-search text-muted"></i>
+                                        <i class=" ri-search-line text-muted"></i>
                                     </span>
                                     <input type="text" class="form-control form-control-sm border-start-0" id="student-search-input" placeholder="Filtrer par nom, prénom, matricule...">
                                     <button class="btn btn-outline-secondary" type="button" id="btn-clear-search" title="Effacer la recherche">
-                                        <i class="bi bi-x"></i>
+                                        <i class=" ri-close-line"></i>
                                     </button>
                                 </div>
                                 <div class="btn-group btn-group-sm" role="group">
                                     <button type="button" class="btn btn-outline-primary btn-sm" id="btn-select-all">
-                                        <i class="bi bi-check-all me-1"></i><span id="btn-select-all-label">Tout inclure</span>
+                                        <i class=" ri-check-double-line me-1"></i><span id="btn-select-all-label">Tout inclure</span>
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-deselect-all">
-                                        <i class="bi bi-x-circle me-1"></i><span id="btn-deselect-all-label">Tout exclure</span>
+                                        <i class=" ri-close-circle-line me-1"></i><span id="btn-deselect-all-label">Tout exclure</span>
                                     </button>
                                 </div>
                             </div>
@@ -253,7 +253,7 @@ Récapitulatif du semestre
                             <!-- Zone de liste des étudiants -->
                             <div class="card-body p-3">
                                 <div id="students-placeholder" class="text-center py-4 text-muted">
-                                    <i class="bi bi-info-circle fs-3 d-block mb-2 text-primary opacity-50"></i>
+                                    <i class=" ri-information-line fs-3 d-block mb-2 text-primary opacity-50"></i>
                                     <span>Veuillez sélectionner une <strong>Année d'étude</strong> et une <strong>Année académique</strong> pour charger la liste des étudiants.</span>
                                 </div>
 
@@ -263,7 +263,7 @@ Récapitulatif du semestre
                                 </div>
 
                                 <div id="students-empty" class="alert alert-warning mb-0 py-2" style="display: none;">
-                                    <i class="bi bi-exclamation-triangle me-1"></i> Aucun étudiant trouvé pour cette sélection.
+                                    <i class=" ri-alert-line me-1"></i> Aucun étudiant trouvé pour cette sélection.
                                 </div>
 
                                 <div id="students-grid" class="student-grid-container row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-2" style="display: none;">
@@ -277,23 +277,23 @@ Récapitulatif du semestre
                     <div class="col-12 mt-4 pt-2 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div class="d-flex align-items-center gap-2">
                             <button class="btn btn-sm btn-primary px-3 shadow-sm" type="button" onclick="afficher()">
-                                <i class="bi bi-eye me-1"></i> Afficher
+                                <i class=" ri-eye-line me-1"></i> Afficher
                             </button>
                             <small class="text-muted d-none d-sm-inline">Affiche le tableau récapitulatif à l'écran</small>
                         </div>
 
                         <div class="d-flex flex-wrap align-items-center gap-2">
                             <button type="submit" class="btn btn-sm btn-secondary px-3" value="Session normale" name="btn" id="btn-session-normale">
-                                <i class="bi bi-printer me-1"></i> <span class="btn-lbl">Session normale</span>
+                                <i class=" ri-printer-line me-1"></i> <span class="btn-lbl">Session normale</span>
                             </button>
                             <button type="submit" class="btn btn-sm text-light px-3" style="background-color: #20c997;" value="Rattrapages" name="btn" id="btn-rattrapages">
-                                <i class="bi bi-printer me-1"></i> <span class="btn-lbl">Rattrapages</span>
+                                <i class=" ri-printer-line me-1"></i> <span class="btn-lbl">Rattrapages</span>
                             </button>
                             <button type="submit" class="btn btn-sm btn-dark px-3" name="btn" value="Reprises" id="btn-reprises">
-                                <i class="bi bi-printer me-1"></i> <span class="btn-lbl">Reprises</span>
+                                <i class=" ri-printer-line me-1"></i> <span class="btn-lbl">Reprises</span>
                             </button>
                             <button type="submit" class="btn btn-sm text-light px-3" style="background-color: #6f42c1;" name="btn" value="Reprises après rattrapage" id="btn-reprises-apres-rattr">
-                                <i class="bi bi-printer me-1"></i> <span class="btn-lbl">Reprises après rattrapage</span>
+                                <i class=" ri-printer-line me-1"></i> <span class="btn-lbl">Reprises après rattrapage</span>
                             </button>
                         </div>
                     </div>
@@ -516,7 +516,7 @@ Récapitulatif du semestre
                 etudiantsData = Array.isArray(response) ? response : [];
 
                 if (etudiantsData.length === 0) {
-                    $('#students-empty').html('<i class="bi bi-exclamation-triangle me-1"></i> Aucun étudiant trouvé pour cette sélection.').show();
+                    $('#students-empty').html('<i class=" ri-alert-line me-1"></i> Aucun étudiant trouvé pour cette sélection.').show();
                     mettreAJourBadge(0, 0, getModeDocument());
                     return;
                 }
@@ -554,7 +554,7 @@ Récapitulatif du semestre
                         $('<div>', { 'class': 'fw-bold text-dark text-truncate', style: 'font-size: 0.88rem;', text: nomComplet }),
                         $('<div>', { 'class': 'd-flex align-items-center justify-content-between gap-1 flex-wrap' }).append(
                             $('<small>', { 'class': 'text-muted font-monospace', style: 'font-size: 0.78rem;' })
-                                .html('<i class="bi bi-upc-scan me-1"></i>' + $('<span>').text(matricule).html()),
+                                .html('<i class=" ri-scan-line me-1"></i>' + $('<span>').text(matricule).html()),
                             $('<span>', { 'class': 'status-indicator' })
                         )
                     );
@@ -574,7 +574,7 @@ Récapitulatif du semestre
             },
             error: function () {
                 $('#students-loading').hide();
-                $('#students-empty').html('<i class="bi bi-x-circle text-danger me-1"></i> Erreur lors du chargement des étudiants.').show();
+                $('#students-empty').html('<i class=" ri-close-circle-line text-danger me-1"></i> Erreur lors du chargement des étudiants.').show();
                 mettreAJourBadge(0, 0, getModeDocument());
             }
         });
@@ -597,15 +597,15 @@ Récapitulatif du semestre
                 card.toggleClass('is-selected', isChecked);
                 card.toggleClass('is-excluded-pv', !isChecked);
                 if (isChecked) {
-                    indicator.html('<span class="badge-included"><i class="bi bi-check me-1"></i>Inclus au PV</span>');
+                    indicator.html('<span class="badge-included"><i class=" ri-check-line me-1"></i>Inclus au PV</span>');
                 } else {
-                    indicator.html('<span class="badge-excluded"><i class="bi bi-x-circle me-1"></i>Exclu du PV</span>');
+                    indicator.html('<span class="badge-excluded"><i class=" ri-close-circle-line me-1"></i>Exclu du PV</span>');
                 }
             } else {
                 card.toggleClass('is-selected', isChecked);
                 card.removeClass('is-excluded-pv');
                 if (isChecked) {
-                    indicator.html('<span class="badge-included"><i class="bi bi-file-earmark-check me-1"></i>Relevé coché</span>');
+                    indicator.html('<span class="badge-included"><i class=" ri-file-check-line me-1"></i>Relevé coché</span>');
                 } else {
                     indicator.empty();
                 }
@@ -627,7 +627,7 @@ Récapitulatif du semestre
 
         if (total === 0) {
             badge.removeClass().addClass('badge bg-light text-secondary border px-3 py-2 badge-mode')
-                 .html('<i class="bi bi-info-circle me-1"></i>En attente de sélection...');
+                 .html('<i class=" ri-information-line me-1"></i>En attente de sélection...');
             btnNormale.text('Session normale');
             btnRattr.text('Rattrapages');
             btnRepr.text('Reprises');
@@ -639,34 +639,34 @@ Récapitulatif du semestre
             var exclus = total - checkedCount;
             if (checkedCount === total) {
                 badge.removeClass().addClass('badge bg-success text-white border px-3 py-2 badge-mode shadow-sm')
-                     .html('<i class="bi bi-check-all me-1 fs-6"></i>PV Complet : tous les ' + total + ' étudiants inclus');
+                     .html('<i class=" ri-check-double-line me-1 fs-6"></i>PV Complet : tous les ' + total + ' étudiants inclus');
             } else if (checkedCount > 0) {
                 badge.removeClass().addClass('badge bg-warning text-dark border px-3 py-2 badge-mode shadow-sm')
-                     .html('<i class="bi bi-funnel-fill me-1"></i>PV Filtré : ' + checkedCount + '/' + total + ' étudiants (' + exclus + ' exclu' + (exclus > 1 ? 's' : '') + ')');
+                     .html('<i class=" ri-filter-fill me-1"></i>PV Filtré : ' + checkedCount + '/' + total + ' étudiants (' + exclus + ' exclu' + (exclus > 1 ? 's' : '') + ')');
             } else {
                 badge.removeClass().addClass('badge bg-danger text-white border px-3 py-2 badge-mode shadow-sm')
-                     .html('<i class="bi bi-exclamation-triangle-fill me-1"></i>Attention : 0 étudiant dans le PV');
+                     .html('<i class=" ri-alert-fill me-1"></i>Attention : 0 étudiant dans le PV');
             }
 
-            btnNormale.html('<i class="bi bi-file-earmark-spreadsheet me-1"></i>PV - Session normale');
-            btnRattr.html('<i class="bi bi-file-earmark-spreadsheet me-1"></i>PV - Rattrapages');
-            btnRepr.html('<i class="bi bi-file-earmark-spreadsheet me-1"></i>PV - Reprises');
-            btnReprApresRattr.html('<i class="bi bi-file-earmark-spreadsheet me-1"></i>PV - Reprises après rattrapage');
+            btnNormale.html('<i class=" ri-file-excel-line me-1"></i>PV - Session normale');
+            btnRattr.html('<i class=" ri-file-excel-line me-1"></i>PV - Rattrapages');
+            btnRepr.html('<i class=" ri-file-excel-line me-1"></i>PV - Reprises');
+            btnReprApresRattr.html('<i class=" ri-file-excel-line me-1"></i>PV - Reprises après rattrapage');
         } else {
             // Mode Relevé
             if (checkedCount === 0) {
                 badge.removeClass().addClass('badge bg-light text-secondary border px-3 py-2 badge-mode')
-                     .html('<i class="bi bi-circle me-1"></i>0 relevé sélectionné (cochez les étudiants)');
+                     .html('<i class=" ri-checkbox-blank-circle-line me-1"></i>0 relevé sélectionné (cochez les étudiants)');
             } else {
                 badge.removeClass().addClass('badge bg-primary text-white border px-3 py-2 badge-mode shadow-sm')
-                     .html('<i class="bi bi-check-circle-fill me-1"></i>' + checkedCount + ' relevé' + (checkedCount > 1 ? 's' : '') + ' sélectionné' + (checkedCount > 1 ? 's' : ''));
+                     .html('<i class=" ri-checkbox-circle-fill me-1"></i>' + checkedCount + ' relevé' + (checkedCount > 1 ? 's' : '') + ' sélectionné' + (checkedCount > 1 ? 's' : ''));
             }
 
             var suffix = checkedCount <= 1 ? ' (Relevé)' : ' (' + checkedCount + ' Relevés)';
-            btnNormale.html('<i class="bi bi-printer me-1"></i>Session normale' + suffix);
-            btnRattr.html('<i class="bi bi-printer me-1"></i>Rattrapages' + suffix);
-            btnRepr.html('<i class="bi bi-printer me-1"></i>Reprises' + suffix);
-            btnReprApresRattr.html('<i class="bi bi-printer me-1"></i>Reprises' + suffix);
+            btnNormale.html('<i class=" ri-printer-line me-1"></i>Session normale' + suffix);
+            btnRattr.html('<i class=" ri-printer-line me-1"></i>Rattrapages' + suffix);
+            btnRepr.html('<i class=" ri-printer-line me-1"></i>Reprises' + suffix);
+            btnReprApresRattr.html('<i class=" ri-printer-line me-1"></i>Reprises' + suffix);
         }
     }
 

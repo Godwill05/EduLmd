@@ -20,14 +20,14 @@
 
                         <div class="row">
                             <div class="col-auto">
-                                <button type="button" class="btn"><i class="bi bi-eye" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"></i></button>
+                                <button type="button" class="btn"><i class=" ri-eye-line" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"></i></button>
                             </div>
                             <div class="col-auto">
                                 <form action="{{ route('attribuer-ecue-ue.edit') }}" method="post">
                                     @csrf
                                     <input type="hidden" name="uesem" value="{{$item->Id_Attr_ue_Sem}}">
                                     <input type="hidden" name="ecUe" value="{{$item->codeEcu}}">
-                                    <button type="submit" class="btn btn"><i class="bi bi-pencil text-secondary"></i></button>
+                                    <button type="submit" class="btn btn"><i class=" ri-pencil-line text-secondary"></i></button>
                                 </form>
                             </div>
                             <div class="col-auto">
@@ -36,7 +36,7 @@
                                     @method('DELETE')
                                     <input type="hidden" name="uesem" value="{{$item->Id_Attr_ue_Sem}}">
                                     <input type="hidden" name="ecUe" value="{{$item->codeEcu}}">
-                                    <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer cette relation entre  l\'UE {{$item->ueSemestre->ue->libelleUe}} et l\'ECUE {{$item->ecue->libelleEcu}}')" class="btn"><i class="bi bi-trash text-danger"></i></button>
+                                    <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer cette relation entre  l\'UE {{$item->ueSemestre->ue->libelleUe}} et l\'ECUE {{$item->ecue->libelleEcu}}')" class="btn"><i class=" ri-delete-bin-line text-danger"></i></button>
                                 </form>
                             </div>
                         </div>

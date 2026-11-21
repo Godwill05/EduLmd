@@ -17,28 +17,28 @@ Gestion des Échéances & Prévisions
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h3 class="mb-0 fw-bold text-navy"><i class="bi bi-calendar-event me-2 text-primary"></i>Gestion des Échéances &amp; Prévisions de Paiement</h3>
+            <h3 class="mb-0 fw-bold text-navy"><i class=" ri-calendar-event-line me-2 text-primary"></i>Gestion des Échéances &amp; Prévisions de Paiement</h3>
             <p class="text-muted small mb-0">Configuration des tranches par défaut pour toute une classe ou sur-mesure pour chaque étudiant.</p>
         </div>
         <div>
             <a href="{{ route('engagement.index') }}" class="btn btn-outline-dark btn-sm">
-                <i class="bi bi-file-earmark-pdf me-1"></i> Fiches d'engagement
+                <i class=" ri-file-pdf-line me-1"></i> Fiches d'engagement
             </a>
             <a href="{{ route('paiements.index') }}" class="btn btn-outline-primary btn-sm ms-1">
-                <i class="bi bi-cash-stack me-1"></i> Espace Paiements
+                <i class=" ri-wallet-3-line me-1"></i> Espace Paiements
             </a>
         </div>
     </div>
 
     @if (session()->has('succes'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle-fill me-2"></i>{{ session('succes') }}
+        <i class=" ri-checkbox-circle-fill me-2"></i>{{ session('succes') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
     @if (session()->has('echec'))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('echec') }}
+        <i class=" ri-alert-fill me-2"></i>{{ session('echec') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
@@ -47,17 +47,17 @@ Gestion des Échéances & Prévisions
     <ul class="nav nav-pills nav-fill mb-3 bg-white p-2 rounded shadow-sm" id="previsionTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-bold" id="tab-perso-btn" data-bs-toggle="pill" data-bs-target="#tab-perso" type="button" role="tab">
-                <i class="bi bi-person-gear me-1"></i> 1. Échéancier personnalisé par étudiant
+                <i class=" ri-user-settings-line me-1"></i> 1. Échéancier personnalisé par étudiant
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold" id="tab-classe-btn" data-bs-toggle="pill" data-bs-target="#tab-classe" type="button" role="tab">
-                <i class="bi bi-collection-play me-1"></i> 2. Génération automatique pour toute une classe
+                <i class=" ri-play-list-line me-1"></i> 2. Génération automatique pour toute une classe
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link fw-bold" id="tab-liste-btn" data-bs-toggle="pill" data-bs-target="#tab-liste" type="button" role="tab">
-                <i class="bi bi-table me-1"></i> 3. Consultation des prévisions existantes
+                <i class=" ri-table-line me-1"></i> 3. Consultation des prévisions existantes
             </button>
         </li>
     </ul>
@@ -67,7 +67,7 @@ Gestion des Échéances & Prévisions
         <!-- ═══ ONGLET 1 : ÉCHÉANCIER PERSONNALISÉ PAR ÉTUDIANT ═══ -->
         <div class="tab-pane fade show active" id="tab-perso" role="tabpanel">
             <div class="card p-4 shadow-sm border-0 mb-3">
-                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-search me-2 text-primary"></i>Sélectionner un étudiant</h5>
+                <h5 class="fw-bold text-dark mb-3"><i class=" ri-search-line me-2 text-primary"></i>Sélectionner un étudiant</h5>
                 <div class="row g-3">
                     <div class="col-lg-4 col-md-6 col-sm-12">
                         <label class="form-label fw-semibold" for="anneeAcademiquePerso">Année académique <span class="text-danger">*</span></label>
@@ -129,48 +129,48 @@ Gestion des Échéances & Prévisions
                 <!-- TABLEAU ÉDITABLE DES TRANCHES -->
                 <div class="card p-4 shadow-sm border-0">
                     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                        <h5 class="fw-bold mb-0"><i class="bi bi-list-check me-2 text-primary"></i>Échéancier des tranches</h5>
+                        <h5 class="fw-bold mb-0"><i class=" ri-list-check me-2 text-primary"></i>Échéancier des tranches</h5>
                         <div class="d-flex flex-wrap gap-2">
                             <!-- Menu Découpage Mensuel (Plan Social) -->
                             <div class="btn-group">
                                 <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle fw-semibold" data-bs-toggle="dropdown" aria-expanded="false" id="btnPlanMensuelDropdown">
-                                    <i class="bi bi-calendar-range me-1"></i> Plan mensuel
+                                    <i class=" ri-calendar-line me-1"></i> Plan mensuel
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border p-1" style="min-width: 280px; z-index: 1050;">
                                     <li><h6 class="dropdown-header text-uppercase fw-bold" style="font-size: 0.75rem;">Découpage en mensualités</h6></li>
                                     <li>
                                         <a class="dropdown-item py-2 btn-plan-rapide" href="javascript:void(0)" data-mois="4">
-                                            <i class="bi bi-calendar3 me-2 text-secondary"></i>4 mensualités <span class="text-muted small ms-1">(Octobre à Janvier)</span>
+                                            <i class=" ri-calendar-line me-2 text-secondary"></i>4 mensualités <span class="text-muted small ms-1">(Octobre à Janvier)</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item py-2 btn-plan-rapide" href="javascript:void(0)" data-mois="6">
-                                            <i class="bi bi-calendar3 me-2 text-secondary"></i>6 mensualités <span class="text-muted small ms-1">(Octobre à Mars)</span>
+                                            <i class=" ri-calendar-line me-2 text-secondary"></i>6 mensualités <span class="text-muted small ms-1">(Octobre à Mars)</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item py-2 btn-plan-rapide" href="javascript:void(0)" data-mois="8">
-                                            <i class="bi bi-calendar-check me-2 text-success"></i>8 mensualités <span class="text-muted small ms-1">(Octobre à Mai)</span>
+                                            <i class=" ri-calendar-check-line me-2 text-success"></i>8 mensualités <span class="text-muted small ms-1">(Octobre à Mai)</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item py-2 btn-plan-rapide" href="javascript:void(0)" data-mois="10">
-                                            <i class="bi bi-calendar3 me-2 text-secondary"></i>10 mensualités <span class="text-muted small ms-1">(Octobre à Juillet)</span>
+                                            <i class=" ri-calendar-line me-2 text-secondary"></i>10 mensualités <span class="text-muted small ms-1">(Octobre à Juillet)</span>
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider my-1"></li>
                                     <li>
                                         <a class="dropdown-item py-2" href="javascript:void(0)" id="btnOuvrirModalPlan">
-                                            <i class="bi bi-sliders me-2 text-primary"></i>Personnaliser le plan...
+                                            <i class=" ri-settings-3-line me-2 text-primary"></i>Personnaliser le plan...
                                         </a>
                                     </li>
                                 </ul>
                             </div>
                             <button type="button" class="btn btn-outline-secondary btn-sm" id="btnResetDefaut" title="Rétablir les 3 ou 4 tranches officielles">
-                                <i class="bi bi-arrow-counterclockwise me-1"></i> Barème officiel
+                                <i class=" ri-arrow-go-back-line me-1"></i> Barème officiel
                             </button>
                             <button type="button" class="btn btn-outline-primary btn-sm" id="btnAjouterTranche">
-                                <i class="bi bi-plus-circle me-1"></i> Ajouter une tranche
+                                <i class=" ri-add-circle-line me-1"></i> Ajouter une tranche
                             </button>
                         </div>
                     </div>
@@ -199,12 +199,12 @@ Gestion des Échéances & Prévisions
                     </div>
 
                     <div class="alert alert-info py-2 small mb-3">
-                        <i class="bi bi-info-circle me-1"></i> Vous pouvez modifier librement les dates et montants selon l'accord conclu avec l'étudiant ou son tuteur. Les versements déjà enregistrés viendront automatiquement solder les premières tranches.
+                        <i class=" ri-information-line me-1"></i> Vous pouvez modifier librement les dates et montants selon l'accord conclu avec l'étudiant ou son tuteur. Les versements déjà enregistrés viendront automatiquement solder les premières tranches.
                     </div>
 
                     <div class="text-end">
                         <button type="button" class="btn btn-success btn-lg px-4" id="btnEnregistrerEcheancier">
-                            <i class="bi bi-check-lg me-1"></i> Enregistrer cet échéancier
+                            <i class=" ri-check-line me-1"></i> Enregistrer cet échéancier
                         </button>
                     </div>
                 </div>
@@ -216,7 +216,7 @@ Gestion des Échéances & Prévisions
             <div class="card p-4 shadow-sm border-0 border-top border-primary border-3">
                 <div class="d-flex align-items-center mb-3">
                     <div class="bg-primary-subtle text-primary p-3 rounded me-3">
-                        <i class="bi bi-magic fs-2"></i>
+                        <i class=" ri-magic-line fs-2"></i>
                     </div>
                     <div>
                         <h4 class="fw-bold mb-0">Générer les tranches en 1 clic pour toute une classe</h4>
@@ -227,7 +227,7 @@ Gestion des Échéances & Prévisions
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded border h-100">
-                            <h6 class="fw-bold text-navy mb-2"><i class="bi bi-calendar3 me-2"></i>1ère et 3ème année (3 tranches en parts égales)</h6>
+                            <h6 class="fw-bold text-navy mb-2"><i class=" ri-calendar-line me-2"></i>1ère et 3ème année (3 tranches en parts égales)</h6>
                             <ul class="small text-muted mb-0 ps-3">
                                 <li><b>1ère Tranche (33.3%)</b> : Échéance au <b>30 Septembre</b></li>
                                 <li><b>2ème Tranche (33.3%)</b> : Échéance au <b>30 Novembre</b></li>
@@ -237,7 +237,7 @@ Gestion des Échéances & Prévisions
                     </div>
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded border h-100">
-                            <h6 class="fw-bold text-navy mb-2"><i class="bi bi-calendar4 me-2"></i>2ème année (4 tranches en parts égales)</h6>
+                            <h6 class="fw-bold text-navy mb-2"><i class=" ri-calendar-line me-2"></i>2ème année (4 tranches en parts égales)</h6>
                             <ul class="small text-muted mb-0 ps-3">
                                 <li><b>1ère Tranche (25%)</b> : Échéance au <b>30 Septembre</b></li>
                                 <li><b>2ème Tranche (25%)</b> : Échéance au <b>30 Novembre</b></li>
@@ -283,7 +283,7 @@ Gestion des Échéances & Prévisions
 
                     <div class="mt-4 text-end">
                         <button type="button" class="btn btn-primary btn-lg" id="btnLancerGeneration">
-                            <i class="bi bi-play-circle-fill me-1"></i> Lancer la génération automatique
+                            <i class=" ri-play-circle-fill me-1"></i> Lancer la génération automatique
                         </button>
                     </div>
                 </form>
@@ -313,14 +313,14 @@ Gestion des Échéances & Prévisions
                         </select>
                     </div>
                     <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-funnel me-1"></i> Filtrer</button>
+                        <button type="submit" class="btn btn-primary btn-sm w-100"><i class=" ri-filter-line me-1"></i> Filtrer</button>
                     </div>
                 </form>
             </div>
 
             <div class="card p-4 shadow-sm border-0">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0"><i class="bi bi-table me-2 text-secondary"></i>Liste des tranches enregistrées en base</h5>
+                    <h5 class="fw-bold mb-0"><i class=" ri-table-line me-2 text-secondary"></i>Liste des tranches enregistrées en base</h5>
                     <span class="badge bg-secondary">{{ $previsions->total() }} tranche(s)</span>
                 </div>
 
@@ -349,9 +349,9 @@ Gestion des Échéances & Prévisions
                                 <td>{{ number_format($p->reste_a_payer, 0, ',', ' ') }} F</td>
                                 <td>
                                     @if ($p->paye)
-                                    <span class="badge bg-success"><i class="bi bi-check-lg"></i> Réglé</span>
+                                    <span class="badge bg-success"><i class=" ri-check-line"></i> Réglé</span>
                                     @else
-                                    <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> À solder</span>
+                                    <span class="badge bg-warning text-dark"><i class=" ri-time-line"></i> À solder</span>
                                     @endif
                                 </td>
                                 <td>
@@ -360,7 +360,7 @@ Gestion des Échéances & Prévisions
                                         @method('DELETE')
                                         <button type="button" class="btn btn-outline-danger btn-sm rounded-3 px-2" title="Supprimer cette tranche"
                                             onclick="confirmDelete(document.getElementById('form-del-prev-{{ $p->id }}'), 'la tranche du <strong>{{ \Carbon\Carbon::parse($p->echeance)->format('d/m/Y') }}</strong>')">
-                                            <i class="bi bi-trash"></i>
+                                            <i class=" ri-delete-bin-line"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -368,7 +368,7 @@ Gestion des Échéances & Prévisions
                             @empty
                             <tr>
                                 <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="bi bi-inbox fs-3 d-block mb-1"></i> Aucune prévision trouvée pour ces filtres.
+                                    <i class=" ri-inbox-line fs-3 d-block mb-1"></i> Aucune prévision trouvée pour ces filtres.
                                 </td>
                             </tr>
                             @endforelse
@@ -391,13 +391,13 @@ Gestion des Échéances & Prévisions
         <div class="modal-content border-0 shadow" style="border-radius: 0.75rem;">
             <div class="modal-header bg-dark text-white py-3 px-4">
                 <h5 class="modal-title fw-semibold" id="modalPlanMensuelLabel">
-                    <i class="bi bi-calendar3 me-2"></i>Configuration du plan mensuel
+                    <i class=" ri-calendar-line me-2"></i>Configuration du plan mensuel
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
                 <div class="alert alert-light border d-flex align-items-center py-2 px-3 mb-3">
-                    <i class="bi bi-info-circle text-primary fs-5 me-2"></i>
+                    <i class=" ri-information-line text-primary fs-5 me-2"></i>
                     <div class="small text-muted">
                         Répartition de la scolarité de <strong id="modalScolariteAffichee" class="text-dark">0 F CFA</strong> en mensualités régulières.
                     </div>
@@ -454,7 +454,7 @@ Gestion des Échéances & Prévisions
             <div class="modal-footer border-0 px-4 pb-4 pt-0 justify-content-end gap-2">
                 <button type="button" class="btn btn-light rounded-3 px-3" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-success rounded-3 px-4 fw-bold" id="btnAppliquerPlanMensuel">
-                    <i class="bi bi-check2-circle me-1"></i> Appliquer à l'échéancier
+                    <i class=" ri-checkbox-circle-line me-1"></i> Appliquer à l'échéancier
                 </button>
             </div>
         </div>
@@ -581,9 +581,9 @@ $(document).ready(function() {
         $('#infoReste').text(formatNombre(data.reste_total) + ' F');
 
         if (data.existe_en_base) {
-            $('#badgeStatutPrevision').html('<span class="badge bg-success-subtle text-success border border-success"><i class="bi bi-check-circle me-1"></i>Échéancier déjà configuré en base</span>');
+            $('#badgeStatutPrevision').html('<span class="badge bg-success-subtle text-success border border-success"><i class=" ri-checkbox-circle-line me-1"></i>Échéancier déjà configuré en base</span>');
         } else {
-            $('#badgeStatutPrevision').html('<span class="badge bg-warning-subtle text-warning-emphasis border border-warning"><i class="bi bi-clock me-1"></i>Tranches suggérées par défaut (non encore enregistrées)</span>');
+            $('#badgeStatutPrevision').html('<span class="badge bg-warning-subtle text-warning-emphasis border border-warning"><i class=" ri-time-line me-1"></i>Tranches suggérées par défaut (non encore enregistrées)</span>');
         }
     }
 
@@ -598,7 +598,7 @@ $(document).ready(function() {
             html += '<td class="text-center fw-bold text-navy"><span class="badge bg-dark">T' + (idx + 1) + '</span><br><small class="text-muted">' + label + '</small></td>';
             html += '<td><input type="date" class="form-control form-control-sm tranche-date" value="' + dateVal + '" required></td>';
             html += '<td><div class="input-group input-group-sm"><input type="number" class="form-control tranche-montant" value="' + montantVal + '" min="0" step="1000" required><span class="input-group-text">F CFA</span></div></td>';
-            html += '<td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm btn-suppr-tranche" title="Supprimer cette tranche"><i class="bi bi-trash"></i></button></td>';
+            html += '<td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm btn-suppr-tranche" title="Supprimer cette tranche"><i class=" ri-delete-bin-line"></i></button></td>';
             html += '</tr>';
         });
 
@@ -620,11 +620,11 @@ $(document).ready(function() {
             let diff = cible - total;
 
             if (diff === 0) {
-                $('#indicateurEquilibre').html('<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Équilibré (100% de la scolarité)</span>');
+                $('#indicateurEquilibre').html('<span class="badge bg-success"><i class=" ri-checkbox-circle-line me-1"></i>Équilibré (100% de la scolarité)</span>');
             } else if (diff > 0) {
-                $('#indicateurEquilibre').html('<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle me-1"></i>Manque ' + formatNombre(diff) + ' F CFA</span>');
+                $('#indicateurEquilibre').html('<span class="badge bg-warning text-dark"><i class=" ri-alert-line me-1"></i>Manque ' + formatNombre(diff) + ' F CFA</span>');
             } else {
-                $('#indicateurEquilibre').html('<span class="badge bg-danger"><i class="bi bi-exclamation-circle me-1"></i>Dépassement de ' + formatNombre(Math.abs(diff)) + ' F CFA</span>');
+                $('#indicateurEquilibre').html('<span class="badge bg-danger"><i class=" ri-error-warning-line me-1"></i>Dépassement de ' + formatNombre(Math.abs(diff)) + ' F CFA</span>');
             }
         }
     }
@@ -653,7 +653,7 @@ $(document).ready(function() {
         html += '<td class="text-center fw-bold text-navy"><span class="badge bg-dark">T' + (count + 1) + '</span><br><small class="text-muted">Tranche ' + (count + 1) + '</small></td>';
         html += '<td><input type="date" class="form-control form-control-sm tranche-date" value="' + today + '" required></td>';
         html += '<td><div class="input-group input-group-sm"><input type="number" class="form-control tranche-montant" value="0" min="0" step="1000" required><span class="input-group-text">F CFA</span></div></td>';
-        html += '<td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm btn-suppr-tranche" title="Supprimer cette tranche"><i class="bi bi-trash"></i></button></td>';
+        html += '<td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm btn-suppr-tranche" title="Supprimer cette tranche"><i class=" ri-delete-bin-line"></i></button></td>';
         html += '</tr>';
         $('#tranchesTbody').append(html);
         recalculerTotaux();
@@ -692,11 +692,11 @@ $(document).ready(function() {
         confirmAction({
             title: 'Réinitialiser l\'échéancier',
             message: 'Voulez-vous réinitialiser les tranches de cet étudiant selon le <strong>barème officiel</strong> ?',
-            icon: 'bi-arrow-counterclockwise',
+            icon: 'ri-arrow-go-back-line',
             gradient: 'linear-gradient(135deg,#f57c00,#ffb74d)',
             confirmText: 'Réinitialiser',
             confirmClass: 'btn-warning text-dark',
-            confirmIcon: 'bi-arrow-counterclockwise',
+            confirmIcon: 'ri-arrow-go-back-line',
             onConfirm: function() {
                 appliquerTranchesDefaut();
             }
@@ -779,11 +779,11 @@ $(document).ready(function() {
         confirmAction({
             title: `Plan sur ${nbMois} mensualités`,
             message: `Répartir la scolarité de <strong>${formatNombre(total)} F CFA</strong> en <strong>${nbMois} mensualités</strong> d'environ <strong>${formatNombre(est)} F CFA / mois</strong> ?`,
-            icon: 'bi-calendar3',
+            icon: 'ri-calendar-line',
             gradient: 'linear-gradient(135deg,#1e293b,#334155)',
             confirmText: 'Appliquer ce plan',
             confirmClass: 'btn-dark',
-            confirmIcon: 'bi-check-lg',
+            confirmIcon: 'ri-check-line',
             onConfirm: function() {
                 construirePlanMensuel(nbMois, 10, 'fin');
             }
@@ -799,7 +799,7 @@ $(document).ready(function() {
         }
         $('#modalScolariteAffichee').text(formatNombre(currentEtudiantData.frais_total) + ' F CFA');
         actualiserSimulationModal();
-        new bootstrap.Modal(document.getElementById('modalPlanMensuelConfig')).show();
+        EduUI.Modal.getOrCreateInstance(document.getElementById('modalPlanMensuelConfig')).show();
     });
 
     function actualiserSimulationModal() {
@@ -828,7 +828,7 @@ $(document).ready(function() {
         construirePlanMensuel(nbMois, startMonth, jour);
 
         let modalEl = document.getElementById('modalPlanMensuelConfig');
-        let modalInst = bootstrap.Modal.getInstance(modalEl);
+        let modalInst = EduUI.Modal.getInstance(modalEl);
         if (modalInst) modalInst.hide();
     });
 
@@ -848,29 +848,29 @@ $(document).ready(function() {
                 tranches: tranches
             },
             success: function(resp) {
-                btn.removeAttr('disabled').html('<i class="bi bi-check-lg me-1"></i> Enregistrer cet échéancier');
+                btn.removeAttr('disabled').html('<i class=" ri-check-line me-1"></i> Enregistrer cet échéancier');
                 confirmAction({
                     title: 'Succès !',
                     message: resp.message || 'L\'échéancier a été enregistré avec succès.',
-                    icon: 'bi-check-circle-fill',
+                    icon: 'ri-checkbox-circle-fill',
                     gradient: 'linear-gradient(135deg,#2e7d32,#66bb6a)',
                     confirmText: 'Parfait',
                     confirmClass: 'btn-success',
-                    confirmIcon: 'bi-check',
+                    confirmIcon: 'ri-check-line',
                     onConfirm: function() {}
                 });
-                $('#badgeStatutPrevision').html('<span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Échéancier enregistré en base</span>');
+                $('#badgeStatutPrevision').html('<span class="badge bg-success"><i class=" ri-checkbox-circle-line me-1"></i>Échéancier enregistré en base</span>');
             },
             error: function(err) {
-                btn.removeAttr('disabled').html('<i class="bi bi-check-lg me-1"></i> Enregistrer cet échéancier');
+                btn.removeAttr('disabled').html('<i class=" ri-check-line me-1"></i> Enregistrer cet échéancier');
                 confirmAction({
                     title: 'Erreur',
                     message: (err.responseJSON ? err.responseJSON.message : 'Erreur lors de l\'enregistrement.'),
-                    icon: 'bi-exclamation-octagon-fill',
+                    icon: 'ri-alert-fill',
                     gradient: 'linear-gradient(135deg,#c62828,#ef5350)',
                     confirmText: 'Fermer',
                     confirmClass: 'btn-danger',
-                    confirmIcon: 'bi-x-lg',
+                    confirmIcon: 'ri-close-line',
                     onConfirm: function() {}
                 });
             }
@@ -909,11 +909,11 @@ $(document).ready(function() {
             confirmAction({
                 title: 'Écart sur la scolarité',
                 message: 'Le total des tranches (<strong>' + formatNombre(totalSaisi) + ' F</strong>) ne correspond pas à la scolarité totale de l\'étudiant (<strong>' + formatNombre(currentEtudiantData.frais_total) + ' F</strong>).<br><br>Souhaitez-vous tout de même enregistrer cet échéancier spécifique ?',
-                icon: 'bi-exclamation-triangle-fill',
+                icon: 'ri-alert-fill',
                 gradient: 'linear-gradient(135deg,#f57c00,#ff9800)',
                 confirmText: 'Enregistrer quand même',
                 confirmClass: 'btn-warning text-dark',
-                confirmIcon: 'bi-check-circle',
+                confirmIcon: 'ri-checkbox-circle-line',
                 onConfirm: function() {
                     envoyerEcheancier(tranches);
                 }
@@ -940,16 +940,16 @@ $(document).ready(function() {
 
         const filiereTexte = $('#anneeEtudeClasse option:selected').text();
         const ecraser = $('#checkEcraser').is(':checked');
-        const ecraserTexte = ecraser ? '<br><span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle me-1"></i>Attention : les échéanciers personnalisés existants seront écrasés !</span>' : '';
+        const ecraserTexte = ecraser ? '<br><span class="text-danger fw-bold"><i class=" ri-alert-line me-1"></i>Attention : les échéanciers personnalisés existants seront écrasés !</span>' : '';
 
         confirmAction({
             title: 'Génération automatique des tranches',
             message: 'Voulez-vous générer les tranches d\'échéance officielles pour <strong>' + filiereTexte + '</strong> ?' + ecraserTexte,
-            icon: 'bi-calendar-check-fill',
+            icon: 'ri-calendar-check-line',
             gradient: 'linear-gradient(135deg,#1a73e8,#4285f4)',
             confirmText: 'Lancer la génération',
             confirmClass: 'btn-primary',
-            confirmIcon: 'bi-play-circle-fill',
+            confirmIcon: 'ri-play-circle-fill',
             onConfirm: function() {
                 document.getElementById('formGenererClasse').submit();
             }

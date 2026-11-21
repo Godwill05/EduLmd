@@ -103,7 +103,7 @@ Gestion des notes
                             <td>
                                 {{-- <form action="/test?id_eval={{$evaluation->numeroEval}}&id_annee={{$evaluation->an}}&id_an_etude={{$evaluation->Code_Annee_Etude}}">
                                     @csrf --}}
-                                    <a target="_blank" title="Insérer notes" href="?id_eval={{$evaluation->numeroEval}}&id_annee={{$evaluation->an}}&id_an_etude={{$evaluation->Code_Annee_Etude}}#modalNote" target="_blank" class="btn"><i class="bi bi-list"></i></a>
+                                    <a target="_blank" title="Insérer notes" href="?id_eval={{$evaluation->numeroEval}}&id_annee={{$evaluation->an}}&id_an_etude={{$evaluation->Code_Annee_Etude}}#modalNote" target="_blank" class="btn"><i class=" ri-menu-line"></i></a>
                                 {{-- </form> --}}
                             </td>
                         </tr>
@@ -150,12 +150,12 @@ Gestion des notes
                                             @if(isset($rcnote[0]->idObtenir))
                                             <td><input id="note{{$rcnote[0]->idObtenir}}" type="number" min="0" step="0.01" max="20" class="form-control form-control-sm" value="{{$rcnote[0]->Note ?? ''}}" name="{{$inscription->MATRICULE}}"></td>
                                             @can('Supprimer les notes')
-                                            <td id="supprimerNote{{$rcnote[0]->idObtenir}}"><i data-reach="{{$rcnote[0]->idObtenir}}" onclick="supprimerNote({{$rcnote[0]->idObtenir}})" class="btn bi bi-trash text-danger" title="Supprimer note"></i></td>
+                                            <td id="supprimerNote{{$rcnote[0]->idObtenir}}"><i data-reach="{{$rcnote[0]->idObtenir}}" onclick="supprimerNote({{$rcnote[0]->idObtenir}})" class="btn ri-delete-bin-line text-danger" title="Supprimer note"></i></td>
                                             @endcan
                                             @else
                                             <td><input type="number" min="0" step="0.01" max="20" class="form-control form-control-sm" value="{{$rcnote[0]->Note ?? ''}}" name="{{$inscription->MATRICULE}}"></td>
                                             @can('Supprimer les notes')
-                                            <td><span class="bi bi-trash btn disabled"></span></td>
+                                            <td><span class=" ri-delete-bin-line btn disabled"></span></td>
                                             @endcan
                                             @endif
                                         </tr>
@@ -290,7 +290,7 @@ Gestion des notes
                 type:'GET',
                 success:function(){
                     $('#note'+note).val('');
-                    $('#supprimerNote'+note).html('<span class="bi bi-trash btn disabled"></span>');
+                    $('#supprimerNote'+note).html('<span class=" ri-delete-bin-line btn disabled"></span>');
                 }
             })
         }

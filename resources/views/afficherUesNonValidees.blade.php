@@ -60,7 +60,7 @@ Affichage des UEs non validées
                     <tr>
                         <td>{{$etudiant->etu->MATRICULE}}</td>
                         <td>{{$etudiant->etu->nomEtu}} {{$etudiant->etu->prenomsEtu}}</td>
-                        <td><button type="button" class="btn btn-outline-dark" title="Voir" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"><i class="bi bi-eye"></i></button></td>
+                        <td><button type="button" class="btn btn-outline-dark" title="Voir" data-bs-toggle="modal" data-bs-target="#modalId{{$loop->iteration}}"><i class=" ri-eye-line"></i></button></td>
 
                         <!-- Modal Body -->
                         <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->

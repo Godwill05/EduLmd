@@ -46,7 +46,7 @@
 
 @if(empty($groupesParDate))
 <div class="alert alert-warning text-center py-4">
-    <i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>
+    <i class=" ri-alert-line fs-3 d-block mb-2"></i>
     Aucun paiement enregistré sur cette période pour les critères sélectionnés.
 </div>
 @else
@@ -73,7 +73,7 @@
 <div class="card mb-3 border shadow-sm">
     <div class="card-header bg-success bg-opacity-10 d-flex justify-content-between align-items-center py-2">
         <h6 class="mb-0 fw-bold text-success">
-            <i class="bi bi-calendar-date me-2"></i>
+            <i class=" ri-calendar-2-line me-2"></i>
             {{ $dateAffichee }}
         </h6>
         <span class="badge bg-success fs-6">
@@ -111,7 +111,7 @@
                     <td>
                         @if($p['reste_apres'] !== null)
                             @if($p['reste_apres'] <= 0)
-                                <span class="badge bg-success"><i class="bi bi-check-all me-1"></i>Soldé</span>
+                                <span class="badge bg-success"><i class=" ri-check-double-line me-1"></i>Soldé</span>
                             @else
                                 <span class="text-warning fw-semibold">{{ number_format($p['reste_apres'], 0, ',', ' ') }} F</span>
                             @endif
@@ -137,7 +137,7 @@
 {{-- Récapitulatif global --}}
 <div class="card border-dark shadow-sm mt-4">
     <div class="card-header bg-dark text-white fw-bold py-2">
-        <i class="bi bi-calculator-fill me-2"></i>RÉCAPITULATIF GLOBAL — Total encaissé sur la période
+        <i class=" ri-calculator-fill me-2"></i>RÉCAPITULATIF GLOBAL — Total encaissé sur la période
     </div>
     <div class="card-body p-3">
         <div class="row g-3">

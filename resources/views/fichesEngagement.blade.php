@@ -7,13 +7,13 @@ Fiches d'engagement financier
 <div class="container-fluid">
     @if (session()->has('succes'))
     <div class="alert alert-success alert-dismissible fade show">
-        <i class="bi bi-check-circle me-1"></i> {{ session('succes') }}
+        <i class=" ri-checkbox-circle-line me-1"></i> {{ session('succes') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
     @if (session()->has('echec'))
     <div class="alert alert-danger alert-dismissible fade show">
-        <i class="bi bi-exclamation-octagon me-1"></i> {{ session('echec') }}
+        <i class=" ri-alert-line me-1"></i> {{ session('echec') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
@@ -22,7 +22,7 @@ Fiches d'engagement financier
         <div class="card p-4 shadow-sm border-0 border-top border-primary border-3">
             <div class="d-flex align-items-center mb-3">
                 <div class="bg-primary-subtle text-primary p-2 rounded me-3">
-                    <i class="bi bi-file-earmark-text fs-3"></i>
+                    <i class=" ri-file-text-line fs-3"></i>
                 </div>
                 <div>
                     <h4 class="mb-0 fw-bold">Fiches d'engagement financier &amp; Échéanciers</h4>
@@ -60,10 +60,10 @@ Fiches d'engagement financier
                         <label class="form-label fw-bold" for="recherche">Recherche rapide</label>
                         <div class="input-group input-group-sm">
                             <input type="text" name="recherche" id="recherche" class="form-control" placeholder="Nom, prénom ou matricule..." value="{{ $search }}">
-                            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+                            <button type="submit" class="btn btn-primary"><i class=" ri-search-line"></i></button>
                             @if ($search || $selectedFiliere)
                             <a href="{{ route('engagement.index', ['anneeAcademique' => $selectedAnnee]) }}" class="btn btn-outline-secondary" title="Réinitialiser filtres">
-                                <i class="bi bi-x-lg"></i>
+                                <i class=" ri-close-line"></i>
                             </a>
                             @endif
                         </div>
@@ -76,7 +76,7 @@ Fiches d'engagement financier
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 p-3 bg-light rounded border">
                 <div>
                     <span class="badge bg-primary fs-7 me-1">
-                        <i class="bi bi-people me-1"></i>{{ $inscriptions->count() }} étudiant(s) affiché(s)
+                        <i class=" ri-team-line me-1"></i>{{ $inscriptions->count() }} étudiant(s) affiché(s)
                     </span>
                     @if ($selectedFiliere)
                     <span class="badge bg-secondary fs-7 me-1">
@@ -87,7 +87,7 @@ Fiches d'engagement financier
                         (Total année : <b>{{ $totalAnnee }}</b> inscrits)
                     </span>
                     <div class="text-muted small mt-1">
-                        <i class="bi bi-info-circle text-primary me-1"></i> Les boutons d'impression génèrent la <b>totalité</b> des étudiants en base (indépendamment de la pagination de 25 par page du tableau).
+                        <i class=" ri-information-line text-primary me-1"></i> Les boutons d'impression génèrent la <b>totalité</b> des étudiants en base (indépendamment de la pagination de 25 par page du tableau).
                     </div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
@@ -99,7 +99,7 @@ Fiches d'engagement financier
                         <input type="hidden" name="anneeEtude" value="{{ $selectedFiliere }}">
                         <input type="hidden" name="mode_impression" value="tous">
                         <button type="submit" class="btn btn-sm btn-dark" title="Imprime l'intégralité des fiches de cette classe sans limite de pagination">
-                            <i class="bi bi-printer-fill me-1"></i> Imprimer TOUTE la classe ({{ $inscriptions->count() }} fiches)
+                            <i class=" ri-printer-fill me-1"></i> Imprimer TOUTE la classe ({{ $inscriptions->count() }} fiches)
                         </button>
                     </form>
                     @endif
@@ -111,7 +111,7 @@ Fiches d'engagement financier
                         <input type="hidden" name="anneeEtude" value="">
                         <input type="hidden" name="mode_impression" value="tous">
                         <button type="submit" class="btn btn-sm btn-primary" title="Imprime toutes les fiches d'engagement de tous les étudiants de l'année académique">
-                            <i class="bi bi-collection-fill me-1"></i> Imprimer TOUTE l'année ({{ $totalAnnee }} fiches)
+                            <i class=" ri-stack-fill me-1"></i> Imprimer TOUTE l'année ({{ $totalAnnee }} fiches)
                         </button>
                     </form>
                 </div>
@@ -151,7 +151,7 @@ Fiches d'engagement financier
                             <td>
                                 @if ($nbPrevs > 0)
                                     <span class="badge bg-info-subtle text-info border border-info">
-                                        <i class="bi bi-calendar-check me-1"></i>{{ $nbPrevs }} tranche(s)
+                                        <i class=" ri-calendar-check-line me-1"></i>{{ $nbPrevs }} tranche(s)
                                     </span>
                                 @else
                                     <span class="badge bg-secondary-subtle text-muted border">
@@ -168,7 +168,7 @@ Fiches d'engagement financier
                                    target="_blank"
                                    class="btn btn-sm btn-outline-primary"
                                    title="Imprimer la fiche d'engagement en 2 volets">
-                                    <i class="bi bi-printer me-1"></i> Imprimer
+                                    <i class=" ri-printer-line me-1"></i> Imprimer
                                 </a>
                             </td>
                         </tr>
@@ -178,7 +178,7 @@ Fiches d'engagement financier
             </div>
             @else
             <div class="alert alert-info text-center py-4 my-3">
-                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                <i class=" ri-inbox-line fs-2 d-block mb-2"></i>
                 Aucun étudiant trouvé pour l'année <strong>{{ $annees->where('id_Annee_Acad', $selectedAnnee)->first()?->ANNEE_ACAD }}</strong>.
             </div>
             @endif

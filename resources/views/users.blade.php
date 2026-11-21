@@ -86,11 +86,11 @@ Utilisateurs
                                     <form action="{{ route('utilisateurs.destroy', $user->id) }}" method="post">
                                         @csrf
                                         @method('DELETE')
-                                        <a href="{{ route('utilisateurs.permissions',$user->id) }}" title="Gérer les rôles" class="btn" type="button"><i class="bi bi-sliders2 text-black"></i></a>
+                                        <a href="{{ route('utilisateurs.permissions',$user->id) }}" title="Gérer les rôles" class="btn" type="button"><i class=" ri-equalizer-line text-black"></i></a>
 
-                                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}" title="Modifier l'utilisateur"><i class="bi bi-pencil text-secondary"></i></button>
+                                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exampleModal{{$loop->iteration}}" title="Modifier l'utilisateur"><i class=" ri-pencil-line text-secondary"></i></button>
 
-                                        <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$user->login}}?')" class="btn" title="Supprimer l'utilisateur"><i class="bi bi-trash text-danger"></i></button>
+                                        <button type="submit" onclick="return confirm('Etes vous sûr de vouloir supprimer {{$user->login}}?')" class="btn" title="Supprimer l'utilisateur"><i class=" ri-delete-bin-line text-danger"></i></button>
                                     </form>
                                 </td>
                             </tr>

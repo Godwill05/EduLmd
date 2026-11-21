@@ -8,13 +8,13 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
 <div class="container-fluid">
     @if (session()->has('succes'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-1"></i> {{ session('succes') }}
+        <i class=" ri-checkbox-circle-line me-1"></i> {{ session('succes') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
     @if (session()->has('echec'))
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-octagon me-1"></i> {{ session('echec') }}
+        <i class=" ri-alert-line me-1"></i> {{ session('echec') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     @endif
@@ -23,7 +23,7 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
         <div class="card p-4 shadow-sm border-0 border-top border-primary border-3">
             <div class="d-flex align-items-center mb-3">
                 <div class="bg-primary-subtle text-primary p-3 rounded-3 me-3">
-                    <i class="bi bi-mortarboard-fill fs-2"></i>
+                    <i class=" ri-graduation-cap-fill fs-2"></i>
                 </div>
                 <div>
                     <h4 class="mb-1 fw-bold text-dark">Attestations de Diplôme &amp; Certificats d'Authenticité</h4>
@@ -63,7 +63,7 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
 
                         <div class="col-lg-2 col-md-12 col-sm-12">
                             <button type="submit" class="btn btn-primary btn-sm w-100 fw-semibold">
-                                <i class="bi bi-arrow-repeat me-1"></i> Charger la classe
+                                <i class=" ri-loop-right-line me-1"></i> Charger la classe
                             </button>
                         </div>
                     </div>
@@ -80,10 +80,10 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
                 <div class="card border mb-4">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
                         <span class="fw-bold text-dark small text-uppercase">
-                            <i class="bi bi-sliders me-2 text-primary"></i>Paramètres réglementaires et mentions officielles
+                            <i class=" ri-settings-3-line me-2 text-primary"></i>Paramètres réglementaires et mentions officielles
                         </span>
                         <button class="btn btn-sm btn-link text-decoration-none p-0 text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#collapseParams" aria-expanded="true">
-                            <i class="bi bi-chevron-down"></i>
+                            <i class=" ri-arrow-down-s-line"></i>
                         </button>
                     </div>
                     <div class="collapse show" id="collapseParams">
@@ -187,7 +187,7 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
                 <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 p-3 bg-light rounded-3 border">
                     <div>
                         <span class="badge bg-primary fs-7 me-2">
-                            <i class="bi bi-people me-1"></i> {{ $inscriptions->count() }} étudiant(s) inscrit(s)
+                            <i class=" ri-team-line me-1"></i> {{ $inscriptions->count() }} étudiant(s) inscrit(s)
                         </span>
                         <span class="text-muted small">
                             Classe : <b>{{ $filieresL3->where('Code_Annee_Etude', $selectedFiliere)->first()?->Libelle_AnEtude ?? $selectedFiliere }}</b> ({{ $anneeLibelle }})
@@ -197,13 +197,13 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
                     @if ($inscriptions->isNotEmpty())
                     <div class="d-flex gap-2 flex-wrap">
                         <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" id="btnImprimerToutesAttestations">
-                            <i class="bi bi-file-earmark-pdf me-1"></i> Imprimer TOUTES les Attestations
+                            <i class=" ri-file-pdf-line me-1"></i> Imprimer TOUTES les Attestations
                         </button>
                         <button type="button" class="btn btn-sm btn-outline-primary fw-semibold" id="btnImprimerTousCertificats">
-                            <i class="bi bi-patch-check me-1"></i> Imprimer TOUS les Certificats
+                            <i class=" ri-verified-badge-line me-1"></i> Imprimer TOUS les Certificats
                         </button>
                         <button type="button" class="btn btn-sm btn-success fw-bold" id="btnImprimerPackClasse">
-                            <i class="bi bi-collection-fill me-1"></i> Imprimer Pack Complet (Classe entière)
+                            <i class=" ri-stack-fill me-1"></i> Imprimer Pack Complet (Classe entière)
                         </button>
                     </div>
                     @endif
@@ -266,19 +266,19 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
                                             data-action="attestation"
                                             data-matricule="{{ $ins->MATRICULE }}"
                                             title="Imprimer Attestation de diplôme">
-                                            <i class="bi bi-file-earmark-pdf"></i>
+                                            <i class=" ri-file-pdf-line"></i>
                                         </button>
                                         <button type="button" class="btn btn-outline-primary btn-print-single"
                                             data-action="certificat"
                                             data-matricule="{{ $ins->MATRICULE }}"
                                             title="Imprimer Certificat d'authenticité">
-                                            <i class="bi bi-patch-check"></i>
+                                            <i class=" ri-verified-badge-line"></i>
                                         </button>
                                         <button type="button" class="btn btn-outline-success btn-print-single"
                                             data-action="pack"
                                             data-matricule="{{ $ins->MATRICULE }}"
                                             title="Imprimer Pack (Les 2 documents)">
-                                            <i class="bi bi-collection"></i>
+                                            <i class=" ri-stack-line"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -289,7 +289,7 @@ Attestations de Diplôme &amp; Certificats d'Authenticité
                 </div>
                 @else
                 <div class="alert alert-info text-center py-5 my-3">
-                    <i class="bi bi-inbox fs-1 d-block mb-2 text-primary"></i>
+                    <i class=" ri-inbox-line fs-1 d-block mb-2 text-primary"></i>
                     <h5>Aucun étudiant trouvé dans cette classe pour l'année sélectionnée</h5>
                     <p class="text-muted small mb-0">Veuillez sélectionner une autre filière ou vérifier les inscriptions de cette année académique.</p>
                 </div>

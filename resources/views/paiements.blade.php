@@ -26,17 +26,17 @@ Paiements
     <ul class="nav nav-tabs nav-tabs-bordered mb-4" id="paiementsTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active fw-semibold" id="tab-liste-btn" data-bs-toggle="tab" data-bs-target="#tab-liste" type="button" role="tab" aria-controls="tab-liste" aria-selected="true">
-                <i class="bi bi-list-check me-1"></i> Liste des paiements
+                <i class=" ri-list-check me-1"></i> Liste des paiements
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link text-primary fw-bold" id="tab-situation-btn" data-bs-toggle="tab" data-bs-target="#tab-situation" type="button" role="tab" aria-controls="tab-situation" aria-selected="false">
-                <i class="bi bi-calendar-check me-1"></i> Situation des paiements à une échéance (En règle / En retard)
+                <i class=" ri-calendar-check-line me-1"></i> Situation des paiements à une échéance (En règle / En retard)
             </button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link text-success fw-bold" id="tab-journal-btn" data-bs-toggle="tab" data-bs-target="#tab-journal" type="button" role="tab" aria-controls="tab-journal" aria-selected="false">
-                <i class="bi bi-journal-check me-1"></i> Journal d'encaissement
+                <i class=" ri-book-read-line me-1"></i> Journal d'encaissement
             </button>
         </li>
     </ul>
@@ -48,7 +48,7 @@ Paiements
                 <div class="card p-4 shadow-sm border-0 border-top border-secondary border-3">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-secondary-subtle text-secondary p-2 rounded me-3">
-                            <i class="bi bi-receipt fs-3"></i>
+                            <i class=" ri-receipt-line fs-3"></i>
                         </div>
                         <div>
                             <h4 class="mb-0 fw-bold">Afficher la liste des paiements</h4>
@@ -61,7 +61,7 @@ Paiements
                         <div class="row g-3 align-items-end">
                             <div class="col-lg-3 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold small" for="anneeAcademique">
-                                    <i class="bi bi-calendar-event me-1 text-primary"></i>Année académique <span class="text-danger">*</span>
+                                    <i class=" ri-calendar-event-line me-1 text-primary"></i>Année académique <span class="text-danger">*</span>
                                 </label>
                                 <select name="anneeAcademique" id="anneeAcademique" class="form-select form-select-sm no-tomselect" required>
                                     <option value="">Sélectionner l'année...</option>
@@ -73,7 +73,7 @@ Paiements
 
                             <div class="col-lg-3 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold small" for="anneeEtudePmt">
-                                    <i class="bi bi-mortarboard me-1 text-primary"></i>Filière / Classe
+                                    <i class=" ri-graduation-cap-line me-1 text-primary"></i>Filière / Classe
                                 </label>
                                 <select name="anneeEtude" id="anneeEtudePmt" class="form-select form-select-sm no-tomselect">
                                     <option value="">Toutes les filières</option>
@@ -85,14 +85,14 @@ Paiements
 
                             <div class="col-lg-2 col-md-6 col-sm-6">
                                 <label for="dateDebut" class="form-label fw-bold small">
-                                    <i class="bi bi-calendar3 me-1 text-secondary"></i>Du (facultatif)
+                                    <i class=" ri-calendar-line me-1 text-secondary"></i>Du (facultatif)
                                 </label>
                                 <input type="date" name="dateDebut" id="dateDebut" class="form-control form-control-sm">
                             </div>
 
                             <div class="col-lg-2 col-md-6 col-sm-6">
                                 <label for="dateFin" class="form-label fw-bold small">
-                                    <i class="bi bi-calendar3 me-1 text-secondary"></i>Au (facultatif)
+                                    <i class=" ri-calendar-line me-1 text-secondary"></i>Au (facultatif)
                                 </label>
                                 <input type="date" name="dateFin" id="dateFin" class="form-control form-control-sm">
                             </div>
@@ -100,16 +100,16 @@ Paiements
                             <div class="col-lg-2 col-md-12 col-sm-12">
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-outline-primary btn-sm flex-fill" id="afficher" type="button">
-                                        <i class="bi bi-eye me-1"></i>Afficher
+                                        <i class=" ri-eye-line me-1"></i>Afficher
                                     </button>
                                     <button type="submit" class="btn btn-primary btn-sm flex-fill">
-                                        <i class="bi bi-printer me-1"></i>Imprimer
+                                        <i class=" ri-printer-line me-1"></i>Imprimer
                                     </button>
                                 </div>
                             </div>
                         </div>
                         <div class="mt-2 text-muted small">
-                            <i class="bi bi-info-circle me-1"></i>Laissez les dates vides pour consulter ou imprimer l'ensemble des paiements de l'année.
+                            <i class=" ri-information-line me-1"></i>Laissez les dates vides pour consulter ou imprimer l'ensemble des paiements de l'année.
                         </div>
                         <input type="hidden" name="btn" value="Imprimer">
                     </form>
@@ -126,7 +126,7 @@ Paiements
                 <div class="card p-4 shadow-sm border-0 border-top border-primary border-3">
                     <div class="d-flex align-items-center mb-2">
                         <div class="bg-primary-subtle text-primary p-2 rounded me-3">
-                            <i class="bi bi-calendar-check fs-3"></i>
+                            <i class=" ri-calendar-check-line fs-3"></i>
                         </div>
                         <div>
                             <h4 class="mb-0 fw-bold">Situation des paiements à une échéance</h4>
@@ -185,10 +185,10 @@ Paiements
                         <input type="hidden" name="btn" value="Imprimer">
                         <div class="mt-4 text-end">
                             <button type="button" class="btn btn-outline-primary" id="btnAfficherSituation">
-                                <i class="bi bi-eye me-1"></i> Afficher la situation
+                                <i class=" ri-eye-line me-1"></i> Afficher la situation
                             </button>
                             <button type="submit" class="btn btn-primary" id="btnImprimerSituation">
-                                <i class="bi bi-printer me-1"></i> Imprimer le document
+                                <i class=" ri-printer-line me-1"></i> Imprimer le document
                             </button>
                         </div>
                     </form>
@@ -205,7 +205,7 @@ Paiements
                 <div class="card p-4 shadow-sm border-0 border-top border-success border-3">
                     <div class="d-flex align-items-center mb-3">
                         <div class="bg-success-subtle text-success p-2 rounded me-3">
-                            <i class="bi bi-journal-check fs-3"></i>
+                            <i class=" ri-book-read-line fs-3"></i>
                         </div>
                         <div>
                             <h4 class="mb-0 fw-bold">Journal d'encaissement</h4>
@@ -247,10 +247,10 @@ Paiements
                             <div class="col-lg-2 col-md-12">
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-outline-success btn-sm flex-fill" id="btnAfficherJournal">
-                                        <i class="bi bi-eye me-1"></i>Afficher
+                                        <i class=" ri-eye-line me-1"></i>Afficher
                                     </button>
                                     <button type="button" class="btn btn-success btn-sm flex-fill" id="btnImprimerJournal">
-                                        <i class="bi bi-printer me-1"></i>Imprimer
+                                        <i class=" ri-printer-line me-1"></i>Imprimer
                                     </button>
                                 </div>
                             </div>
@@ -309,7 +309,7 @@ Paiements
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     err = xhr.responseJSON.message;
                 }
-                $('.displaySituationEcheance').html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + err + '</div>');
+                $('.displaySituationEcheance').html('<div class="alert alert-danger"><i class=" ri-alert-line me-2"></i>' + err + '</div>');
             }
         });
     });
@@ -334,7 +334,7 @@ Paiements
             error: function(xhr) {
                 let err = 'Erreur lors du chargement du journal.';
                 if (xhr.responseJSON && xhr.responseJSON.message) err = xhr.responseJSON.message;
-                $('.displayJournalEncaissement').html('<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>' + err + '</div>');
+                $('.displayJournalEncaissement').html('<div class="alert alert-danger"><i class=" ri-alert-line me-2"></i>' + err + '</div>');
             }
         });
     }
