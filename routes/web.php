@@ -162,7 +162,14 @@ Route::post('/',function(Request $rq){
     return back()->with('errorCredentials' , 'Email ou mot de passe invalide')->onlyInput('email');
 })->name('login.post');
 Route::middleware('auth')->group(function(){
-    Route::view('/about-us', 'about')->name('about-us');
+    /* La page « À propos » porte les constantes système : elle lit la
+       table parametres_systeme et l'enregistre sur place. */
+    Route::get('/about-us', function () {
+        return view('about', ['groupes' => \App\Support\Parametres::groupes()]);
+    })->name('about-us');
+    Route::patch('/about-us', [\App\Http\Controllers\ParametreSystemeController::class, 'update'])
+        ->middleware('can:Modifier les paramètres système')
+        ->name('parametres-systeme.update');
     Route::name('affichage-recap-')->group(function(){
         Route::post('/affichage-recap-ues', '\App\Http\Controllers\UEController@recapitulatif')->name('ues');
         Route::post('/affichage-recap-semestre', '\App\Http\Controllers\SemestresEtudesController@recapitulatif')->name('semestre');
@@ -239,6 +246,22 @@ Route::middleware('auth')->group(function(){
 
     })->name('utilisateurs.permissions_post')->middleware('can:Gérer les utilisateurs');
     Route::resource('/permissions',PermissionController::class)->except(['create','edit'])->middleware('can:Gérer les utilisateurs');
+
+    /* Rôles et hiérarchie. Un rôle n'est modifiable que par un utilisateur
+       de niveau strictement supérieur : la règle est dans le contrôleur
+       (elle dépend de la cible, pas seulement de la permission). */
+    Route::get('/roles', [\App\Http\Controllers\RoleController::class, 'index'])
+        ->middleware('can:Gérer les utilisateurs')->name('roles.index');
+    Route::post('/roles', [\App\Http\Controllers\RoleController::class, 'store'])
+        ->middleware('can:Gérer les utilisateurs')->name('roles.store');
+    Route::get('/roles/{role}/permissions', [\App\Http\Controllers\RoleController::class, 'edit'])
+        ->middleware('can:Gérer les utilisateurs')->name('roles.edit');
+    Route::put('/roles/{role}', [\App\Http\Controllers\RoleController::class, 'update'])
+        ->middleware('can:Gérer les utilisateurs')->name('roles.update');
+    Route::delete('/roles/{role}', [\App\Http\Controllers\RoleController::class, 'destroy'])
+        ->middleware('can:Gérer les utilisateurs')->name('roles.destroy');
+    Route::post('/utilisateurs/{utilisateur}/role', [\App\Http\Controllers\RoleController::class, 'attribuer'])
+        ->middleware('can:Gérer les utilisateurs')->name('utilisateurs.role');
     Route::resource('/semestres-etudes',SemestresEtudesController::class)->except(['create','edit','show']);
     Route::resource('/attribuer-semestres-anneeEtude',SemestresAnneeEtudeController::class)->only(['index','store']);
     Route::resource('/attribuer-ue-semestre',AttribuerUeSemestreController::class)->except(['create','edit','show']);

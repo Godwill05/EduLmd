@@ -45,7 +45,9 @@ class EtudiantController extends Controller
             'items' => $items,
             'recherche' => $recherche,
             'anneesAcademiques' => \App\Models\AnneeAcademique::orderByDesc('id_Annee_Acad')->get(),
-            'nationalites' => \App\Models\Nationalite::orderBy('libNationalite')->get(),
+            /* La colonne s'appelle libelleNationalite : `libNationalite`
+               provoquait un 500 sur /etudiants (SQLSTATE 42S22). */
+            'nationalites' => \App\Models\Nationalite::orderBy('libelleNationalite')->get(),
             'typesEtudiant' => \App\Models\TypeEtudiant::orderBy('libTypeEtu')->get(),
         ]);
     }

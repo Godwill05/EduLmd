@@ -5,6 +5,19 @@ Utilisateurs
 @section('content')
 <section class="section">
     <div class="container-fluid">
+
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <div>
+            <h1 class="ed-page-title mb-0">Utilisateurs</h1>
+            <p class="ed-page-sub mb-0">
+              Chaque compte reçoit un rôle ; le rôle porte les permissions.
+              Vous ne pouvez attribuer qu'un rôle moins élevé que le vôtre.
+            </p>
+          </div>
+          <a href="{{ route('roles.index') }}" class="btn btn-outline-primary ms-auto">
+            <i class="ri-shield-user-line me-1"></i>Gérer les rôles
+          </a>
+        </div>
         @if (session()->has('succes'))
         <div class="row">
             <div class="alert alert-success">
@@ -58,6 +71,18 @@ Utilisateurs
                             <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
                             <input required type="password" name="password" id="password" class="form-control">
                         </div>
+                        <div class="col-lg-4">
+                            <label for="role_id" class="form-label">Rôle</label>
+                            <select name="role_id" id="role_id" class="form-select">
+                                <option value="">— Aucun rôle (aucun accès) —</option>
+                                @foreach ($roles as $role)
+                                    @if (in_array($role->id, $roleAttribuables, true))
+                                        <option value="{{ $role->id }}">{{ $role->name }} (niveau {{ $role->niveau() }})</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            <div class="form-text">Un compte sans rôle ne peut rien consulter.</div>
+                        </div>
                         <div class="col-lg-12 mt-4 text-end">
                             <button class="btn-block btn btn-primary">Enregistrer</button>
                         </div>
@@ -73,6 +98,7 @@ Utilisateurs
                         <th>Nom</th>
                         <th>Prénom(s)</th>
                         <th>Téléphone</th>
+                        <th>Rôle</th>
                         <th>Actions</th>
                     </thead>
                     <tbody>
@@ -136,6 +162,52 @@ Utilisateurs
                                 </div>
                                 </div>
                             </div>
+                            </div>
+
+                            <div class="modal fade" id="roleModal{{$loop->iteration}}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form action="{{ route('utilisateurs.role', $user->id) }}" method="POST">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5">Rôle de {{ $user->fullname() }}</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                @php($niveauCible = \App\Support\Hierarchie::niveau($user))
+                                                @if ($niveauCible <= $monNiveau)
+                                                    <div class="alert alert-warning mb-0">
+                                                        Ce compte est au niveau {{ $niveauCible }}, au moins aussi élevé que le vôtre
+                                                        ({{ $monNiveau }}) : seul un utilisateur de niveau supérieur peut changer son rôle.
+                                                    </div>
+                                                @else
+                                                    <label for="role-{{$user->id}}" class="form-label fw-semibold">Rôle attribué</label>
+                                                    <select name="role_id" id="role-{{$user->id}}" class="form-select">
+                                                        <option value="">— Retirer le rôle —</option>
+                                                        @foreach ($roles as $role)
+                                                            @if (in_array($role->id, $roleAttribuables, true))
+                                                                <option value="{{ $role->id }}"
+                                                                    @selected($user->roles->contains('id', $role->id))>
+                                                                    {{ $role->name }} (niveau {{ $role->niveau() }})
+                                                                </option>
+                                                            @endif
+                                                        @endforeach
+                                                    </select>
+                                                    <div class="form-text mt-2">
+                                                        Le remplacement retire le rôle principal actuel. Les permissions
+                                                        individuelles accordées à ce compte sont conservées.
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                @if ($niveauCible > $monNiveau)
+                                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                @endif
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         @endforeach
                     </tbody>

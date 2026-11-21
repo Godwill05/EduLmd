@@ -17,8 +17,20 @@ class UserController extends Controller
      */
     public function index()
     {
-        Auth::user()->givePermissionTo('Supprimer les notes');
-        return view('users',['utilisateurs'=>User::all()]);
+        /* `Auth::user()->givePermissionTo(...)` accordait silencieusement
+           la permission « Supprimer les notes » à quiconque ouvrait la
+           page : chaque simple visiteuse ou visiteur gagnait un droit.
+           Retiré. */
+        $utilisateurs = User::with('roles')->orderBy('lastname')->orderBy('firstname')->get();
+
+        $acteur = Auth::user();
+
+        return view('users', [
+            'utilisateurs' => $utilisateurs,
+            'roles' => \App\Models\Role::query()->orderBy('order')->orderBy('name')->get(),
+            'monNiveau' => \App\Support\Hierarchie::niveau($acteur),
+            'roleAttribuables' => \App\Support\Hierarchie::rolesAttribuables($acteur)->pluck('id')->all(),
+        ]);
     }
 
     /**
@@ -57,7 +69,16 @@ class UserController extends Controller
         if ($existingLogin) {
             return back()->with('error','Ce nom d\'utilisateur est déjà utilisé');
         }
-        User::create([
+        $role = null;
+        if ($request->filled('role_id')) {
+            $role = \App\Models\Role::find($request->input('role_id'));
+            if (! $role || ! \App\Support\Hierarchie::peutAttribuer(Auth::user(), $role)) {
+                return back()->withInput()->with('echec',
+                    'Vous ne pouvez pas attribuer ce rôle : il est au moins aussi élevé que le vôtre.');
+            }
+        }
+
+        $utilisateur = User::create([
             'login'=>$request->login,
             'firstname'=>$request->firstname,
             'lastname'=>$request->lastname,
@@ -65,7 +86,13 @@ class UserController extends Controller
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
         ]);
-        return to_route('utilisateurs.index')->with('Utilisateur ajouté');
+
+        if ($role) {
+            $utilisateur->assignRole($role);
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        }
+
+        return to_route('utilisateurs.index')->with('succes','Utilisateur ajouté' . ($role ? ' avec le rôle « ' . $role->name . ' »' : '') . ' !');
     }
 
     /**
@@ -99,7 +126,11 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        User::find($id)->update([
+        $cible = User::findOrFail($id);
+        if (! \App\Support\Hierarchie::peutGererCible(Auth::user(), $cible)) {
+            return back()->with('echec', 'Vous ne pouvez pas modifier ce compte.');
+        }
+        $cible->update([
             'login'=>$request->login,
             'lastname'=>$request->lastname,
             'firstname'=>$request->firstname,
@@ -117,7 +148,11 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        User::find($id)->delete();
+        $cible = User::findOrFail($id);
+        if (! \App\Support\Hierarchie::peutGererCible(Auth::user(), $cible)) {
+            return back()->with('echec', 'Vous ne pouvez pas supprimer ce compte.');
+        }
+        $cible->delete();
         return to_route('utilisateurs.index')->with('succes','Utilisateur supprimé avec succès');
     }
 }

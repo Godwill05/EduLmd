@@ -24,7 +24,10 @@ return [
          * `Spatie\Permission\Contracts\Role` contract.
          */
 
-        'role' => Spatie\Permission\Models\Role::class,
+        /* Modèle étendu : ajoute le niveau hiérarchique (colonne `order`)
+           nécessaire pour qu'un rôle ne puisse être distribué que par un
+           utilisateur d'un niveau supérieur. */
+        'role' => App\Models\Role::class,
 
     ],
 

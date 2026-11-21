@@ -166,6 +166,7 @@
           <li><a class="{{ $isActive('salles') }}" href="{{ route('salles.index') }}">Gestion des salles</a></li>
           @can('Gérer les utilisateurs')
           <li><a class="{{ $isActive('utilisateurs') }}" href="{{ route('utilisateurs.index') }}">Gestion des utilisateurs</a></li>
+          <li><a class="{{ $isActive('roles') }}" href="{{ route('roles.index') }}">Rôles et niveaux</a></li>
           <li><a class="{{ $isActive('journal-activite') }}" href="{{ route('journal-activite.index') }}">Journal d'activité</a></li>
           @endcan
         </ul>

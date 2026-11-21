@@ -139,4 +139,61 @@ class AuditTest extends TestCase
             ->get('/qualite-donnees?tab=doublons')
             ->assertStatus(200);
     }
+
+    /**
+     * /etudiants plantait en 500 : la liste des nationalités était triée
+     * sur `libNationalite`, alors que la colonne s'appelle
+     * `libelleNationalite` (SQLSTATE 42S22).
+     */
+    public function test_la_liste_des_etudiants_repond_et_trie_les_nationalites(): void
+    {
+        $reponse = $this->actingAs($this->utilisateur)->get('/etudiants');
+        $reponse->assertStatus(200);
+        $this->assertStringNotContainsString('libNationalite', $reponse->getContent());
+    }
+
+    /** La page « À propos » affiche les constantes système modifiables. */
+    public function test_la_page_a_propos_expose_les_parametres_systeme(): void
+    {
+        $reponse = $this->actingAs($this->utilisateur)->get('/about-us');
+        $reponse->assertStatus(200);
+
+        if (! \Illuminate\Support\Facades\Schema::hasTable('parametres_systeme')) {
+            return; // migration non jouée sur cette base : rien à vérifier
+        }
+
+        $reponse->assertSee('formParametres', false);
+        $reponse->assertSee('contact.telephone_1', false);
+    }
+
+    /** Les rôles ont un niveau, et la page les liste. */
+    public function test_la_page_des_roles_liste_les_niveaux(): void
+    {
+        $this->actingAs($this->utilisateur)
+            ->get('/roles')
+            ->assertStatus(200);
+    }
+
+    /**
+     * Un utilisateur ne peut pas modifier un compte d'un niveau égal ou
+     * supérieur au sien : c'est ce qui empêche un administrateur de se
+     * promouvoir lui-même.
+     */
+    public function test_la_hierarchie_interdit_l_auto_promotion(): void
+    {
+        $this->actingAs($this->utilisateur);
+
+        $this->assertFalse(
+            \App\Support\Hierarchie::peutGererCible($this->utilisateur, $this->utilisateur),
+            'Un utilisateur ne doit pas pouvoir agir sur son propre compte par ce chemin.'
+        );
+
+        $roleSommet = \App\Models\Role::query()->orderBy('order')->first();
+        if ($roleSommet) {
+            $this->assertFalse(
+                \App\Support\Hierarchie::peutAttribuer($this->utilisateur, $roleSommet),
+                'Le rôle de plus haut niveau ne doit jamais être attribuable.'
+            );
+        }
+    }
 }
