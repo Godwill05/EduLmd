@@ -2033,3 +2033,145 @@ body.ed-cmdk-open { overflow: hidden; }
 
 .ed-cmdk-item.is-active .ed-cmdk-title { color: #6B2435; }
 .ed-cmdk-item.is-active .ed-cmdk-type { background: #fff; }
+
+/* ==========================================================================
+   GESTION DES NOTES — liste des évaluations + console de saisie
+   ========================================================================== */
+.ed-page-title { font-size: 1.25rem; font-weight: 800; color: #0B0B0C; letter-spacing: -.01em; }
+.ed-page-sub { font-size: .82rem; color: #8A8D94; }
+
+.ed-chip {
+  display: inline-flex; align-items: center; gap: .3rem;
+  font-size: .66rem; font-weight: 700; letter-spacing: .02em;
+  padding: .16rem .5rem; border-radius: 99px;
+  background: #FBEDF1; color: #822A40;
+}
+.ed-chip-muted { background: #F0F0F3; color: #5C5F66; }
+.ed-chip-erreur { background: #FEF2F2; color: #991B1B; }
+
+/* ---------- Liste des évaluations ---------- */
+.ed-eval-list {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  max-height: 62vh; padding: .45rem;
+  overscroll-behavior: contain;
+}
+
+.ed-eval-item {
+  width: 100%; display: flex; align-items: center; gap: .7rem;
+  padding: .6rem .65rem; margin-bottom: .2rem;
+  background: transparent; border: 1px solid transparent; border-radius: .7rem;
+  text-align: left; cursor: pointer; font-family: inherit;
+  transition: background .13s, border-color .13s;
+}
+.ed-eval-item:hover { background: #FCF5F6; border-color: #F0DCE1; }
+.ed-eval-item.is-open { background: #FBEDF1; border-color: #E9C3CD; }
+
+.ed-eval-date {
+  flex: 0 0 auto; width: 2.9rem; text-align: center;
+  display: flex; flex-direction: column; line-height: 1.15;
+  padding: .25rem 0; border-radius: .45rem; background: #F4F4F6;
+}
+.ed-eval-item.is-open .ed-eval-date { background: #fff; }
+.ed-eval-date strong { font-size: .78rem; color: #0B0B0C; }
+.ed-eval-date span { font-size: .62rem; color: #8A8D94; }
+
+.ed-eval-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: .05rem; }
+.ed-eval-ecue {
+  font-size: .82rem; font-weight: 700; color: #0B0B0C;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ed-eval-meta {
+  font-size: .68rem; color: #8A8D94;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ed-eval-go { flex: 0 0 auto; color: #C0C2C9; font-size: 1.1rem; }
+.ed-eval-item:hover .ed-eval-go,
+.ed-eval-item.is-open .ed-eval-go { color: #822A40; }
+
+.ed-eval-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .5rem; padding: 3rem 1.5rem; text-align: center; color: #8A8D94;
+}
+.ed-eval-empty i { font-size: 1.9rem; color: #C9C9D1; }
+.ed-eval-empty p { margin: 0; font-size: .82rem; }
+
+/* ---------- Console de saisie ---------- */
+.ed-console-body {
+  flex: 1 1 auto; min-height: 0;
+  display: flex; flex-direction: column;
+}
+
+.ed-console-head {
+  display: flex; flex-wrap: wrap; align-items: center; gap: .75rem;
+  padding: .8rem 1rem; border-bottom: 1px solid var(--ed-ligne);
+  background: linear-gradient(180deg, #FCF7F8, #fff);
+}
+.ed-console-ecue { font-size: .9rem; font-weight: 800; color: #0B0B0C; }
+.ed-console-meta { font-size: .7rem; color: #8A8D94; }
+.ed-console-stats {
+  margin-left: auto; display: flex; gap: .9rem;
+  font-size: .68rem; color: #8A8D94;
+}
+.ed-console-stats strong { display: block; font-size: .9rem; color: #822A40; }
+.ed-console-stats span { text-align: center; }
+
+.ed-console-form { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.ed-console-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; max-height: 52vh; }
+
+.ed-notes-table { margin: 0; }
+.ed-notes-table thead th {
+  position: sticky; top: 0; z-index: 1;
+  background: #fff; border-bottom: 1px solid var(--ed-ligne);
+  font-size: .64rem; font-weight: 800; letter-spacing: .05em;
+  text-transform: uppercase; color: #8A8D94;
+  padding: .5rem .6rem;
+}
+.ed-notes-table tbody td { padding: .32rem .6rem; font-size: .8rem; vertical-align: middle; }
+.ed-notes-table tbody tr:hover { background: #FCFCFD; }
+.ed-num { color: #C0C2C9; font-size: .7rem; }
+.ed-mat { font-family: ui-monospace, monospace; font-size: .72rem; color: #5C5F66; }
+.ed-note-cell { width: 7rem; }
+.ed-note-input { text-align: center; font-weight: 700; }
+.ed-note-input.is-invalid { border-color: #DC2626; background: #FEF2F2; }
+.ed-note-etat { text-align: center; }
+.ed-dot-ok { display: inline-block; width: .45rem; height: .45rem; border-radius: 99px; background: #16A34A; }
+.ed-dot-muted { display: inline-block; width: .45rem; height: .45rem; border-radius: 99px; background: #E1E1E7; }
+
+.ed-console-actions {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .7rem 1rem; border-top: 1px solid var(--ed-ligne);
+  background: #FCFCFD;
+}
+.ed-console-actions .btn { margin-left: auto; }
+.ed-console-hint { font-size: .68rem; color: #8A8D94; }
+.ed-console-hint kbd {
+  font-family: inherit; font-size: .62rem; font-weight: 700;
+  border: 1px solid var(--ed-ligne); border-bottom-width: 2px;
+  border-radius: .3rem; padding: .05rem .28rem; background: #fff;
+}
+
+/* ---------- Notifications ---------- */
+.ed-toast {
+  position: fixed; top: 1rem; right: 1rem; z-index: 9999;
+  display: flex; align-items: center; gap: .55rem;
+  max-width: min(24rem, calc(100vw - 2rem));
+  padding: .7rem .9rem; border-radius: .7rem;
+  background: #fff; font-size: .82rem; font-weight: 600;
+  box-shadow: 0 12px 32px rgba(11, 11, 12, .18);
+  border-left: 3px solid #16A34A;
+  animation: edSlideUp .18s cubic-bezier(.22, 1, .36, 1);
+  transition: opacity .4s, transform .4s;
+}
+.ed-toast i { font-size: 1.1rem; color: #16A34A; flex: 0 0 auto; }
+.ed-toast-erreur { border-left-color: #DC2626; }
+.ed-toast-erreur i { color: #DC2626; }
+.ed-toast.is-out { opacity: 0; transform: translateY(-.5rem); }
+
+/* Rotation des icônes de chargement */
+.ed-spin { display: inline-block; animation: edSpin .8s linear infinite; }
+@keyframes edSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1199.98px) {
+  .ed-eval-list { max-height: 34vh; }
+  .ed-console-scroll { max-height: 44vh; }
+}

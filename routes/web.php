@@ -266,6 +266,7 @@ Route::middleware('auth')->group(function(){
     Route::post('/evaluations/insererNotes',[EvaluationController::class,'insererNotes'])->name('evaluations.insererNotes');
     Route::post('/notes/insererNotes',[NoteController::class,'insererNotes'])->name('notes.insererNotes');
     Route::match(['get','post'],'/notes',[NoteController::class,'index'])->name('afficherNotes');
+    Route::get('/notes/console',[NoteController::class,'console'])->name('notes.console');
     Route::match(['get','post'],'/parcours',function () {
         if(request()->isMethod('post')){
             $etud=Etudiant::find(request()->etudiant);
