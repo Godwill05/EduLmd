@@ -104,6 +104,9 @@ Route::post('/api/actions-groupees/impression', [BulkActionController::class, 'i
 // Fiche étudiant — cible des liens de la recherche globale
 Route::get('/etudiants/fiche/{matricule}', [StudentCardController::class, 'show'])
     ->middleware('auth')->name('etudiants.fiche');
+Route::post('/etudiants/fiche/{matricule}/photo', [StudentCardController::class, 'photo'])
+    ->where('matricule', '.*')
+    ->middleware('auth')->name('etudiants.photo');
 
 // Paiement en un clic — situation et encaissement (JSON)
 Route::get('/api/paiement-rapide/{matricule}', [QuickPaymentController::class, 'situation'])
@@ -115,6 +118,25 @@ Route::post('/api/paiement-rapide', [QuickPaymentController::class, 'store'])
 Route::get('/qualite-donnees', [DataQualityController::class, 'index'])
     ->middleware('auth')
     ->name('qualite-donnees.index');
+
+/* Corbeille des fiches étudiantes : suppression réversible.
+   Supprimer une fiche touche 8 tables ; ces routes permettent de l'y placer
+   puis de la restaurer à l'identique. */
+Route::middleware(['auth', 'can:Supprimer les étudiants'])->group(function () {
+    Route::get('/corbeille-etudiants', [\App\Http\Controllers\CorbeilleEtudiantController::class, 'index'])
+        ->name('corbeille.index');
+    Route::post('/corbeille-etudiants/apercu', [\App\Http\Controllers\CorbeilleEtudiantController::class, 'apercu'])
+        ->name('corbeille.apercu');
+    /* La restauration est déclarée AVANT la mise en corbeille : un motif
+       `{matricule}` permissif capterait « /1/restaurer » et la route
+       de restauration ne serait jamais atteinte. */
+    Route::post('/corbeille-etudiants/{id}/restaurer', [\App\Http\Controllers\CorbeilleEtudiantController::class, 'restaurer'])
+        ->whereNumber('id')
+        ->name('corbeille.restaurer');
+    Route::post('/corbeille-etudiants/{matricule}', [\App\Http\Controllers\CorbeilleEtudiantController::class, 'store'])
+        ->where('matricule', '[^/]+')
+        ->name('corbeille.store');
+});
 
 // Journal d'activité lisible (table `audits`)
 Route::get('/journal-activite', [ActivityLogController::class, 'index'])

@@ -17,6 +17,26 @@ Fiche étudiant
     border:1px solid #EAD2D8;
   }
   .fe-avatar img { width:100%; height:100%; object-fit:cover; }
+
+  /* Avatar modifiable : l'appareil photo apparaît au survol et au focus. */
+  .fe-avatar-wrap { position:relative; flex:0 0 auto; }
+  .fe-avatar-btn {
+    padding:0; cursor:pointer; position:relative;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .fe-avatar-btn:hover, .fe-avatar-btn:focus-visible {
+    border-color:#822A40; box-shadow:0 0 0 3px rgba(130,42,64,.12);
+  }
+  .fe-avatar-btn > span:first-child { width:100%; height:100%; display:grid; place-items:center; }
+  .fe-avatar-voile {
+    position:absolute; inset:0; display:grid; place-items:center;
+    background:rgba(11,11,12,.55); color:#fff; font-size:1.1rem;
+    opacity:0; transition:opacity .15s;
+  }
+  .fe-avatar-btn:hover .fe-avatar-voile,
+  .fe-avatar-btn:focus-visible .fe-avatar-voile { opacity:1; }
+  .fe-avatar-btn.is-envoi .fe-avatar-voile { opacity:1; background:rgba(11,11,12,.7); }
+  .fe-avatar-btn.is-envoi .fe-avatar-voile i { animation:edSpin .8s linear infinite; }
   .fe-nom { font-size:1.2rem; font-weight:800; letter-spacing:-.01em; line-height:1.2; }
   .fe-mat {
     font-family:ui-monospace,monospace; font-size:.8rem; color:#5C5F66;
@@ -118,12 +138,29 @@ Fiche étudiant
 
   {{-- Identité --}}
   <div class="fe-hero">
-    <div class="fe-avatar">
-      @if ($etudiant->photo)
-        <img src="{{ asset('storage/assets/img/etudiants/' . $etudiant->photo) }}" alt="">
-      @else
-        {{ $initiales ?: '?' }}
-      @endif
+    {{-- Avatar cliquable : l'envoi d'une nouvelle photo se fait directement
+         depuis la fiche, avec un aperçu avant validation. --}}
+    <div class="fe-avatar-wrap">
+      <button type="button" class="fe-avatar fe-avatar-btn" id="avatarBouton"
+              title="Changer la photo de l'étudiant"
+              aria-label="Changer la photo de l'étudiant">
+        <span id="avatarApercu">
+          @if ($etudiant->photo)
+            <img src="{{ asset('assets/img/etudiants/' . $etudiant->photo) }}" alt="">
+          @else
+            {{ $initiales ?: '?' }}
+          @endif
+        </span>
+        <span class="fe-avatar-voile"><i class="ri-camera-line"></i></span>
+      </button>
+
+      <form id="formPhoto" method="POST"
+            action="{{ route('etudiants.photo', ['matricule' => $etudiant->MATRICULE]) }}"
+            enctype="multipart/form-data" class="d-none">
+        @csrf
+        <input type="file" name="photo" id="champPhoto"
+               accept="image/jpeg,image/png,image/webp">
+      </form>
     </div>
     <div>
       <div class="fe-nom">{{ $etudiant->nomEtu }} {{ $etudiant->prenomsEtu }}</div>
@@ -280,4 +317,98 @@ Fiche étudiant
   </div>
 
 </section>
+@endsection
+
+@section('js')
+<script>
+/*
+ * Changement de la photo depuis la fiche étudiant.
+ *
+ *  - clic sur l'avatar → sélecteur de fichier ;
+ *  - aperçu immédiat avant l'envoi (aucune requête tant que l'image n'est
+ *    pas choisie) ;
+ *  - envoi en Ajax, mise à jour de l'avatar sans recharger la page.
+ */
+(function () {
+  'use strict';
+
+  var bouton = document.getElementById('avatarBouton');
+  var form = document.getElementById('formPhoto');
+  var champ = document.getElementById('champPhoto');
+  var apercu = document.getElementById('avatarApercu');
+
+  if (!bouton || !form || !champ || !apercu) return;
+
+  var csrf = document.querySelector('meta[name="csrf-token"]');
+  csrf = csrf ? csrf.content : '';
+
+  bouton.addEventListener('click', function () { champ.click(); });
+
+  champ.addEventListener('change', function () {
+    var fichier = champ.files && champ.files[0];
+    if (!fichier) return;
+
+    /* Contrôles côté client : message immédiat, le serveur revalide ensuite. */
+    if (!/^image\/(jpeg|png|webp)$/.test(fichier.type)) {
+      window.alert('Formats acceptés : JPEG, PNG ou WebP.');
+      champ.value = '';
+      return;
+    }
+    if (fichier.size > 4 * 1024 * 1024) {
+      window.alert('L\'image ne doit pas dépasser 4 Mo.');
+      champ.value = '';
+      return;
+    }
+
+    var lecteur = new FileReader();
+    lecteur.onload = function (e) {
+      apercu.innerHTML = '<img src="' + e.target.result + '" alt="Aperçu">';
+    };
+    lecteur.readAsDataURL(fichier);
+
+    envoyer(fichier);
+  });
+
+  function envoyer(fichier) {
+    var donnees = new FormData(form);
+    bouton.classList.add('is-envoi');
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': csrf
+      },
+      body: donnees,
+      credentials: 'same-origin'
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) { d = null; }
+        if (!r.ok) throw new Error((d && d.message) || ('HTTP ' + r.status));
+        return d;
+      });
+    }).then(function (reponse) {
+      apercu.innerHTML = '<img src="' + reponse.url + '" alt="">';
+      afficherBandeau('Photo mise à jour.', 'ok');
+    }).catch(function (erreur) {
+      afficherBandeau('Échec de l\'envoi : ' + erreur.message, 'erreur');
+    }).finally(function () {
+      bouton.classList.remove('is-envoi');
+      champ.value = '';
+    });
+  }
+
+  function afficherBandeau(message, ton) {
+    var el = document.createElement('div');
+    el.className = 'ed-toast ' + (ton === 'erreur' ? 'ed-toast-erreur' : 'ed-toast-ok');
+    el.innerHTML = '<i class="' + (ton === 'erreur' ? 'ri-error-warning-line' : 'ri-checkbox-circle-line') + '"></i>'
+      + '<span></span>';
+    el.querySelector('span').textContent = message;
+    document.body.appendChild(el);
+    setTimeout(function () { el.classList.add('is-out'); }, 2600);
+    setTimeout(function () { el.remove(); }, 3100);
+  }
+})();
+</script>
 @endsection

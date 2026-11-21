@@ -120,11 +120,19 @@ Qualité des données
     {{-- ══════════ Onglet doublons ══════════ --}}
     @if ($tab === 'doublons')
       <div class="p-4">
-        <p class="text-[0.8rem] text-encre-muted mb-3">
-          Groupes d'étudiants partageant exactement le même nom et les mêmes prénoms.
-          Vérifiez la date de naissance avant toute fusion — deux homonymes peuvent
-          être deux personnes différentes.
-        </p>
+        <div class="alert alert-light border d-flex align-items-start gap-2 py-2 mb-3">
+          <i class="ri-information-line text-[#822A40] mt-1"></i>
+          <div class="text-[0.8rem] text-encre-muted">
+            Groupes d'étudiants partageant exactement le même nom et les mêmes prénoms.
+            Vérifiez la date de naissance avant toute action — deux homonymes peuvent
+            être deux personnes différentes.
+            <div class="mt-1">
+              <strong>Mettre en corbeille</strong> retire la fiche sans rien perdre :
+              inscriptions, notes et paiements sont conservés et la fiche peut être
+              restaurée depuis la <a href="{{ route('corbeille.index') }}" class="underline">corbeille</a>.
+            </div>
+          </div>
+        </div>
 
         @forelse ($doublonsDetail as $groupe)
           <div class="dq-groupe">
@@ -151,6 +159,12 @@ Qualité des données
                   <a class="btn btn-sm btn-outline-secondary" href="{{ route('paiements.index') }}?matricule={{ urlencode($e['matricule']) }}" title="Paiements">
                     <i class="ri-hand-coin-line"></i>
                   </a>
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                          title="Mettre cette fiche en corbeille"
+                          data-corbeille="{{ $e['matricule'] }}"
+                          data-nom="{{ $groupe['nom'] }} {{ $groupe['prenoms'] }}">
+                    <i class="ri-delete-bin-6-line"></i>
+                  </button>
                 </span>
               </div>
             @endforeach
@@ -263,4 +277,83 @@ Qualité des données
   </div>
 
 </section>
+@endsection
+
+@section('js')
+<script>
+/*
+ * Mise en corbeille d'une fiche depuis la liste des doublons.
+ *
+ * On demande d'abord un aperçu au serveur pour afficher ce qui sera
+ * réellement retiré (inscriptions, paiements, notes). Rien n'est supprimé
+ * avant confirmation, et la fiche reste restaurable ensuite.
+ */
+(function () {
+  'use strict';
+
+  var csrf = document.querySelector('meta[name="csrf-token"]');
+  csrf = csrf ? csrf.content : '';
+
+  function demander(url, options) {
+    var opt = options || {};
+    opt.headers = Object.assign({
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': csrf
+    }, opt.headers || {});
+    opt.credentials = 'same-origin';
+    return fetch(url, opt).then(function (r) {
+      return r.text().then(function (t) {
+        var d = null; try { d = t ? JSON.parse(t) : null; } catch (e) { d = null; }
+        if (!r.ok) throw new Error((d && d.message) || ('HTTP ' + r.status));
+        return d;
+      });
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var bouton = e.target.closest('[data-corbeille]');
+    if (!bouton) return;
+
+    var matricule = bouton.getAttribute('data-corbeille');
+    var nom = bouton.getAttribute('data-nom') || '';
+    bouton.disabled = true;
+
+    demander('{{ route('corbeille.apercu') }}', {
+      method: 'POST',
+      body: new URLSearchParams({ matricule: matricule })
+    }).then(function (apercu) {
+      var a = apercu.apercu || {};
+      var details = []
+        .concat(a.inscriptions ? [a.inscriptions + ' inscription(s)'] : [])
+        .concat(a.notes ? [a.notes + ' note(s)'] : [])
+        .concat(a.paiements ? [a.paiements + ' paiement(s)'] : [])
+        .concat(a.previsions ? [a.previsions + ' prévision(s)'] : []);
+
+      var message = 'Mettre la fiche ' + matricule + ' (' + nom + ') en corbeille ?\n\n'
+        + (details.length ? 'Seront conservés : ' + details.join(', ') + '.' : 'Aucun parcours à conserver.')
+        + '\n\nLa fiche pourra être restaurée intégralement depuis la corbeille.';
+
+      if (!window.confirm(message)) { bouton.disabled = false; return; }
+
+      return demander('/corbeille-etudiants/' + encodeURIComponent(matricule), {
+        method: 'POST',
+        body: new URLSearchParams({ motif: 'Doublon identifié', type: 'doublon' })
+      }).then(function (reponse) {
+        var ligne = bouton.closest('.dq-etu');
+        if (ligne) {
+          ligne.style.transition = 'opacity .3s';
+          ligne.style.opacity = '0';
+          setTimeout(function () { window.location.reload(); }, 320);
+        } else {
+          window.location.reload();
+        }
+      });
+    }).catch(function (erreur) {
+      window.alert('La mise en corbeille a échoué : ' + erreur.message);
+      bouton.disabled = false;
+    });
+  });
+})();
+</script>
 @endsection

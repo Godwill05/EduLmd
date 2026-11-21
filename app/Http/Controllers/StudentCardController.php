@@ -129,4 +129,67 @@ class StudentCardController extends Controller
             'inscriptionCourante'
         ));
     }
+
+    /**
+     * POST /etudiants/fiche/{matricule}/photo
+     *
+     * Mise à jour de la photo de la fiche.
+     *
+     * Les images sont écrites dans public/assets/img/etudiants (accès direct
+     * par le serveur web, sans lien symbolique à créer), et non dans
+     * storage/app/public comme le faisait la création : la vue affichait
+     * /storage/... qui n'existe pas sur ce déploiement, d'où des photos
+     * invisibles malgré un envoi réussi.
+     */
+    public function photo(Request $request, $matricule)
+    {
+        $etudiant = Etudiant::find($matricule);
+
+        if (! $etudiant) {
+            abort(404, "Aucun étudiant ne porte le matricule « {$matricule} ».");
+        }
+
+        $donnees = $request->validate([
+            'photo' => 'required|image|mimes:jpeg,jpg,png,webp|max:4096',
+        ], [
+            'photo.required' => 'Choisissez une image.',
+            'photo.image' => 'Le fichier envoyé n’est pas une image.',
+            'photo.mimes' => 'Formats acceptés : JPEG, PNG ou WebP.',
+            'photo.max' => 'L’image ne doit pas dépasser 4 Mo.',
+        ]);
+
+        $dossier = public_path('assets/img/etudiants');
+
+        if (! is_dir($dossier)) {
+            @mkdir($dossier, 0755, true);
+        }
+
+        $extension = strtolower($donnees['photo']->extension() ?: 'jpg');
+        $nomFichier = $etudiant->MATRICULE.'.'.$extension;
+
+        /* Ancienne photo : on la retire pour ne pas laisser de fichiers
+           orphelins quand le format change (.jpg → .png). */
+        if ($etudiant->photo && $etudiant->photo !== $nomFichier) {
+            $ancien = $dossier.DIRECTORY_SEPARATOR.$etudiant->photo;
+            if (is_file($ancien)) {
+                @unlink($ancien);
+            }
+        }
+
+        $donnees['photo']->move($dossier, $nomFichier);
+
+        $etudiant->photo = $nomFichier;
+        $etudiant->save();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'photo' => $nomFichier,
+                'url' => asset('assets/img/etudiants/'.$nomFichier).'?v='.time(),
+                'message' => 'Photo mise à jour.',
+            ]);
+        }
+
+        return back()->with('succes', 'Photo mise à jour.');
+    }
 }

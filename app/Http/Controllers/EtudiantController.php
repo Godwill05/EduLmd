@@ -87,9 +87,17 @@ class EtudiantController extends Controller
         $photo = $request->file('photo');
         $nomPhoto = null;
         if ($photo && $photo->isValid()) {
-            $extension = $photo->extension() ?: 'jpg';
+            $extension = strtolower($photo->extension() ?: 'jpg');
             $nomPhoto = $mat . '.' . $extension;
-            $photo->storeAs('public/assets/img/etudiants', $nomPhoto);
+            /* Écriture dans public/assets/img/etudiants : c'est le chemin que
+               lit la fiche (/assets/img/etudiants/…). L'ancien
+               storeAs('public/…') déposait le fichier dans storage/app/public,
+               servi nulle part sur ce déploiement. */
+            $dossier = public_path('assets/img/etudiants');
+            if (! is_dir($dossier)) {
+                @mkdir($dossier, 0755, true);
+            }
+            $photo->move($dossier, $nomPhoto);
         }
 
         Etudiant::create([

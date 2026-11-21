@@ -2175,3 +2175,18 @@ body.ed-cmdk-open { overflow: hidden; }
   .ed-eval-list { max-height: 34vh; }
   .ed-console-scroll { max-height: 44vh; }
 }
+
+/* ---------- Corbeille des étudiants ---------- */
+.ed-corbeille-table thead th {
+  font-size: .66rem; font-weight: 800; letter-spacing: .05em;
+  text-transform: uppercase; color: #8A8D94;
+  border-bottom: 1px solid var(--ed-ligne); padding: .6rem .8rem;
+}
+.ed-corbeille-table tbody td { padding: .6rem .8rem; font-size: .82rem; }
+.ed-corbeille-motif { font-size: .68rem; color: #8A8D94; margin-top: .1rem; }
+.ed-corbeille-parcours { white-space: nowrap; }
+.ed-corbeille-parcours span {
+  display: inline-flex; align-items: center; gap: .2rem;
+  font-size: .74rem; color: #5C5F66; margin: 0 .25rem;
+}
+.ed-corbeille-date { font-size: .76rem; color: #5C5F66; white-space: nowrap; }

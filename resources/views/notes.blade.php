@@ -53,28 +53,25 @@
 
         <div class="col-lg-2 col-md-6">
           <label class="form-label" for="semestreEtude">Semestre</label>
-          <select name="semestreEtude" id="semestreEtude" class="form-select" disabled>
+          <select name="semestreEtude" id="semestreEtude" class="form-select no-tomselect" data-cascade="1" disabled>
             <option value="">Sélectionner…</option>
           </select>
-          <div class="form-text" id="requiredAnEtd">Choisissez une année d'étude.</div>
           <div class="form-text text-danger d-none" id="erreurSemestre"></div>
         </div>
 
         <div class="col-lg-2 col-md-6">
           <label class="form-label" for="ue">UE</label>
-          <select name="ue" id="ue" class="form-select" disabled>
+          <select name="ue" id="ue" class="form-select no-tomselect" data-cascade="1" disabled>
             <option value="">Sélectionner…</option>
           </select>
-          <div class="form-text" id="requiredSemAnac">Choisissez le semestre et l'année.</div>
           <div class="form-text text-danger d-none" id="erreurUe"></div>
         </div>
 
         <div class="col-lg-2 col-md-6">
           <label class="form-label" for="ecue">ECUE</label>
-          <select name="ecue" id="ecue" class="form-select" disabled>
+          <select name="ecue" id="ecue" class="form-select no-tomselect" data-cascade="1" disabled>
             <option value="">Sélectionner…</option>
           </select>
-          <div class="form-text" id="requiredUe">Choisissez d'abord l'UE.</div>
           <div class="form-text text-danger d-none" id="erreurEcue"></div>
         </div>
       </div>
@@ -380,8 +377,11 @@
 
   /* ───────────────────────── Restauration au chargement ───────────────────────── */
 
+ 
+
   if (memorise.etude) {
     chargerSemestres(memorise.etude, memorise.sem).then(function () {
+     
       if (!memorise.acad || !memorise.sem) return;
       return chargerUes(memorise.acad, memorise.sem, memorise.ue).then(function () {
         if (!memorise.ue) return;

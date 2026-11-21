@@ -332,9 +332,32 @@
 
     $(document).ready(function() {
         document.querySelectorAll('.form-select:not(.no-tomselect)').forEach((el)=>{
+          /*
+           * Les listes à cascade (semestre, UE, ECUE de la page « Notes »)
+           * sont remplies par JavaScript après coup : TomSelect ne voit pas
+           * ces modifications et affiche une liste vide. Elles portent donc
+           * la classe .no-tomselect et gardent le <select> natif.
+           */
+          if (el.disabled || el.dataset.cascade === '1') return;
           let settings = {maxOptions:null};
           new TomSelect(el,settings);
         });
+
+        /*
+         * Remplace l'instance TomSelect d'un select par les options à jour.
+         * À appeler après tout remplissage dynamique d'un select enrichi.
+         */
+        window.edulmdSyncSelect = function (select) {
+          if (!select) return;
+          if (select.tomselect) {
+            select.tomselect.clearOptions();
+            Array.prototype.forEach.call(select.options, function (o) {
+              if (o.value !== '') select.tomselect.addOption({ value: o.value, text: o.textContent });
+            });
+            select.tomselect.refreshOptions(false);
+            select.tomselect.setValue(select.value, true);
+          }
+        };
     });
   </script>
 
