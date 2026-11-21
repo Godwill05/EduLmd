@@ -130,6 +130,12 @@ UEs
                     @endforeach
                 </tbody>
             </table>
+
+            @if (method_exists($items, 'links') && $items->hasPages())
+                <div class="mt-4">
+                    @include('partials.pagination', ['paginateur' => $items])
+                </div>
+            @endif
         </div>
     </div>
 </div>

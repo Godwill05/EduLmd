@@ -30,7 +30,7 @@ Etudiants
                             <label for="anneeAcademique" class="form-label">Année académique</label>
                             <select required name="anneeAcademique" id="anneeAcademique" class="form-control form-select">
                                 <option value="">Sélectionner l'année académique...</option>
-                                @foreach (\App\Models\AnneeAcademique::all() as $anneeAcademique)
+                                @foreach ($anneesAcademiques as $anneeAcademique)
                                 <option value="{{$anneeAcademique->ANNEE_ACAD}}">{{$anneeAcademique->ANNEE_ACAD}}</option>
                                 @endforeach
                             </select>
@@ -65,7 +65,7 @@ Etudiants
                             <label class="form-label" for="nationalite">Nationalité <span class="text-danger">*</span></label>
                             <select required class="form-control form-select" name="nationalite" id="nationalite">
                                 <option value="">Sélectionner une nationalité...</option>
-                                @foreach (\App\Models\Nationalite::all() as $nationalite)
+                                @foreach ($nationalites as $nationalite)
                                 <option value="{{$nationalite->codeNationalite}}">{{$nationalite->libelleNationalite}}</option>
                                 @endforeach
                             </select>
@@ -98,7 +98,7 @@ Etudiants
                             <label class="form-label" for="typeEtudiant">Type d'étudiant <span class="text-danger">*</span></label>
                             <select required class="form-control form-select" name="typeEtudiant" id="typeEtudiant">
                                 <option value="">Sélectionner un type...</option>
-                                @foreach (\App\Models\TypeEtudiant::all() as $te)
+                                @foreach ($typesEtudiant as $te)
                                 <option value="{{$te->codeTypeEtu}}">{{$te->libTypeEtu}}</option>
                                 @endforeach
                             </select>
@@ -241,7 +241,7 @@ Etudiants
                                                     <label class="form-label" for="nationalite">Nationalité <span class="text-danger">*</span></label>
                                                     <select class="form-control form-select" name="nationalite" id="nationalite">
                                                         <option value="">Sélectionner une nationalité...</option>
-                                                        @foreach (\App\Models\Nationalite::all() as $nationalite)
+                                                        @foreach ($nationalites as $nationalite)
                                                         <option value="{{$nationalite->codeNationalite}}" @selected($nationalite->codeNationalite==$item->codeNationalite)>{{$nationalite->libelleNationalite}}</option>
                                                         @endforeach
                                                     </select>
@@ -274,7 +274,7 @@ Etudiants
                                                     <label class="form-label" for="typeEtudiant">Type d'étudiant <span class="text-danger">*</span></label>
                                                     <select class="form-control form-select" name="typeEtudiant" id="typeEtudiant">
                                                         <option value="">Sélectionner un type...</option>
-                                                        @foreach (\App\Models\TypeEtudiant::all() as $te)
+                                                        @foreach ($typesEtudiant as $te)
                                                         <option value="{{$te->codeTypeEtu}}" @selected($te->codeTypeEtu==$item->codeTypeEtu)>{{$te->libTypeEtu}}</option>
                                                         @endforeach
                                                     </select>
@@ -331,6 +331,20 @@ Etudiants
                     @endforeach
                 </tbody>
             </table>
+
+            {{-- Pagination : la liste complète n'est plus chargée d'un coup. --}}
+            @if (method_exists($items, 'links') && $items->hasPages())
+                <div class="mt-4">
+                    @include('partials.pagination', ['paginateur' => $items])
+                </div>
+            @endif
+
+            @if ($recherche !== '')
+                <p class="text-[0.78rem] text-encre-muted mt-2">
+                    {{ $items->total() }} résultat(s) pour « {{ $recherche }} » —
+                    <a href="{{ route('etudiants.index') }}" class="underline">tout afficher</a>
+                </p>
+            @endif
         </div>
     </div>
 </div>

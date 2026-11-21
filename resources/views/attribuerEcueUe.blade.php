@@ -41,7 +41,7 @@ Attribution ECUE à UE
                                     <label class="form-label" for="ueSemestre">Unité d'Enseignement du Semestre <span class="text-danger">*</span></label>
                                     <select name="ueSemestre" id="ueSemestre" class="form-control form-select">
                                         <option value="">Séléctionner une UE...</option>
-                                        @foreach (\App\Models\AttrUeClasse::all() as $ueSemestre)
+                                        @foreach ($ueSemestres as $ueSemestre)
                                         <option value="{{$ueSemestre->Id_Attr_ue_Sem}}">{{$ueSemestre->ue->libelleUe}} | {{$ueSemestre->semestre->Nom_Classe}} | {{$ueSemestre->anneeacademique->ANNEE_ACAD}}</option>
                                         @endforeach
                                     </select>
@@ -52,7 +52,7 @@ Attribution ECUE à UE
                                     <label class="form-label" for="ecue">Elément Constitutif de l'Unité <span class="text-danger">*</span></label>
                                     <select name="ecue" id="ecue" class="form-control form-select">
                                         <option value="">Séléctionner une ECUE...</option>
-                                        @foreach (\App\Models\Ecue::all() as $ecue)
+                                        @foreach ($ecues as $ecue)
                                         <option value="{{$ecue->codeEcu}}">{{$ecue->libelleEcu}}</option>
                                         @endforeach
                                     </select>
@@ -63,7 +63,7 @@ Attribution ECUE à UE
                                     <label class="form-label" for="enseignant">Enseignant <span class="text-danger">*</span></label>
                                     <select name="enseignant" id="enseignant" class="form-control form-select">
                                         <option value="">Sélectionner un enseignant...</option>
-                                        @foreach (\App\Models\Enseignant::all() as $professeur)
+                                        @foreach ($enseignants as $professeur)
                                         <option value="{{$professeur->numeroProf}}">{{$professeur->nomProf}} {{$professeur->prenomsProf}} - Tél : {{$professeur->telProf}}</option>
                                         @endforeach
                                     </select>
@@ -74,7 +74,7 @@ Attribution ECUE à UE
                                     <label class="form-label" for="modeEvaluation">Mode d'évaluation <span class="text-danger">*</span></label>
                                     <select name="modeEvaluation" id="modeEvaluation" class="form-control form-select">
                                         <option value="">Sélectionner un mode d'évaluation...</option>
-                                        @foreach (\App\Models\ModeEvaluation::all() as $modeEvaluation)
+                                        @foreach ($modesEvaluation as $modeEvaluation)
                                         <option value="{{$modeEvaluation->idMode}}">{{$modeEvaluation->lib_mode}}</option>
                                         @endforeach
                                     </select>

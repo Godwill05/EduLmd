@@ -15,7 +15,13 @@ class ECUEController extends Controller
      */
     public function index()
     {
-        return view('ecue',['items'=>Ecue::all()]);
+        /* Pagination : 391 ECUE en production, sans limite d'affichage. */
+        $items = Ecue::query()
+            ->orderBy('codeEcu')
+            ->paginate(50)
+            ->withQueryString();
+
+        return view('ecue', ['items' => $items]);
     }
 
     /**

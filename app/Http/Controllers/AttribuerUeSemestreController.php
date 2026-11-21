@@ -15,7 +15,25 @@ class AttribuerUeSemestreController extends Controller
      */
     public function index()
     {
-        return view('attribuerUeSemestre',['items'=>AttrUeClasse::all()]);
+        /* Avant : AttrUeClasse::all() + relations déréférencées ligne par
+           ligne dans la vue (anneeacademique, semestre, ue, categorieUe,
+           importance) → 1 078 ms et 643 Ko. Eager loading + pagination. */
+        $items = AttrUeClasse::query()
+            ->with(['anneeacademique', 'semestre', 'ue', 'categorieUe', 'importance'])
+            ->orderByDesc('Id_Attr_ue_Sem')
+            ->paginate(50)
+            ->withQueryString();
+
+        return view('attribuerUeSemestre', [
+            'items' => $items,
+            /* Les 5 listes déroulantes étaient construites dans la boucle des
+               lignes : elles sont désormais chargées une seule fois. */
+            'anneesAcademiques' => \App\Models\AnneeAcademique::orderByDesc('id_Annee_Acad')->get(),
+            'constantesImportance' => \App\Models\ConstanteImportance::orderBy('libelleImp')->get(),
+            'semestresEtude' => \App\Models\SemestreEtude::orderBy('Nom_Classe')->get(),
+            'ues' => \App\Models\Ue::orderBy('libelleUe')->get(),
+            'categoriesUe' => \App\Models\CategorieUe::orderBy('Lib_Cat_Ue')->get(),
+        ]);
     }
 
     /**

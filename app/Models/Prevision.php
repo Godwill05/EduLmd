@@ -19,6 +19,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Prevision extends Model
 {
+    /* Clés composites (MATRICULE + Id_Annee) : requis par les relations
+       utilisées par withCount() et les paiements par tranche. */
+    use \Awobaz\Compoships\Compoships;
+
     /**
      * @var array
      */
@@ -27,6 +31,15 @@ class Prevision extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    /**
+     * Inscriptions de la même promotion : permet de compter les prévisions
+     * par inscription via withCount, sans requête par ligne.
+     */
+    public function inscriptions()
+    {
+        return $this->hasMany(Inscription::class, ['MATRICULE', 'Id_Annee'], ['MATRICULE', 'Id_Annee']);
+    }
+
     public function inscription()
     {
         return Inscription::where('MATRICULE',$this->MATRICULE)

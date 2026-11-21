@@ -290,24 +290,45 @@ Route::middleware('auth')->group(function(){
     })->name('afficherUesNonValidees');
     Route::view('/repartition-salle','repartitionSalle')->name('repartition-salle');
     Route::post('/repartition-salle-post',function(){
-        extract(request()->except('_token'));
+        extract(app(\App\Http\Controllers\Controller::class)->extraireEntreesPourRoutes());
         $request=request();
         $lgn=Auth::user()->login;
-        for ($i = 1; $i <= $pld_Sal; $i++) {
-            $matr = trim($_POST['Matricule' . $i]);
-            DB::insert("INSERT INTO `repartir` (`Matricule`, `annee_etude`,`grpe_P`, `annee_acad`, `codeSalle`, `datedebut`, `datefin`, `login`, `created_at`, `version`) VALUES ('" . $matr . "', '" . $request->anetud . "', '" . $request->grpee . "', '" . $request->anacad . "', '" . $request->salleCompo . "', '" . $request->debut . "', '" . $request->fin . "','" . $lgn . "',CURRENT_TIMESTAMP,'1');");
+
+        /* Validation en amont : une répartition sans année académique connue
+           provoquait une 500 (« Attempt to read property on null »). */
+        $donnees = $request->validate([
+            'anetud'     => 'nullable|string|max:50',
+            'grpee'      => 'nullable|string|max:50',
+            'anacad'     => 'nullable|string|max:20',
+            'salleCompo' => 'nullable|string|max:50',
+            'debut'      => 'nullable|string|max:20',
+            'fin'        => 'nullable|string|max:20',
+            'pld_Sal'    => 'nullable|integer|min:0|max:500',
+        ]);
+
+        $anneeAcademique = AnneeAcademique::where('ANNEE_ACAD', $request->anacad)->first();
+
+        for ($i = 1; $i <= (int) ($pld_Sal ?? 0); $i++) {
+            $matr = trim((string) ($_POST['Matricule' . $i] ?? ''));
+            /* Requête paramétrée : les 8 valeurs venaient du formulaire et
+               étaient concaténées dans le SQL. */
+            DB::insert(
+                'INSERT INTO `repartir` (`Matricule`, `annee_etude`, `grpe_P`, `annee_acad`, `codeSalle`, `datedebut`, `datefin`, `login`, `created_at`, `version`)'
+                . ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 1)',
+                [$matr, $request->anetud, $request->grpee, $request->anacad, $request->salleCompo, $request->debut, $request->fin, $lgn]
+            );
         }
         return to_route('repartition-salle',[
-            'Debut'=>$debut,
-            'Fin'=>$fin,
-            'id_aa'=>AnneeAcademique::where('ANNEE_ACAD',$anacad)->first()->id_Annee_Acad,
+            'Debut'=>$debut ?? null,
+            'Fin'=>$fin ?? null,
+            'id_aa'=>$anneeAcademique?->id_Annee_Acad,
             'id_ae'=>$anetud,
             'id_grpe'=>$grpee,
             '&id_ane'=>$anacad
         ])->withFragment('#openModal');
     })->name('repartition-salle-post');
     Route::post('/repartitionSalle',function(){
-        extract(request()->except('_token'));
+        extract(app(\App\Http\Controllers\Controller::class)->extraireEntreesPourRoutes());
         $d1 = \Carbon\Carbon::parse($dateDebut)->format('Y-m-d');
         $d2 = \Carbon\Carbon::parse($dateFin)->format('Y-m-d');
         $rc = DB::select("SELECT DISTINCT(annee_etude.Code_Annee_Etude) as anneeetude,evaluation.codeGroupe as grpe,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD, COUNT(annee_etude.Code_Annee_Etude) as nbre FROM annee_etude_semestre,annee_etude,`attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue,professeur,evaluation,typeevaluation WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and attr_ecue_ue.numeroProf=professeur.numeroProf and annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND classe.id_S_Gr_Spe=annee_etude_semestre.id_S_Gr_Spe AND evaluation.Id_Attr_ue_Sem=attr_ecue_ue.Id_Attr_ue_Sem AND evaluation.codeEcu=attr_ecue_ue.codeEcu AND evaluation.codTypEval=typeevaluation.codTypEval AND `dateEval` BETWEEN '$d1' AND '$d2' GROUP BY attr_ue_classe.`id_Annee_Acad`, ANNEE_ACAD,annee_etude.Code_Annee_Etude,grpe ORDER BY annee_etude.Code_Annee_Etude ASC");
@@ -356,16 +377,84 @@ Route::middleware('auth')->group(function(){
         return view('rechercheEtudiants',['items'=>Etudiant::orderBy('nomEtu')->where('nomEtu','like',"%$rech%")->orWhere('prenomsEtu','like',"%$rech%")->orWhere('MATRICULE','like',"%$rech%")->get()]);
     })->name('afficherEtudiants');
     Route::get('/dEva', function(){
-        $rech=request()->recherche;
-        return view('rechercheEvaluations',['items1'=>Evaluation::orderBy('dateEval')->where('heureDebutEval','like',"%$rech%")->orWhereRelation('ueSem',function(Builder $query){$rch=request('recherche');$query->whereRelation('ue','libelleUe','like',"%$rch%")->orWhereRelation('semestre','Nom_Classe','like',"%$rch%")->orWhereRelation('anneeacademique','ANNEE_ACAD','like',"%$rch%");})->orWhereRelation('ecue','libelleEcu','like',"%$rech%")->orWhereRelation('typeEvaluation','libTypEval','like',"%$rech%")->get()]);
+        /* Cette page chargeait les 1 851 évaluations avec leurs relations
+           déréférencées une par une dans la vue : 18 399 requêtes SQL et
+           10 secondes de rendu. Eager loading + pagination :
+           ~10 requêtes, une fraction de seconde. */
+        $rech = trim((string) request('recherche', ''));
+        $terme = '%' . addcslashes($rech, '%_\\') . '%';
+
+        $requete = Evaluation::query()
+            ->with([
+                'ueSem.ue',
+                'ueSem.semestre.anneeEtudeSemestres.anneeEtude',
+                'ueSem.anneeacademique',
+                'ecue',
+                'typeEvaluation',
+            ])
+            ->orderBy('dateEval');
+
+        if ($rech !== '') {
+            $requete->where(function ($q) use ($terme) {
+                $q->where('heureDebutEval', 'like', $terme)
+                    ->orWhereRelation('ueSem.ue', 'libelleUe', 'like', $terme)
+                    ->orWhereRelation('ueSem.semestre', 'Nom_Classe', 'like', $terme)
+                    ->orWhereRelation('ueSem.anneeacademique', 'ANNEE_ACAD', 'like', $terme)
+                    ->orWhereRelation('ecue', 'libelleEcu', 'like', $terme)
+                    ->orWhereRelation('typeEvaluation', 'libTypEval', 'like', $terme);
+            });
+        }
+
+        return view('rechercheEvaluations', [
+            'items1' => $requete->paginate(50)->withQueryString(),
+        ]);
     })->name('afficherEvaluations');
     Route::get('/dAttrEcUe', function(){
-        $rech=request()->recherche;
-        return view('rechercheAttrEcueUe',['items'=>AttrEcueUe::whereRelation('ueSemestre',function(Builder $query){$rch=request('recherche');$query->whereRelation('ue','libelleUe','like',"%$rch%")->orWhereRelation('semestre','Nom_Classe','like',"%$rch%")->orWhereRelation('anneeacademique','ANNEE_ACAD','like',"%$rch%");})->orWhereRelation('ecue','libelleEcu','like',"%$rech%")->orWhereRelation('professeur','nomProf','like',"%$rech%")->orWhereRelation('professeur','prenomsProf','like',"%$rech%")->get()]);
+        /* Même correctif que /dEva : eager loading + pagination.
+           3 757 requêtes SQL et 2,5 Mo de HTML auparavant. */
+        $rech = trim((string) request('recherche', ''));
+        $terme = '%' . addcslashes($rech, '%_\\') . '%';
+
+        $requete = AttrEcueUe::query()
+            ->with(['ueSemestre.ue', 'ueSemestre.semestre', 'ueSemestre.anneeacademique', 'ecue', 'professeur']);
+
+        if ($rech !== '') {
+            $requete->where(function ($q) use ($terme) {
+                $q->whereRelation('ueSemestre.ue', 'libelleUe', 'like', $terme)
+                    ->orWhereRelation('ueSemestre.semestre', 'Nom_Classe', 'like', $terme)
+                    ->orWhereRelation('ueSemestre.anneeacademique', 'ANNEE_ACAD', 'like', $terme)
+                    ->orWhereRelation('ecue', 'libelleEcu', 'like', $terme)
+                    ->orWhereRelation('professeur', 'nomProf', 'like', $terme)
+                    ->orWhereRelation('professeur', 'prenomsProf', 'like', $terme);
+            });
+        }
+
+        return view('rechercheAttrEcueUe', [
+            'items' => $requete->paginate(50)->withQueryString(),
+        ]);
     })->name('afficherAttrEcueUe');
     Route::get('/dIns',function(){
-        $rech=request()->recherche;
-        return view('displayInscription',['items'=>Inscription::orderBy('MATRICULE')->where('MATRICULE','like',"%$rech%")->orWhereRelation('etudiant','nomEtu','like',"%$rech%")->orWhereRelation('etudiant','prenomsEtu','like',"%$rech%")->orWhereRelation('anneeacademique','ANNEE_ACAD','like',"%$rech%")->orWhereRelation('anneeEtude','Libelle_AnEtude','like',"%$rech%")->get()]);
+        /* 2 285 requêtes SQL et 2,4 Mo de HTML → eager loading + pagination. */
+        $rech = trim((string) request('recherche', ''));
+        $terme = '%' . addcslashes($rech, '%_\\') . '%';
+
+        $requete = Inscription::query()
+            ->with(['etudiant', 'anneeacademique', 'anneeEtude'])
+            ->orderBy('MATRICULE');
+
+        if ($rech !== '') {
+            $requete->where(function ($q) use ($terme) {
+                $q->where('MATRICULE', 'like', $terme)
+                    ->orWhereRelation('etudiant', 'nomEtu', 'like', $terme)
+                    ->orWhereRelation('etudiant', 'prenomsEtu', 'like', $terme)
+                    ->orWhereRelation('anneeacademique', 'ANNEE_ACAD', 'like', $terme)
+                    ->orWhereRelation('anneeEtude', 'Libelle_AnEtude', 'like', $terme);
+            });
+        }
+
+        return view('displayInscription', [
+            'items' => $requete->paginate(50)->withQueryString(),
+        ]);
     })->name('afficherInscription');
     Route::post('/dP', function () {
         $query = Paiement::where('Id_Annee', request()->anneeAcademique);

@@ -1849,3 +1849,99 @@ body.ed-ech-open { overflow: hidden; }
   .ed-ech-ligne { grid-template-columns: 1.6rem 1fr 1fr; }
   .ed-ech-etat, .ed-ech-suppr { grid-column: span 1; }
 }
+
+/* ==========================================================================
+   RACCOURCIS : palette de commandes enrichie + aide-mémoire
+   ========================================================================== */
+body.ed-cmdk-open { overflow: hidden; }
+
+.ed-cmdk-overlay {
+  position: fixed; inset: 0; z-index: 1095;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 10vh 1rem 1rem;
+  background: rgba(11, 11, 12, .45);
+  backdrop-filter: blur(2px);
+  animation: edFadeIn .12s ease-out;
+}
+.ed-cmdk-overlay[hidden] { display: none; }
+
+.ed-cmdk-type {
+  margin-left: auto; flex: 0 0 auto;
+  font-size: .6rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .06em; padding: .12rem .4rem; border-radius: 99px;
+  background: #EEF1FE; color: #1D38D8;
+}
+.ed-cmdk-type.act { background: #FBEDF1; color: #822A40; }
+
+.ed-cmdk-avatar {
+  flex: 0 0 auto; width: 1.7rem; height: 1.7rem; border-radius: 99px;
+  display: grid; place-items: center;
+  font-size: .66rem; font-weight: 800;
+  background: #FBEDF1; color: #822A40;
+}
+
+/* Aide-mémoire */
+.ed-keys-overlay {
+  position: fixed; inset: 0; z-index: 1096;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; background: rgba(11, 11, 12, .5);
+  backdrop-filter: blur(2px);
+}
+.ed-keys-overlay[hidden] { display: none; }
+
+.ed-keys-panel {
+  width: min(30rem, 100%);
+  max-height: 85vh; overflow-y: auto;
+  background: #fff; border-radius: 1rem; overflow-x: hidden;
+  box-shadow: 0 24px 64px rgba(11, 11, 12, .3);
+  animation: edSlideUp .16s cubic-bezier(.2,.8,.3,1);
+}
+.ed-keys-head {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .85rem 1.1rem; border-bottom: 1px solid var(--ed-ligne);
+  background: linear-gradient(180deg, #F2F5FE, #fff);
+}
+.ed-keys-head h2 { margin: 0; font-size: .95rem; font-weight: 800; }
+.ed-keys-close {
+  margin-left: auto; width: 1.9rem; height: 1.9rem; border-radius: .5rem;
+  display: grid; place-items: center; border: 1px solid var(--ed-ligne);
+  background: #fff; color: #5C5F66; cursor: pointer;
+}
+.ed-keys-close:hover { background: #F4F4F6; color: #822A40; }
+
+.ed-keys-list { list-style: none; margin: 0; padding: .5rem 1.1rem 1.1rem; }
+.ed-keys-list li {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .5rem 0; border-bottom: 1px dashed var(--ed-ligne);
+}
+.ed-keys-list li:last-child { border-bottom: 0; }
+.ed-keys-combo {
+  flex: 0 0 40%; font-size: .75rem; font-weight: 700; color: #822A40;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.ed-keys-desc { font-size: .78rem; color: #4B4E55; }
+
+/* Petites touches clavier, réutilisables */
+.ed-cmdk-foot kbd {
+  display: inline-grid; place-items: center;
+  min-width: 1.2rem; height: 1.2rem; padding: 0 .3rem;
+  font-size: .62rem; font-weight: 700;
+  border: 1px solid var(--ed-ligne); border-bottom-width: 2px;
+  border-radius: .3rem; background: #fff; color: #5C5F66;
+}
+
+@media (max-width: 640px) {
+  .ed-keys-combo { flex-basis: 46%; font-size: .7rem; }
+}
+
+/* Bouton d'aide clavier dans l'en-tête */
+.ed-keys-trigger {
+  width: 2.1rem; height: 2.1rem; border-radius: .55rem;
+  display: grid; place-items: center;
+  border: 1px solid var(--ed-ligne); background: #fff;
+  color: #5C5F66; font-size: 1rem; cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.ed-keys-trigger:hover, .ed-keys-trigger:focus-visible {
+  color: #822A40; border-color: #E9C3CD; background: #FBEDF1;
+}

@@ -1,3 +1,8 @@
+@extends('layout')
+
+@section('title', 'Évaluations')
+
+@section('content')
 <form action="" id="recher">
     <div class="clearfix mb-4">
         <div class="float-end">
@@ -65,3 +70,10 @@
         @endforeach
     </tbody>
 </table>
+
+@if (method_exists($items1, 'links') && $items1->hasPages())
+    <div class="mt-4">
+        @include('partials.pagination', ['paginateur' => $items1])
+    </div>
+@endif
+@endsection

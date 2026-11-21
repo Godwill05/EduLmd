@@ -69,10 +69,16 @@
       <ul>
         <li class="nav-item">
           <button type="button" class="ed-search-trigger" id="edSearchTrigger"
-                  aria-label="Recherche globale (Ctrl+K)" title="Recherche globale — Ctrl+K">
+                  aria-label="Palette de commandes (Ctrl+K)" title="Palette de commandes — Ctrl+K">
             <i class="ri-search-line"></i>
-            <span class="ed-search-label">Rechercher…</span>
+            <span class="ed-search-label">Rechercher ou aller à…</span>
             <kbd>Ctrl K</kbd>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="ed-keys-trigger" data-ed-keys
+                  aria-label="Raccourcis clavier" title="Raccourcis clavier — appuyez sur ?">
+            <i class="ri-question-line"></i>
           </button>
         </li>
         <li class="nav-item dropdown">
@@ -280,6 +286,10 @@
   <script>
     window.EDULMD_SEARCH_URL = "{{ route('recherche.etudiants') }}";
   </script>
+  {{-- Palette de commandes unifiée, aide clavier, navigation « g » : n'ajoute
+       aucune fonctionnalité métier, seulement des chemins plus courts.
+       Chargée avant search.js, qui renonce alors à sa palette d'étudiants. --}}
+  <script src="{{ asset('/assets/js/edulmd-raccourcis.js') }}"></script>
   <script src="{{ asset('/assets/js/edulmd-search.js') }}"></script>
   <script>
     window.EDULMD_PAY_SITUATION = "{{ url('/api/paiement-rapide') }}";

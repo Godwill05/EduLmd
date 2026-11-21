@@ -91,7 +91,7 @@ class SemestresEtudesController extends Controller
     }
     public function recapitulatif()
     {
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $UE = $this->convert_array(DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND attr_ue_classe.id_S_Gr_Spe='$semestreEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique';"));
         if (!$UE) {
             return('<div class="row"><div class="col-auto">Aucun résultat...</div><div class="col-auto"><a href="javascript:void(0);" onclick="afficher()">Relancer</a> | <a href="/attribuer-ue-semestre">Attribuer</a></div></div>');

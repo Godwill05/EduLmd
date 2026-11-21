@@ -46,5 +46,17 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        /* Une valeur refusée par le garde-fou SQL est une erreur de saisie,
+           pas une panne : on rend un message clair au lieu d'une page 500. */
+        $this->renderable(function (\InvalidArgumentException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $e->getMessage()], 400);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['saisie' => $e->getMessage()]);
+        });
     }
 }

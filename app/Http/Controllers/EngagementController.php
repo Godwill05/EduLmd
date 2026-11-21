@@ -50,7 +50,16 @@ class EngagementController extends Controller
                 });
             }
 
-            $inscriptions = $query->orderBy('ID_FILIERE')->orderBy('MATRICULE')->get();
+            /* La vue comptait les prévisions et sommait les paiements de
+               chaque inscription : 2 requêtes par ligne (528 au total).
+               Les totaux sont calculés en une requête chacun, via les
+               sous-requêtes withCount / withSum. */
+            $query->withCount(['previsions as nb_previsions'])
+                ->withSum('pmts as cumul_paiements', 'montantPaye');
+
+            $inscriptions = $query->orderBy('ID_FILIERE')->orderBy('MATRICULE')
+                ->paginate(50)
+                ->withQueryString();
         }
 
         return view('fichesEngagement', compact('annees', 'anneesEtudes', 'selectedAnnee', 'selectedFiliere', 'search', 'inscriptions', 'totalAnnee'));
@@ -378,7 +387,7 @@ class EngagementController extends Controller
             $dateNow = now()->format('Y.m.d.H.i.s');
             $objPDF->Output('Engagement_' . $matricule . '_' . $dateNow . '.pdf');
         } catch (Exception $e) {
-            die("Erreur lors de la génération du PDF d'engagement : " . $e->getMessage());
+            abort(500, 'Erreur lors de la génération du PDF d\'engagement :');
         }
     }
 
@@ -430,7 +439,7 @@ class EngagementController extends Controller
             $dateNow = now()->format('Y.m.d.H.i.s');
             $objPDF->Output($titrePdf . '_' . $dateNow . '.pdf');
         } catch (Exception $e) {
-            die("Erreur lors de la génération du lot de fiches d'engagement : " . $e->getMessage());
+            abort(500, 'Erreur lors de la génération du lot de fiches d\'engagement :');
         }
     }
 }

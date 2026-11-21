@@ -36,7 +36,7 @@ class ImpressionController extends Controller
     public function impressionGrade(){
         if(request('btn')=='Imprimer'){
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             if (empty(FiliereCpl::find($filiere)->annee3)) {
                 $anneeEtude=FiliereCpl::find($filiere)->anneeEtude2->Code_Annee_Etude;
                 $lastYear=$this->anneeAcademiqueNext($anneeAcademique);
@@ -198,13 +198,13 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('PV_Grade_'.FiliereCpl::find($filiere)->nom.'_PROMO_'.AnneeAcademique::find($anneeAcademique)->ANNEE_ACAD.'.pdf');
             } catch (Exception $e) {
-                dump($e);
-                die("erreur lors de la création du pdf !");
+
+                abort(500, 'erreur lors de la création du pdf !');
             }
 
         }
         if(request('btn')=='Ordre de mérite'){
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
             $rc = $this->convert_array(DB::select("SELECT recap_annuel.`MATRICULE` as Matricule, nomEtu,prenomsEtu,ANNEE_ACAD, annee_etude.Libelle_AnEtude, recap_annuel.*  FROM etudiant,anneeacademique,annee_etude,recap_annuel WHERE recap_annuel.MATRICULE=etudiant.MATRICULE AND recap_annuel.id_Annee_Acad=anneeacademique.id_Annee_Acad AND recap_annuel.Code_Annee_Etude=annee_etude.Code_Annee_Etude AND recap_annuel.Code_Annee_Etude='" . FiliereCpl::find($filiere)->annee1 . "' and recap_annuel.id_Annee_Acad=" . $anneeAcademique . " ORDER BY Ptage_Obt DESC, recap_annuel.DecisionJury DESC, `recap_annuel`.`MoyenneSem`  DESC"));
             $anneesEtudes=AnneeEtude::whereIn('Code_Annee_Etude',[FiliereCpl::find($filiere)->annee1,FiliereCpl::find($filiere)->annee2,FiliereCpl::find($filiere)->annee3])->get();
@@ -217,7 +217,7 @@ class ImpressionController extends Controller
             }
             if (empty($rc)) {
                 $message='Aucune donnée trouvée pour cette année. Veuillez d\'abord effectuer la délibération annuelle';
-                die(view('errors.not-found',compact('message')));
+                abort(404);
             }
             ob_start(); ?>
             <page backtop="40mm" backbottom="12mm" backleft="2mm" backright="2mm">
@@ -332,7 +332,7 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('ORDRE_DE_MERITE_' . FiliereCpl::find($filiere)->nom . '_' . AnneeAcademique::find($anneeAcademique)->ANNEE_ACAD . '.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !");
+                abort(500, 'erreur lors de la création du pdf !');
             }
 
 
@@ -470,7 +470,7 @@ class ImpressionController extends Controller
             $dateNow = $dateNow->format('Y.m.d.H.i.s');
             $objPDF->Output('Attestation_ ' . $tete[0]['libelleGrade'] . '_' . UTF8_encode($etudiant[0]['noms']) . '_' . UTF8_encode($etudiant[0]['prenoms']) . '.pdf');
         } catch (Exception $e) {
-            die("erreur lors de la création du pdf !");
+            abort(500, 'erreur lors de la création du pdf !');
         }
     }
 
@@ -606,7 +606,7 @@ class ImpressionController extends Controller
             $dateNow = $dateNow->format('Y.m.d.H.i.s');
             $objPDF->Output('Attestation_ ' . $tete[0]['libelleGrade'] . '_' . UTF8_encode($etudiant[0]['noms']) . '_' . UTF8_encode($etudiant[0]['prenoms']) . '.pdf');
         } catch (Exception $e) {
-            die("erreur lors de la création du pdf !");
+            abort(500, 'erreur lors de la création du pdf !');
         }
     }
 
@@ -708,7 +708,7 @@ class ImpressionController extends Controller
             $dateNow = $dateNow->format('Y.m.d.H.i.s');
             $objPDF->Output('Cursus_' . $temp1[0]["Libelle_AnEtude"] . '_' . $temp2[0]["ANNEE_ACAD"] . '.pdf');
         } catch (Exception $e) {
-            die("erreur lors de la création du pdf ! $e");
+            abort(500, 'Erreur lors de la création du document.');
         }
     }
 
@@ -813,7 +813,7 @@ class ImpressionController extends Controller
             $dateNow = $dateNow->format('Y.m.d.H.i.s');
             $objPDF->Output('TS_' . $anne . '_' . $cl . '.pdf');
         } catch (Exception $e) {
-            die("erreur lors de la création du pdf ! $e");
+            abort(500, 'Erreur lors de la création du document.');
         }
     }
 
@@ -828,7 +828,7 @@ class ImpressionController extends Controller
             ]);
             if(empty(request('semestreEtude')) || empty(request('anneeEtude')) || empty(request('anneeAcademique')) || empty(request('ue')))
                 return back()->with('echec','Renseigner tous les champs s\'il vous plaît !');
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $univ = DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id");
             $rc = DB::select("SELECT attr_ecue_ue.Id_Attr_ue_Sem as nattr,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ue ,libelleUe,attr_ecue_ue.codeEcu as ecue,libelleEcu,Ponderation,PoidsDev,PoidsPart,attr_ue_classe.`Seuil_Ue` as Seuil_Ue FROM  `attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and  attr_ecue_ue.Id_Attr_ue_Sem=$ue AND attr_ue_classe.id_Annee_Acad=$anneeAcademique AND attr_ue_classe.id_S_Gr_Spe=$semestreEtude ORDER BY libelleEcu ASC"); //echo count($rc);
             $tete = DB::select("SELECT annee_etude_semestre.id_S_Gr_Spe, Nom_Classe,classe.numeroSemestre as seclas,Lib_Semestre,classe.codeSpe as speclas,libelleSpe,classe.codeGrade as graclas,libelleGrade,specialite.codeMention as cde_Mention,libelleMention,mention.`Id_domaine` as cde_Domaine,lib_domaine,Libelle_AnEtude  FROM  classe ,semestre, grade, specialite,`mention`,domaine,annee_etude_semestre,annee_etude WHERE classe.`numeroSemestre` = semestre.numeroSemestre AND classe.`codeSpe` = specialite.`codeSpe`  AND classe.`codeGrade` = grade.codeGrade AND  specialite.`codeMention`=mention.`codeMention` AND mention.`Id_domaine`=domaine.`Id_domaine` AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude'");
@@ -1002,7 +1002,7 @@ class ImpressionController extends Controller
         }
         if (request()->btn=="Imprimer reprises") {
             # code...
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $univ = DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id");
             $univ=array_map(function ($value) {
                 return (array)$value;
@@ -1231,7 +1231,7 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('NON_VALIDER_RECAP ' . $rc[0]["libelleUe"] . '_' . $anneeEtude . '_' . AnneeAcademique::find($anneeAcademique)->value('ANNEE_ACAD') . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
             }
         }
     }
@@ -1243,12 +1243,12 @@ class ImpressionController extends Controller
             $univ=array_map(function ($value) {
                 return (array)$value;
             }, $univ);
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             if(empty(request('semestreEtude')) || empty(request('anneeEtude')) || empty(request('anneeAcademique')))
                 return back()->with('echec','Renseigner tous les champs s\'il vous plaît !');
             $UE = DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND attr_ue_classe.id_S_Gr_Spe='$semestreEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique';");
             if(empty($UE))
-                die(view('errors.not-found'));
+                abort(404);
             $UE=array_map(function ($value) {
                 return (array)$value;
             }, $UE);
@@ -1644,7 +1644,7 @@ class ImpressionController extends Controller
 
         if (request()->btn=="Rattrapages") {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $UE = $this->convert_array(DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND attr_ue_classe.id_S_Gr_Spe='$semestreEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique';"));
             $rTaux = $this->convert_array(DB::select("SELECT `ANNEE_ACAD`, `Ptge_Validation` pourcent FROM anneeacademique WHERE `id_Annee_Acad`='$anneeAcademique' LIMIT 1;"));
             $tete = $this->convert_array(DB::select("SELECT annee_etude_semestre.id_S_Gr_Spe, Nom_Classe,classe.numeroSemestre as seclas,Lib_Semestre,classe.codeSpe as speclas,libelleSpe,classe.codeGrade as graclas,libelleGrade,specialite.codeMention as cde_Mention,libelleMention,mention.`Id_domaine` as cde_Domaine,lib_domaine,Libelle_AnEtude  FROM  classe ,semestre, grade, specialite,`mention`,domaine,annee_etude_semestre,annee_etude WHERE classe.`numeroSemestre` = semestre.numeroSemestre AND classe.`codeSpe` = specialite.`codeSpe`  AND classe.`codeGrade` = grade.codeGrade AND  specialite.`codeMention`=mention.`codeMention` AND mention.`Id_domaine`=domaine.`Id_domaine` AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude'"));
@@ -1929,14 +1929,14 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('PV_' . $anneeEtude . '_' . $UE[0]['Nom_Classe'] . '_' . AnneeAcademique::find($anneeAcademique)->ANNEE_ACAD . '.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf ! $e");
+                abort(500, 'Erreur lors de la création du document.');
             }
         }
     }
 
     public function impressionAnnuel(){
         if (request()->btn=="Imprimer") {
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             if(empty(request('anneeEtude')) || empty(request('anneeAcademique')))
                 return back()->with('echec','Renseigner tous les champs s\'il vous plaît !');
             $univ = DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id");
@@ -1945,10 +1945,7 @@ class ImpressionController extends Controller
             }, $univ);
             $UE = DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas,annee_etude_semestre.Code_Annee_Etude ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance,annee_etude,annee_etude_semestre WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND annee_etude_semestre.Code_Annee_Etude=annee_etude.Code_Annee_Etude AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique' ORDER BY Nom_Classe,libelleUe ASC;");
             if(empty($UE))
-                die(view('errors.not-found',[
-                    'message'=>"Aucune attribution d'UE à semestre pour cette année d'étude",
-                    'attrUeSem'=>true
-                ]));
+                abort(404);
             $UE=array_map(function ($value) {
                 return (array)$value;
             }, $UE);
@@ -1960,7 +1957,7 @@ class ImpressionController extends Controller
             $tete=array_map(function ($value) {
                 return (array)$value;
             }, $tete);
-            // die(json_encode($UE));
+            // return response()->json($UE);
             $classe = $UE[0]['Nom_Classe'];
             $taux = count($rTaux) === 0 ? 0 : 100 * $rTaux[0]['pourcent'];
             $moyNor = $rTaux[0]['Moyenne'];
@@ -2353,11 +2350,11 @@ class ImpressionController extends Controller
                     //'PV_'.$anneeEtude.'_'.$mysql->anne($anneeAcademique).'
                     $objPDF->Output('PV_' . $anneeEtude . '_' . AnneeAcademique::find($anneeAcademique)->value('ANNEE_ACAD') . '.pdf');
                 } catch (Exception $e) {
-                    die("erreur lors de la création du pdf !");
+                    abort(500, 'erreur lors de la création du pdf !');
                 }
         }
         if (request()->btn=="Reprises") {
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             if(empty(request('anneeEtude')) || empty(request('anneeAcademique')))
                 return back()->with('echec','Renseigner tous les champs s\'il vous plaît !');
             $univ = DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id");
@@ -2366,10 +2363,7 @@ class ImpressionController extends Controller
             }, $univ);
             $UE = DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas,annee_etude_semestre.Code_Annee_Etude ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance,annee_etude,annee_etude_semestre WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND annee_etude_semestre.Code_Annee_Etude=annee_etude.Code_Annee_Etude AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique' ORDER BY Nom_Classe,libelleUe ASC;");
             if(empty($UE))
-                die(view('errors.not-found',[
-                    'message'=>"Aucune attribution d'UE à semestre pour cette année d'étude",
-                    'attrUeSem'=>true
-                ]));
+                abort(404);
             $UE=array_map(function ($value) {
                 return (array)$value;
             }, $UE);
@@ -2381,7 +2375,7 @@ class ImpressionController extends Controller
             $tete=array_map(function ($value) {
                 return (array)$value;
             }, $tete);
-            // die(json_encode($UE));
+            // return response()->json($UE);
             $classe = $UE[0]['Nom_Classe'];
             $taux = count($rTaux) === 0 ? 0 : 100 * $rTaux[0]['pourcent'];
             $moyNor = $rTaux[0]['Moyenne'];
@@ -2743,7 +2737,7 @@ class ImpressionController extends Controller
                 //'PV_'.$anneeEtude.'_'.$mysql->anne($anneeAcademique).'
                 $objPDF->Output('PV_' . $anneeEtude . '_' . AnneeAcademique::find($anneeAcademique)->value('ANNEE_ACAD') . '.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !");
+                abort(500, 'erreur lors de la création du pdf !');
             }
         }
     }
@@ -2759,7 +2753,7 @@ class ImpressionController extends Controller
     {
         if (request()->btn=="Liste des étudiants") {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $rc = $this->convert_array(DB::select("SELECT inscriptions.`MATRICULE` as Matricule, nomEtu,prenomsEtu,inscriptions.`Id_Annee` as annee,ANNEE_ACAD,`ID_FILIERE`,LibStatut,`Group_PDGQ`,`frais_paye`,`S_Finance` FROM `inscriptions`,etudiant,anneeacademique,annee_etude,statut WHERE inscriptions.`MATRICULE`=etudiant.`MATRICULE` and inscriptions.`Id_Annee`=anneeacademique.`id_Annee_Acad` and inscriptions.`ID_FILIERE`=annee_etude.Code_Annee_Etude and inscriptions.`codeStatut` =statut.`codeStatut` AND inscriptions.ID_FILIERE='$anneeEtude' AND inscriptions.Id_Annee='$anneeAcademique' ORDER BY LibStatut,nomEtu,prenomsEtu ASC ;"));
             ob_start(); ?>
             <page backtop="35mm" backbottom="10mm" backleft="2mm" backright="2mm">
@@ -2851,16 +2845,16 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('MonPdf_ ' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !");
+                abort(500, 'erreur lors de la création du pdf !');
             }
         }
         if (request()->btn=="Inscrits") {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $rc = $this->convert_array(DB::select("SELECT inscriptions.`MATRICULE` as Matricule, nomEtu,prenomsEtu,inscriptions.`Id_Annee` as annee,ANNEE_ACAD,`ID_FILIERE`,LibStatut,`Group_PDGQ`,`frais_paye`,`S_Finance` FROM `inscriptions`,etudiant,anneeacademique,annee_etude,statut WHERE inscriptions.`MATRICULE`=etudiant.`MATRICULE` and inscriptions.`Id_Annee`=anneeacademique.`id_Annee_Acad` and inscriptions.`ID_FILIERE`=annee_etude.Code_Annee_Etude and inscriptions.`codeStatut` =statut.`codeStatut` AND inscriptions.ID_FILIERE='$anneeEtude' AND inscriptions.Id_Annee='$anneeAcademique' AND S_Finance='OUI' ORDER BY nomEtu,prenomsEtu ASC ;"));
             if (empty($rc)) {
                 $message='Encore aucun inscrit';
-                die(view('errors.not-found',compact('message')));
+                abort(404);
             }
             ob_start(); ?>
             <page backtop="50mm" backbottom="10mm" backleft="2mm" backright="2mm">
@@ -2956,16 +2950,16 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Liste de présence des inscrits_ ' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
             }
         }
         if (request()->btn=="Non inscrits") {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $rc = $this->convert_array(DB::select("SELECT inscriptions.`MATRICULE` as Matricule, nomEtu,prenomsEtu,inscriptions.`Id_Annee` as annee,ANNEE_ACAD,`ID_FILIERE`,LibStatut,`Group_PDGQ`,`frais_paye`,`S_Finance` FROM `inscriptions`,etudiant,anneeacademique,annee_etude,statut WHERE inscriptions.`MATRICULE`=etudiant.`MATRICULE` and inscriptions.`Id_Annee`=anneeacademique.`id_Annee_Acad` and inscriptions.`ID_FILIERE`=annee_etude.Code_Annee_Etude and inscriptions.`codeStatut` =statut.`codeStatut` AND inscriptions.ID_FILIERE='$anneeEtude' AND inscriptions.Id_Annee='$anneeAcademique' AND S_Finance='NON' ORDER BY nomEtu,prenomsEtu ASC ;"));
             if (empty($rc)) {
                 $message='Aucun non inscrits';
-                die(view('errors.not-found',compact('message')));
+                abort(404);
             }
             ob_start(); ?>
             <page backtop="50mm" backbottom="10mm" backleft="2mm" backright="2mm">
@@ -3061,7 +3055,7 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Liste de présence des non inscrits_ ' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
                 }
             }
 
@@ -3070,14 +3064,14 @@ class ImpressionController extends Controller
     {
         if (request('btn')=='Imprimer') {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except(['_token']));
+            extract($this->extraireEntrees());
             if(empty(request('semestreEtude')) || empty(request('anneeEtude')) || empty(request('anneeAcademique')) || empty(request('etud')))
                 return back()->with('echec','Renseigner tous les champs s\'il vous plaît !');
 
             //echo var_dump($_GET);
             $UE = $this->convert_array(DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND attr_ue_classe.id_S_Gr_Spe='$semestreEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique';"));
             if(empty($UE)){$message="Aucune attribution d'UE à ce semestre n'a été trouvée";
-            die(view('errors.not-found',compact('message')));}
+            abort(404);}
             $etudiant = $this->convert_array(DB::select("SELECT inscriptions.`MATRICULE` as Matricule,etudiant.photo,nomEtu,prenomsEtu,sexeEtu,inscriptions.`Id_Annee` as annee,ANNEE_ACAD,`ID_FILIERE`,dateNaisEtu,lieuNaisEtu FROM `inscriptions`,etudiant,anneeacademique,annee_etude WHERE inscriptions.`MATRICULE`=etudiant.`MATRICULE` and inscriptions.`Id_Annee`=anneeacademique.`id_Annee_Acad` and inscriptions.`ID_FILIERE`=annee_etude.Code_Annee_Etude and inscriptions.`MATRICULE`= '$etud'  and `Id_Annee` = $anneeAcademique  and `ID_FILIERE` = '$anneeEtude'  "));
             $se = $this->convert_array(DB::select("SELECT * FROM `classe` where id_S_Gr_Spe='$semestreEtude';"));
             $tete = $this->convert_array(DB::select("SELECT annee_etude_semestre.id_S_Gr_Spe, Nom_Classe,classe.numeroSemestre as seclas,Lib_Semestre,classe.codeSpe as speclas,libelleSpe,classe.codeGrade as graclas,libelleGrade,specialite.codeMention as cde_Mention,libelleMention,mention.`Id_domaine` as cde_Domaine,lib_domaine  FROM  classe ,semestre, grade, specialite,`mention`,domaine,annee_etude_semestre WHERE classe.`numeroSemestre` = semestre.numeroSemestre AND classe.`codeSpe` = specialite.`codeSpe`  AND classe.`codeGrade` = grade.codeGrade AND  specialite.`codeMention`=mention.`codeMention` AND mention.`Id_domaine`=domaine.`Id_domaine` AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude'"));
@@ -3338,7 +3332,7 @@ class ImpressionController extends Controller
                                     <td style="text-align:center;"><b><?php echo $tValide . '  sur  ' . $tCredit; ?></b></td>
                                     <td>Pourcentage crédits Capitalisé</td>
                                     <td style="text-align:center;"><b><?php if(count($UE)!==0){$percentUE = 100 * $nV / count($UE);
-                                                                        echo number_format($percentUE, 2, ',', ' ');}else{die('Aucune UE trouvée');} ?>%</b></td>
+                                                                        echo number_format($percentUE, 2, ',', ' ');}else{abort(500, 'Aucune UE trouvée');} ?>%</b></td>
 
 
                                 </tr>
@@ -3514,12 +3508,12 @@ class ImpressionController extends Controller
                 $objPDF->Output('Releve_de_note_ ' . $etudiant[0]['Matricule'] . '_' . $se[0]['Nom_Classe'] . '_' . $etudiant[0]['ANNEE_ACAD'] . '.pdf');
                 // $objPDF->Output('MonPdf_ '.$dateNow.'.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !" . $e);
+                abort(500, 'Erreur lors de la création du document.');
             }
         }
         if (request('btn')=='Imprimer relevé annuel') {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             if(empty(request('semestreEtude')) || empty(request('anneeEtude')) || empty(request('anneeAcademique')) || empty(request('etud')))
                 return back()->with('echec','Renseigner tous les champs s\'il vous plaît !');
             $UE = $this->convert_array(DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas,annee_etude_semestre.Code_Annee_Etude ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance,annee_etude,annee_etude_semestre WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND annee_etude_semestre.Code_Annee_Etude=annee_etude.Code_Annee_Etude AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique' ORDER BY Nom_Classe,libelleUe ASC;"));
@@ -3886,7 +3880,7 @@ class ImpressionController extends Controller
                 //.$etudiant[0]['ID_FILIERE'].'</b> pour le compte de l\'année :<b> '.$etudiant[0]['ANNEE_ACAD'].'
                 $objPDF->Output('Releve_de_note_ ' . $etudiant[0]['Matricule'] . '_' . $etudiant[0]['ID_FILIERE'] . '_' . $etudiant[0]['ANNEE_ACAD'] . '.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !".$e);
+                abort(500, 'Erreur lors de la création du document.');
             }
         }
     }
@@ -3896,7 +3890,7 @@ class ImpressionController extends Controller
         $totalResteGlobal=0;
         if (request()->btn=="Imprimer") {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             ob_start();?>
 
             <page backtop="45mm" backbottom="20mm" backleft="2mm" backright="2mm">
@@ -4061,7 +4055,7 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Paiements_' . $dateNow . '_'.AnneeAcademique::find($anneeAcademique)->value('ANNEE_ACAD') .'.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !");
+                abort(500, 'erreur lors de la création du pdf !');
             }
         }
             /* return view('imprimerPaiement',['items'=>Inscription::where('Id_Annee',request()->anneeAcademique)->where('ID_FILIERE',request()->anneeEtude)->get()]); */
@@ -4069,7 +4063,7 @@ class ImpressionController extends Controller
     public function impressionPrevision(){
         if (request()->btn=="Imprimer") {
             $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             if (request()->filled(['dateDebut','dateFin'])) {
                 $items=Prevision::whereBetween('echeance',[\Carbon\Carbon::parse(request()->dateDebut)->format('Y-m-d'),\Carbon\Carbon::parse(request()->dateFin)->format('Y-m-d')])->get();
             }
@@ -4167,7 +4161,7 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Prévisions_' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("erreur lors de la création du pdf !");
+                abort(500, 'erreur lors de la création du pdf !');
             }
         }
     }
@@ -4175,7 +4169,7 @@ class ImpressionController extends Controller
     {
         $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
         if (request()->btn=="Imprimer") {
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $d1 = \Carbon\Carbon::parse(trim($dateDebut))->format('Y-m-d');
             $d2 = \Carbon\Carbon::parse(trim($dateFin))->format('Y-m-d');
             ob_start(); ?>
@@ -4218,7 +4212,7 @@ class ImpressionController extends Controller
             <?php $rc = $this->convert_array(DB::select("SELECT attr_ecue_ue.Id_Attr_ue_Sem as nattr,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,annee_etude.Code_Annee_Etude,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ue ,libelleUe,attr_ecue_ue.codeEcu as ecue,libelleEcu,attr_ecue_ue.numeroProf as nprof,nomProf,prenomsProf,telProf,`numeroEval`,evaluation.`dateEval`,`heureDebutEval`,`dureeEval`,`codeGroupe`,evaluation.codTypEval,libTypEval FROM  annee_etude_semestre,annee_etude,`attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue,professeur,evaluation,typeevaluation  WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and  attr_ecue_ue.numeroProf=professeur.numeroProf and annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND classe.id_S_Gr_Spe=annee_etude_semestre.id_S_Gr_Spe AND evaluation.Id_Attr_ue_Sem=attr_ecue_ue.Id_Attr_ue_Sem AND evaluation.codeEcu=attr_ecue_ue.codeEcu AND evaluation.codTypEval=typeevaluation.codTypEval AND `dateEval` BETWEEN '$d1' AND '$d2' ORDER BY annee_etude.Code_Annee_Etude ASC, `dateEval`,`heureDebutEval` ASC"));
             if (empty($rc)) {
                 $message='Aucune évaluation trouvée pour cette période';
-                die(view('errors.not-found',compact('message')));
+                abort(404);
             }
             ?>
             <table style="width:90%" border="1px">
@@ -4267,17 +4261,17 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Liste des compositions_ ' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
             }
         }
         if (request()->btn=="Imprimer par année d'étude"){
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $d1 = \Carbon\Carbon::parse(trim($dateDebut))->format('Y-m-d');
             $d2 = \Carbon\Carbon::parse(trim($dateFin))->format('Y-m-d');
             $rc = $this->convert_array(DB::select("SELECT attr_ecue_ue.Id_Attr_ue_Sem as nattr,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,annee_etude.Code_Annee_Etude,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ue ,libelleUe,attr_ecue_ue.codeEcu as ecue,libelleEcu,attr_ecue_ue.numeroProf as nprof,nomProf,prenomsProf,telProf,`numeroEval`,evaluation.`dateEval`,`heureDebutEval`,`dureeEval`,`codeGroupe`,evaluation.codTypEval,libTypEval FROM  annee_etude_semestre,annee_etude,`attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue,professeur,evaluation,typeevaluation  WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and  attr_ecue_ue.numeroProf=professeur.numeroProf and annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND classe.id_S_Gr_Spe=annee_etude_semestre.id_S_Gr_Spe AND evaluation.Id_Attr_ue_Sem=attr_ecue_ue.Id_Attr_ue_Sem AND evaluation.codeEcu=attr_ecue_ue.codeEcu AND evaluation.codTypEval=typeevaluation.codTypEval AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.`id_Annee_Acad`=$anneeAcademique AND `dateEval` BETWEEN '$d1' AND '$d2' ORDER BY annee_etude.Code_Annee_Etude,Nom_Classe ASC,libelleUe ASC, `dateEval`,`heureDebutEval` ASC"));
             if (empty($rc)) {
                 $message='Aucune évaluation trouvée pour cette période';
-                die(view('errors.not-found',compact('message')));
+                abort(404);
             }
             ob_start(); ?>
             <page backtop="45mm" backbottom="12mm" backleft="2mm" backright="2mm">
@@ -4362,7 +4356,7 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Impression des évaluations pour la filière_'.$anneeEtude.'_'.$rc[0]['ANNEE_ACAD'].'_' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
             }
         }
     }
@@ -4370,7 +4364,7 @@ class ImpressionController extends Controller
     {
         $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
         if (request()->btn=="Imprimer") {
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $d1 = \Carbon\Carbon::parse(trim($dateDebut))->format('Y-m-d');
             $d2 = \Carbon\Carbon::parse(trim($dateFin))->format('Y-m-d');
             ob_start(); ?>
@@ -4414,7 +4408,7 @@ class ImpressionController extends Controller
                     $rc = $this->convert_array(DB::select("SELECT attr_ecue_ue.Id_Attr_ue_Sem as nattr,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,annee_etude.Code_Annee_Etude,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ue ,libelleUe,attr_ecue_ue.codeEcu as ecue,libelleEcu,attr_ecue_ue.numeroProf as nprof,nomProf,prenomsProf,telProf,`numeroProg`,prog_cours.`datedebut`,prog_cours.`datefin`,prog_cours.`heureDebutCours`,prog_cours.`heureFinCours`,`codeGroupe`,prog_cours.codeSalle as salle,attr_ecue_ue.MasseHoraire as mht,prog_cours.MHoraireProg as mhex FROM  annee_etude_semestre,annee_etude,`attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue,professeur,prog_cours WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and  attr_ecue_ue.numeroProf=professeur.numeroProf and annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND classe.id_S_Gr_Spe=annee_etude_semestre.id_S_Gr_Spe AND prog_cours.Id_Attr_ue_Sem=attr_ecue_ue.Id_Attr_ue_Sem AND prog_cours.codeEcu=attr_ecue_ue.codeEcu  AND prog_cours.`datedebut` = '$d1' AND  prog_cours.`datefin` = '$d2' ORDER BY annee_etude.Code_Annee_Etude ASC, `datedebut`,`heureDebutCours` ASC"));
                     if (empty($rc)) {
                         $message='Aucun cours trouvé pour cette période';
-                        die(view('errors.not-found',compact('message')));
+                        abort(404);
                     }
                     ?>
                     <table style="width:90%" border="1px">
@@ -4471,17 +4465,17 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Programmation_cours ' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
             }
         }
         if (request()->btn=="Imprimer par année d'étude"){
-            extract(request()->except('_token'));
+            extract($this->extraireEntrees());
             $d1 = \Carbon\Carbon::parse(trim($dateDebut))->format('Y-m-d');
             $d2 = \Carbon\Carbon::parse(trim($dateFin))->format('Y-m-d');
             $rc = $this->convert_array(DB::select("SELECT attr_ecue_ue.Id_Attr_ue_Sem as nattr,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,annee_etude.Code_Annee_Etude,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ue ,libelleUe,attr_ecue_ue.codeEcu as ecue,libelleEcu,attr_ecue_ue.numeroProf as nprof,nomProf,prenomsProf,telProf,`numeroProg`,prog_cours.`datedebut`,prog_cours.`datefin`,prog_cours.`heureDebutCours`,prog_cours.`heureFinCours`,`codeGroupe`,codeSalle FROM  annee_etude_semestre,annee_etude,`attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue,professeur,prog_cours WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and  attr_ecue_ue.numeroProf=professeur.numeroProf and annee_etude.Code_Annee_Etude=annee_etude_semestre.Code_Annee_Etude AND classe.id_S_Gr_Spe=annee_etude_semestre.id_S_Gr_Spe AND prog_cours.Id_Attr_ue_Sem=attr_ecue_ue.Id_Attr_ue_Sem AND prog_cours.codeEcu=attr_ecue_ue.codeEcu  AND prog_cours.`datedebut` = '$d1' AND  prog_cours.`datefin` = '$d2' AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.`id_Annee_Acad`=$anneeAcademique ORDER BY annee_etude.Code_Annee_Etude,Nom_Classe ASC,libelleUe ASC, `datedebut`,`heureDebutCours` ASC"));
             if (empty($rc)) {
                 $message='Aucun cours trouvé pour cette période';
-                die(view('errors.not-found',compact('message')));
+                abort(404);
             }
             ob_start(); ?>
             <page backtop="45mm" backbottom="12mm" backleft="2mm" backright="2mm">
@@ -4570,13 +4564,13 @@ class ImpressionController extends Controller
                 $dateNow = $dateNow->format('Y.m.d.H.i.s');
                 $objPDF->Output('Programmation_cours ' . $dateNow . '.pdf');
             } catch (Exception $e) {
-                die("Erreur lors de la création du pdf !");
+                abort(500, 'Erreur lors de la création du pdf !');
             }
         }
     }
     public function impressionRepartir() {
         $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $d1 = \Carbon\Carbon::parse(trim($dateDebut))->format('Y-m-d');
         $d2 = \Carbon\Carbon::parse(trim($dateFin))->format('Y-m-d');
         //echo $$anneeAImprimer;
@@ -4593,7 +4587,7 @@ class ImpressionController extends Controller
         $rc = $this->convert_array(DB::select($$anneeAImprimer));
         if (empty($rc)) {
             $message='Aucun évaluation trouvée pour cette période';
-            die(view('errors.not-found',compact('message')));
+            abort(404);
         }
         $nbr = count($rc);
         if ($anneeAImprimer == "l1") {
@@ -4706,7 +4700,7 @@ class ImpressionController extends Controller
             $dateNow = $dateNow->format('Y.m.d.H.i.s');
             $objPDF->Output('Liste d\'émargement_' . $dateNow . '.pdf');
         } catch (Exception $e) {
-            die("Erreur lors de la création du pdf !");
+            abort(500, 'Erreur lors de la création du pdf !');
         }
     }
 }

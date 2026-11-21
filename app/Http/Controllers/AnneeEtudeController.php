@@ -106,10 +106,10 @@ class AnneeEtudeController extends Controller
         return to_route('annees-etudes.index')->with('succes','Année d\'étude supprimée avec succès');
     }
     public function recapitulatif() {
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $UE = DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas,annee_etude_semestre.Code_Annee_Etude ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance,annee_etude,annee_etude_semestre WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND annee_etude_semestre.Code_Annee_Etude=annee_etude.Code_Annee_Etude AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique' ORDER BY Nom_Classe,libelleUe ASC;");
         if(empty($UE))
-            die("Aucune UE n'est attribuée à cette filière. <a href='/attribuer-ue-semestre'>Attribuer</a>");
+            abort(500, 'Aucune UE n\'est attribuée à cette filière. <a href=\'/attribuer-ue-semestre\'>Attribuer</a>');
         $UE=array_map(function ($value) {
             return (array)$value;
         }, $UE);
@@ -425,10 +425,10 @@ class AnneeEtudeController extends Controller
         exit();
     }
     public function exportExcel() {
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $UE = DB::select("SELECT Id_Attr_ue_Sem,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas,annee_etude_semestre.Code_Annee_Etude ,Nom_Classe,attr_ue_classe.`codeUe` as ID_UE ,libelleUe,attr_ue_classe.`Id_Cat_Ue` as cat ,Lib_Cat_Ue,attr_ue_classe.`idImportance` as import ,libelleImp,`Seuil_Ue`,`Credit` FROM `attr_ue_classe`,anneeacademique,classe,ue,categorie_ue,importance,annee_etude,annee_etude_semestre WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe` AND attr_ue_classe.`Id_Cat_Ue`=categorie_ue.`Id_Cat_Ue` AND attr_ue_classe.`idImportance`=importance.`idImportance` AND annee_etude_semestre.Code_Annee_Etude=annee_etude.Code_Annee_Etude AND annee_etude_semestre.id_S_Gr_Spe=classe.id_S_Gr_Spe AND annee_etude_semestre.Code_Annee_Etude='$anneeEtude' AND attr_ue_classe.id_Annee_Acad='$anneeAcademique' ORDER BY Nom_Classe,libelleUe ASC;");
         if(empty($UE))
-            die("Aucune UE n'est attribuée à cette filière. <a href='/attribuer-ue-semestre'>Attribuer</a>");
+            abort(500, 'Aucune UE n\'est attribuée à cette filière. <a href=\'/attribuer-ue-semestre\'>Attribuer</a>');
         $UE=array_map(function ($value) {
             return (array)$value;
         }, $UE);

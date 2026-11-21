@@ -16,7 +16,38 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        return view('etudiants',['items'=>Etudiant::all()]);
+        /* Sans pagination, la page renvoyait 5 Mo de HTML et 603 requêtes
+           SQL pour 297 étudiants : chaque ligne embarque plusieurs modals.
+           À 3 000 étudiants la page devenait inutilisable.
+           La recherche reste possible via ?recherche=… */
+        $recherche = trim((string) request('recherche', ''));
+
+        $requete = Etudiant::query()
+            ->with(['typeEtudiant', 'nationalite'])
+            ->orderBy('nomEtu')
+            ->orderBy('prenomsEtu');
+
+        if ($recherche !== '') {
+            $terme = '%' . addcslashes($recherche, '%_\\') . '%';
+            $requete->where(function ($q) use ($terme) {
+                $q->where('nomEtu', 'like', $terme)
+                    ->orWhere('prenomsEtu', 'like', $terme)
+                    ->orWhere('MATRICULE', 'like', $terme);
+            });
+        }
+
+        $items = $requete->paginate(50)->withQueryString();
+
+        /* Les listes déroulantes étaient chargées par la vue elle-même
+           (AnneeAcademique::all() dans une boucle), soit des dizaines de
+           requêtes SQL par page. Elles sont préparées une seule fois ici. */
+        return view('etudiants', [
+            'items' => $items,
+            'recherche' => $recherche,
+            'anneesAcademiques' => \App\Models\AnneeAcademique::orderByDesc('id_Annee_Acad')->get(),
+            'nationalites' => \App\Models\Nationalite::orderBy('libNationalite')->get(),
+            'typesEtudiant' => \App\Models\TypeEtudiant::orderBy('libTypeEtu')->get(),
+        ]);
     }
 
     /**

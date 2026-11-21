@@ -134,8 +134,10 @@ Fiches d'engagement financier
                     <tbody>
                         @foreach ($inscriptions as $ins)
                         @php
-                            $nbPrevs = \App\Models\Prevision::where('MATRICULE', $ins->MATRICULE)->where('Id_Annee', $ins->Id_Annee)->count();
-                            $cumul = $ins->paiements()->sum('montantPaye');
+                            /* Totaux fournis par withCount / withSum : plus de
+                               requête par ligne. */
+                            $nbPrevs = $ins->nb_previsions ?? 0;
+                            $cumul = $ins->cumul_paiements ?? 0;
                         @endphp
                         <tr>
                             <td class="fw-bold">{{ $ins->MATRICULE }}</td>

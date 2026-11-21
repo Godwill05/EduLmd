@@ -1,3 +1,8 @@
+@extends('layout')
+
+@section('title', 'Inscriptions')
+
+@section('content')
 <table class="table table-striped datatable" id="tableD">
     <thead>
         <th>Matricule</th>
@@ -96,3 +101,10 @@
         @endforeach
     </tbody>
 </table>
+
+@if (method_exists($items, 'links') && $items->hasPages())
+    <div class="mt-4">
+        @include('partials.pagination', ['paginateur' => $items])
+    </div>
+@endif
+@endsection

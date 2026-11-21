@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttrEcueUe;
+use App\Models\AttrUeClasse;
+use App\Models\Ecue;
+use App\Models\Enseignant;
+use App\Models\ModeEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +19,28 @@ class AttribuerEcueUeController extends Controller
      */
     public function index()
     {
-        return view('attribuerEcueUe',['items'=>AttrEcueUe::paginate(5)]);
+        /* 1 282 requêtes SQL : chaque ligne déréférençait ueSemestre, ue,
+           semestre, anneeacademique, ecue et professeur. Eager loading. */
+        $items = AttrEcueUe::query()
+            ->with(['ueSemestre.ue', 'ueSemestre.semestre', 'ueSemestre.anneeacademique', 'ecue', 'professeur'])
+            ->paginate(50)
+            ->withQueryString();
+
+        /* La liste déroulante « UE – semestre » parcourt AttrUeClasse::all()
+           et déréférence ue / semestre / anneeacademique pour chaque ligne :
+           415 × 3 requêtes. Chargées ici une fois pour toutes. */
+        $ueSemestres = AttrUeClasse::query()
+            ->with(['ue', 'semestre', 'anneeacademique'])
+            ->orderByDesc('Id_Attr_ue_Sem')
+            ->get();
+
+        return view('attribuerEcueUe', [
+            'items' => $items,
+            'ueSemestres' => $ueSemestres,
+            'ecues' => Ecue::orderBy('libelleEcu')->get(),
+            'enseignants' => Enseignant::orderBy('nomProf')->get(),
+            'modesEvaluation' => ModeEvaluation::orderBy('libEvaMode')->get(),
+        ]);
     }
 
     /**

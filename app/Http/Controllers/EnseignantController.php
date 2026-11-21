@@ -15,7 +15,13 @@ class EnseignantController extends Controller
      */
     public function index()
     {
-        return view('enseignants',['items'=>Enseignant::all()]);
+        $items = Enseignant::query()
+            ->orderBy('nomProf')
+            ->orderBy('prenomsProf')
+            ->paginate(50)
+            ->withQueryString();
+
+        return view('enseignants', ['items' => $items]);
     }
 
     /**

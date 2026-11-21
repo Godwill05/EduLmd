@@ -53,7 +53,7 @@ class CoursController extends Controller
             "heureDebut" => "required",
             "heureFin" => "required",
         ]);
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $heureDebut=new Carbon($heureDebut);
         $heureFin=new Carbon($heureFin);
         $dateDebut=$cbn->createFromDate($dateDebut);
@@ -114,7 +114,7 @@ class CoursController extends Controller
             "heureDebut" => "required",
             "heureFin" => "required",
         ]);
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $heureDebut=new Carbon($heureDebut);
         $heureFin=new Carbon($heureFin);
         $dateDebut=$cbn->createFromDate($dateDebut);

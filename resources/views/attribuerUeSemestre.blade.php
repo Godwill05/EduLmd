@@ -41,7 +41,7 @@ UE -> Semestre
                                     <label class="form-label" for="anneeAcademique">Année académique <span class="text-danger">*</span></label>
                                     <select name="anneeAcademique" id="anneeAcademique" class="form-control form-select">
                                         <option value="">Séléctionner une année académique...</option>
-                                        @foreach (\App\Models\AnneeAcademique::all() as $anAc)
+                                        @foreach ($anneesAcademiques as $anAc)
                                         <option value="{{$anAc->id_Annee_Acad}}">{{$anAc->ANNEE_ACAD}}</option>
                                         @endforeach
                                     </select>
@@ -52,7 +52,7 @@ UE -> Semestre
                                     <label class="form-label" for="importanceUe">Importance de l'UE <span class="text-danger">*</span></label>
                                     <select name="importanceUe" id="importanceUe" class="form-control form-select">
                                         <option value="">Spécifier l'importance de l'UE...</option>
-                                        @foreach (\App\Models\ConstanteImportance::all() as $constImp)
+                                        @foreach ($constantesImportance as $constImp)
                                         <option value="{{$constImp->idImportance}}">{{$constImp->libelleImp}}</option>
                                         @endforeach
                                     </select>
@@ -63,7 +63,7 @@ UE -> Semestre
                                     <label class="form-label" for="semestre">Semestre <span class="text-danger">*</span></label>
                                     <select name="semestre" id="semestre" class="form-control form-select">
                                         <option value="">Spécifier le semestre...</option>
-                                        @foreach (\App\Models\SemestreEtude::all() as $semestreEtude)
+                                        @foreach ($semestresEtude as $semestreEtude)
                                         <option value="{{$semestreEtude->id_S_Gr_Spe}}">{{$semestreEtude->Nom_Classe}}</option>
                                         @endforeach
                                     </select>
@@ -80,7 +80,7 @@ UE -> Semestre
                                     <label class="form-label" for="ue">Unité d'Enseignement <span class="text-danger">*</span></label>
                                     <select name="ue" id="ue" class="form-control form-select">
                                         <option value="">Séléctionner une UE...</option>
-                                        @foreach (\App\Models\Ue::all() as $ue)
+                                        @foreach ($ues as $ue)
                                         <option value="{{$ue->codeUe}}">{{$ue->libelleUe}}</option>
                                         @endforeach
                                     </select>
@@ -97,7 +97,7 @@ UE -> Semestre
                                     <label class="form-label" for="categorie">Catégorie de l'UE</label>
                                     <select name="categorie" id="categorie" class="form-control form-select">
                                         <option value="">Séléctionner une catégorie...</option>
-                                        @foreach (\App\Models\CategorieUe::all() as $categorieUe)
+                                        @foreach ($categoriesUe as $categorieUe)
                                         <option value="{{$categorieUe->Id_Cat_Ue}}">{{$categorieUe->Lib_Cat_Ue}}</option>
                                         @endforeach
                                     </select>
@@ -158,6 +158,12 @@ UE -> Semestre
                     @endforeach
                 </tbody>
             </table>
+
+                @if ($items->hasPages())
+                    <div class="mt-4">
+                        @include('partials.pagination', ['paginateur' => $items])
+                    </div>
+                @endif
         </div>
     </div>
 </div>

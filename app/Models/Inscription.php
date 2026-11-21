@@ -91,4 +91,14 @@ class Inscription extends Model implements Auditable
         return $this->hasMany('App\Models\Paiement',['MATRICULE', 'Id_Annee', 'ID_FILIERE'], ['MATRICULE', 'Id_Annee', 'ID_FILIERE']);
     }
 
+    /**
+     * Prévisions de paiement de l'inscription, en vraie relation Eloquent :
+     * indispensable à withCount() (l'accès à $this->paiements() renvoie une
+     * collection, pas une relation, et coûtait une requête par ligne).
+     */
+    public function previsions()
+    {
+        return $this->hasMany('App\Models\Prevision', ['MATRICULE', 'Id_Annee'], ['MATRICULE', 'Id_Annee']);
+    }
+
 }

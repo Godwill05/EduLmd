@@ -138,7 +138,7 @@ class GradeController extends Controller
     }
     public function recapitulatif()
     {
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         if (empty(FiliereCpl::find($filiere)->annee3)) {
             $anneeEtude=FiliereCpl::find($filiere)->anneeEtude2->Code_Annee_Etude;
             $lastYear=$this->anneeAcademiqueNext($anneeAcademique);
@@ -315,7 +315,7 @@ class GradeController extends Controller
             exit();
     }
     public function recapSolo(){
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $Promotion = [[$annee_etude, $anneeAcademique]];
         $ttcredit = 0;
 

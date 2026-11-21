@@ -272,16 +272,22 @@
     if (document.querySelector('.ed-cmdk')) return;
     build();
 
-    document.addEventListener('keydown', function (e) {
-      var isK = (e.key === 'k' || e.key === 'K');
-      if (isK && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        isOpen ? close() : open();
-      }
-    });
+    /* Ctrl/⌘+K est pris en charge par edulmd-raccourcis.js (palette unifiée :
+       étudiants + tous les écrans du menu). Ce module ne garde que la
+       recherche d'étudiants quand la palette n'est pas chargée, pour ne
+       jamais laisser le raccourci sans effet. */
+    if (!window.EduRaccourcis) {
+      document.addEventListener('keydown', function (e) {
+        var isK = (e.key === 'k' || e.key === 'K');
+        if (isK && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          isOpen ? close() : open();
+        }
+      });
+    }
 
     // Déclencheur visible dans le header
-    var trigger = document.getElementById('edSearchTrigger');
+    var trigger = window.EduRaccourcis ? null : document.getElementById('edSearchTrigger');
     if (trigger) {
       trigger.addEventListener('click', function (e) {
         e.preventDefault();

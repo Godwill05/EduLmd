@@ -16,7 +16,14 @@ class UEController extends Controller
      */
     public function index()
     {
-        return view('ue',['items'=>Ue::all()]);
+        /* Pagination : la table UE comptait déjà 253 lignes en production
+           et grossit chaque année. */
+        $items = Ue::query()
+            ->orderBy('codeUe')
+            ->paginate(50)
+            ->withQueryString();
+
+        return view('ue', ['items' => $items]);
     }
 
     /**
@@ -105,16 +112,14 @@ class UEController extends Controller
     public function recapitulatif() {
         if (!request()->except('_token','anneeAcademique','anneeEtude')) {
             return('Aucun résultat');
-            die();
         }
-        extract(request()->except('_token'));
+        extract($this->extraireEntrees());
         $rc = DB::select("SELECT attr_ecue_ue.Id_Attr_ue_Sem as nattr,attr_ue_classe.`id_Annee_Acad` as an,ANNEE_ACAD,attr_ue_classe.`id_S_Gr_Spe` as clas ,Nom_Classe,attr_ue_classe.`codeUe` as ue ,libelleUe,attr_ecue_ue.codeEcu as ecue,libelleEcu,Ponderation,PoidsDev,PoidsPart FROM  `attr_ue_classe`,anneeacademique,classe,ue,attr_ecue_ue,ecue WHERE attr_ue_classe.`id_Annee_Acad`=anneeacademique.`id_Annee_Acad` AND attr_ue_classe.`id_S_Gr_Spe`=classe.`id_S_Gr_Spe`AND attr_ue_classe.`codeUe`= ue.`codeUe`AND attr_ecue_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem and attr_ecue_ue.codeEcu=ecue.codeEcu and  attr_ecue_ue.Id_Attr_ue_Sem=$ue AND attr_ue_classe.id_Annee_Acad=$anneeAcademique AND attr_ue_classe.id_S_Gr_Spe=$semestreEtude ORDER BY libelleEcu ASC"); //echo count($rc);
         $rc=array_map(function ($value) {
             return (array)$value;
         }, $rc);
         if (!$rc) {
             return('Aucun résultat');
-            die();
         }
         ?>
         <table id="liste" class="table table-bordered table-striped" style="width:100%" border="1px" cellspacing="2" cellpadding="2">

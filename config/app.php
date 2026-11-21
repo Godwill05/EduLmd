@@ -195,6 +195,15 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Paquets tiers — déclarés explicitement.
+         *
+         * Spatie\Permission était absent : les Gates n'étaient donc jamais
+         * enregistrés et toutes les routes protégées par « can:… »
+         * répondaient 403, même aux administrateurs.
+         */
+        Spatie\Permission\PermissionServiceProvider::class,
+
         OwenIt\Auditing\AuditingServiceProvider::class,
 
     ],
