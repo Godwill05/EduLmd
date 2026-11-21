@@ -21,7 +21,12 @@ Gestion des notes
     @endif
     <div class="row">
         <div class="p-4 card">
-            <form action="{{ route('afficherNotes') }}" method="POST">
+            <form action="{{ route('afficherNotes') }}" method="POST" id="formFiltresNotes"
+                  data-sel-annee-etude="{{ request('anneeEtude') }}"
+                  data-sel-annee-acad="{{ request('anneeAcademique') }}"
+                  data-sel-semestre="{{ request('semestreEtude') }}"
+                  data-sel-ue="{{ request('ue') }}"
+                  data-sel-ecue="{{ request('ecue') }}">
                 @csrf
                 <div class="row g-3">
                     <div class="col-lg-6 col-sm-12 col-md-12">
@@ -53,6 +58,7 @@ Gestion des notes
                                 <option value="">Sélectionner le semestre...</option>
                             </select>
                             <div class="form-text" id="requiredAnEtd">Choisissez d'abord une année d'étude !</div>
+                            <div class="form-text text-danger d-none" id="erreurSemestre"></div>
                         </div>
                     </div>
                     <div class="col-lg-6 col-sm-12 col-md-12">
@@ -62,6 +68,7 @@ Gestion des notes
                                 <option value="">Sélectionner l'UE...</option>
                             </select>
                             <div class="form-text" id="requiredSemAnac">Choisissez d'abord le semestre et l'année académique !</div>
+                            <div class="form-text text-danger d-none" id="erreurUe"></div>
                         </div>
                     </div>
                     <div class="col-lg-6 col-sm-12 col-md-12">
@@ -71,6 +78,7 @@ Gestion des notes
                                 <option value="">Sélectionner l'ECUE...</option>
                             </select>
                             <div class="form-text" id="requiredUe">Choisissez d'abord l'UE !</div>
+                            <div class="form-text text-danger d-none" id="erreurEcue"></div>
                         </div>
                     </div>
                 </div>
@@ -120,7 +128,7 @@ Gestion des notes
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form method="POST" id="insererNotes">
+                            <form method="POST" id="insererNotes" action="{{ route('notes.insererNotes') }}">
                                 @csrf
                                 <input type="hidden" name="numeroEvaluation" value="{{request()->id_eval}}">
                                 <table class="table table-striped">
@@ -166,7 +174,9 @@ Gestion des notes
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                            <button type="button" onclick="$('#insererNotes').submit()" class="btn btn-primary">Enregistrer</button>
+                            {{-- Bouton natif : `$().submit()` ne déclenche pas
+                                 l'événement submit, donc l'Ajax ne partait pas. --}}
+                            <button type="submit" form="insererNotes" class="btn btn-primary">Enregistrer</button>
                         </div>
                     </div>
                 </div>
@@ -179,134 +189,254 @@ Gestion des notes
 @endsection
 @section('js')
 <script>
-    $('#anneeEtude').on('change',function(){
-        $.ajax({
-            url:"/api/semestre-etude/"+this.value,
-            type:'GET',
-            success:function(response){
-                $('#requiredAnEtd').remove();
-                $('.semestre').removeAttr('disabled');
-                $('.semestre').html($('<option>', {
-                    value: "",
-                    text: "Sélectionner le semestre..."
-                }));
-                response.forEach(element => {
-                    $('.semestre').append($('<option>', {
-                        value: element.id_S_Gr_Spe,
-                        text: element.Nom_Classe
-                    }));
+/*
+ * Formulaire « Gestion des notes ».
+ *
+ * Les troisièmes niveaux (semestre, UE, ECUE) sont désactivés au départ : un
+ * <select> désactivé n'est jamais envoyé avec le formulaire. La cascade Ajax
+ * les remplit, mais après « Afficher » la page se recharge et le navigateur
+ * oubliait la sélection : le formulaire revenait vide, semestre et UE
+ * désactivés, donc jamais soumis. On restaure ici la cascade complète à
+ * partir de la sélection mémorisée dans le formulaire.
+ */
+(function () {
+  'use strict';
 
-                });
-                $('.semestre').addClass('form-select');
-            }
-        })
-    });
-    $('#anneeAcademique').on('change',function(){
-        if ($('#semestreEtude').val()=="") {
-            $('#requiredSemAnac').html('Choisissez d\'abord le semestre !');
-        }
-        else{
-            $.ajax({
-                url:"/api/ue/"+$('#anneeAcademique').val()+"/"+$('#semestreEtude').val(),
-                type:'GET',
-                success:function(response){
-                    $('#requiredSemAnac').remove();
-                    $('#ue').removeAttr('disabled');
-                    $('.ue').html($('<option>', {
-                        value: "",
-                        text: "Sélectionner l'UE..."
-                    }));
-                    response.forEach(element => {
-                        $('.ue').append($('<option>', {
-                            value: element.Id_Attr_ue_Sem,
-                            text: element.libelleUe
-                        }));
+  var form     = document.getElementById('formFiltresNotes');
+  var selEtude = document.getElementById('anneeEtude');
+  var selAcad  = document.getElementById('anneeAcademique');
+  var selSem   = document.getElementById('semestreEtude');
+  var selUe    = document.getElementById('ue');
+  var selEcue  = document.getElementById('ecue');
 
-                    });
-                    $('.ue').addClass('form-select');
-                }
-            })
-        }
-    });
-    $('#semestreEtude').on('change',function(){
-        if ($('#anneeAcademique').val()=="") {
-            $('#requiredSemAnac').html('Choisissez d\'abord l\'année académique !');
-        }
-        else{
-            $.ajax({
-                url:"/api/ue/"+$('#anneeAcademique').val()+"/"+$('#semestreEtude').val(),
-                type:'GET',
-                success:function(response){
-                    $('#requiredSemAnac').remove();
-                    $('#ue').removeAttr('disabled');
-                    $('.ue').html($('<option>', {
-                        value: "",
-                        text: "Sélectionner l'UE..."
-                    }));
-                    response.forEach(element => {
-                        $('.ue').append($('<option>', {
-                            value: element.Id_Attr_ue_Sem,
-                            text: element.libelleUe
-                        }));
+  if (!form || !selEtude || !selAcad || !selSem || !selUe || !selEcue) return;
 
-                    });
-                    $('.ue').addClass('form-select');
-                }
-            })
-        }
-    });
-    $('#ue').on('change',function(){
-        $.ajax({
-            url:"/api/ecue/"+this.value,
-            type:'GET',
-            success:function(response){
-                $('#requiredUe').remove();
-                $('.ecue').removeAttr('disabled');
-                $('.ecue').html($('<option>', {
-                    value: "",
-                    text: "Sélectionner l'ECUE..."
-                }));
-                response.forEach(element => {
-                    $('.ecue').append($('<option>', {
-                        value: element.ecue,
-                        text: element.libelle
-                    }));
+  var memorise = {
+    etude: form.dataset.selAnneeEtude  || '',
+    acad:  form.dataset.selAnneeAcad   || '',
+    sem:   form.dataset.selSemestre    || '',
+    ue:    form.dataset.selUe          || '',
+    ecue:  form.dataset.selEcue        || ''
+  };
 
-                });
-                $('.ecue').addClass('form-select');
-            }
-        })
+  /* ─────────── Utilitaires ─────────── */
+
+  function vider(select, texte) {
+    select.innerHTML = '';
+    var o = document.createElement('option');
+    o.value = '';
+    o.textContent = texte || 'Sélectionner…';
+    select.appendChild(o);
+  }
+
+  function remplir(select, items, valeurCourante) {
+    items.forEach(function (element) {
+      var o = document.createElement('option');
+      o.value = element.valeur;
+      o.textContent = element.texte;
+      select.appendChild(o);
     });
-    $(document).ready(function() {
-        if(window.location.href.indexOf('#modalNote') != -1) {
-            $('#modalNote').modal('show');
-        }
+    if (valeurCourante) select.value = valeurCourante;
+  }
+
+  function signaler(id, message) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (!message) { el.classList.add('d-none'); el.textContent = ''; return; }
+    el.textContent = message;
+    el.classList.remove('d-none');
+  }
+
+  /* Requête JSON. On envoie l'en-tête X-Requested-With : les routes
+     /api/ue et /api/ecue répondent 401 sans lui (contrôle request()->ajax()). */
+  function charger(url) {
+    return fetch(url, {
+      headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      credentials: 'same-origin'
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
     });
-    @can('Supprimer les notes')
-    function supprimerNote(note){
-        if(confirm('Voulez-vous vraiment retirer cette note ?')){
-            $.ajax({
-                url:"/deleteNote/"+note,
-                type:'GET',
-                success:function(){
-                    $('#note'+note).val('');
-                    $('#supprimerNote'+note).html('<span class=" ri-delete-bin-line btn disabled"></span>');
-                }
-            })
-        }
+  }
+
+  /* Active un select qui reprend une valeur mémorisée, même si son parent
+     n'a pas encore été rejoué. */
+  function activer(select) { select.disabled = false; }
+
+  /* ─────────── Cascade ─────────── */
+
+  function chargerSemestres(codeAnneeEtude, valeurAChoisir) {
+    vider(selSem, 'Sélectionner le semestre...');
+    signaler('erreurSemestre', '');
+    if (!codeAnneeEtude) {
+      selSem.disabled = true;
+      return Promise.resolve();
     }
-    @endcan
-    $('#insererNotes').on('submit',function(e){
-        e.preventDefault();
-        $.ajax({
-            url:'{{route("notes.insererNotes")}}',
-            type:'POST',
-            dataType:'json',
-            data:$(this).serialize(),
-            success:alert('Notes insérées !'),
-        });
+    return charger('/api/semestre-etude/' + encodeURIComponent(codeAnneeEtude))
+      .then(function (response) {
+        activer(selSem);
+        remplir(selSem, response.map(function (e) {
+          return { valeur: e.id_S_Gr_Spe, texte: e.Nom_Classe };
+        }), valeurAChoisir);
+        if (!response.length) signaler('erreurSemestre', 'Aucun semestre pour cette année d\'étude.');
+      })
+      .catch(function (e) {
+        signaler('erreurSemestre', 'Impossible de charger les semestres (' + e.message + ').');
+      });
+  }
+
+  function chargerUes(idAnneeAcad, idSemestre, valeurAChoisir) {
+    vider(selUe, 'Sélectionner l\'UE...');
+    signaler('erreurUe', '');
+    if (!idAnneeAcad || !idSemestre) {
+      selUe.disabled = true;
+      return Promise.resolve();
+    }
+    return charger('/api/ue/' + encodeURIComponent(idAnneeAcad) + '/' + encodeURIComponent(idSemestre))
+      .then(function (response) {
+        activer(selUe);
+        remplir(selUe, response.map(function (e) {
+          return { valeur: e.Id_Attr_ue_Sem, texte: e.libelleUe };
+        }), valeurAChoisir);
+        if (!response.length) signaler('erreurUe', 'Aucune UE pour ce semestre et cette année académique.');
+      })
+      .catch(function (e) {
+        signaler('erreurUe', 'Impossible de charger les UE (' + e.message + ').');
+      });
+  }
+
+  function chargerEcues(idAttrUeSem, valeurAChoisir) {
+    vider(selEcue, 'Sélectionner l\'ECUE...');
+    signaler('erreurEcue', '');
+    if (!idAttrUeSem) {
+      selEcue.disabled = true;
+      return Promise.resolve();
+    }
+    return charger('/api/ecue/' + encodeURIComponent(idAttrUeSem))
+      .then(function (response) {
+        activer(selEcue);
+        remplir(selEcue, response.map(function (e) {
+          return { valeur: e.ecue, texte: e.libelle };
+        }), valeurAChoisir);
+        if (!response.length) signaler('erreurEcue', 'Aucune ECUE rattachée à cette UE.');
+      })
+      .catch(function (e) {
+        signaler('erreurEcue', 'Impossible de charger les ECUE (' + e.message + ').');
+      });
+  }
+
+  /* ─────────── Écouteurs ─────────── */
+
+  selEtude.addEventListener('change', function () {
+    selUe.disabled = true;
+    selEcue.disabled = true;
+    vider(selUe, 'Sélectionner l\'UE...');
+    vider(selEcue, 'Sélectionner l\'ECUE...');
+    chargerSemestres(this.value, '');
+  });
+
+  selAcad.addEventListener('change', function () {
+    if (!selSem.value) {
+      signaler('erreurUe', 'Choisissez d\'abord le semestre.');
+      return;
+    }
+    selEcue.disabled = true;
+    vider(selEcue, 'Sélectionner l\'ECUE...');
+    chargerUes(this.value, selSem.value, '');
+  });
+
+  selSem.addEventListener('change', function () {
+    if (!selAcad.value) {
+      signaler('erreurUe', 'Choisissez d\'abord l\'année académique.');
+      return;
+    }
+    selEcue.disabled = true;
+    vider(selEcue, 'Sélectionner l\'ECUE...');
+    chargerUes(selAcad.value, this.value, '');
+  });
+
+  selUe.addEventListener('change', function () {
+    chargerEcues(this.value, '');
+  });
+
+  /* ─────────── Restauration après « Afficher » ─────────── */
+
+  if (memorise.etude) {
+    chargerSemestres(memorise.etude, memorise.sem).then(function () {
+      if (!memorise.acad || !memorise.sem) return;
+      return chargerUes(memorise.acad, memorise.sem, memorise.ue).then(function () {
+        if (!memorise.ue) return;
+        return chargerEcues(memorise.ue, memorise.ecue);
+      });
     });
+  }
 
+  /* ─────────── Modal d'insertion des notes ─────────── */
 
+  $(document).ready(function () {
+    if (window.location.href.indexOf('#modalNote') != -1) {
+      $('#modalNote').modal('show');
+    }
+  });
+
+  window.supprimerNote = function (note) {
+    if (!confirm('Voulez-vous vraiment retirer cette note ?')) return;
+    fetch('/api/deleteNote/' + encodeURIComponent(note), {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+          ? document.querySelector('meta[name="csrf-token"]').content
+          : ''
+      },
+      credentials: 'same-origin'
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      $('#note' + note).val('');
+      $('#supprimerNote' + note).html('<span class="ri-delete-bin-line btn disabled"></span>');
+    }).catch(function (e) {
+      alert('La suppression a échoué (' + e.message + ').');
+    });
+  };
+
+  /* Enregistrement des notes : le retour doit venir d'ici, pas du chargement
+     de la page. L'ancien code passait `alert(...)` en rappel, ce qui
+     l'exécutait immédiatement. */
+  $(document).on('submit', '#insererNotes', function (e) {
+    e.preventDefault();
+    var $form = $(this);
+    var $btn = $form.find('button[type="submit"], .btn-primary').first();
+
+    $btn.prop('disabled', true).text('Enregistrement…');
+
+    fetch($form.attr('action') || window.location.href, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+          ? document.querySelector('meta[name="csrf-token"]').content
+          : ''
+      },
+      body: new URLSearchParams(new FormData(this)),
+      credentials: 'same-origin'
+    }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      $('#modalNote').modal('hide');
+      /* Bandeau discret plutôt qu'une alerte bloquante. */
+      var bandeau = document.createElement('div');
+      bandeau.className = 'alert alert-success position-fixed';
+      bandeau.style.cssText = 'top:1rem;right:1rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.15)';
+      bandeau.textContent = 'Notes enregistrées.';
+      document.body.appendChild(bandeau);
+      setTimeout(function () { bandeau.remove(); }, 3200);
+    }).catch(function (err) {
+      alert('L\'enregistrement a échoué (' + err.message + ').');
+    }).finally(function () {
+      $btn.prop('disabled', false).text('Enregistrer');
+    });
+  });
+})();
 </script>
 @endsection

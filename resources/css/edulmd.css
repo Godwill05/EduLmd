@@ -80,11 +80,24 @@
   /* Safari/PWA : pas de flash bleu au tap */
   a, button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 
-  /* Focus visible homogène (accessibilité clavier) */
-  :focus-visible {
+  /* Focus visible homogène (accessibilité clavier).
+     On cible les éléments actionnables et non les champs de saisie : ceux-ci
+     portent déjà leur propre indicateur (bordure + halo) via .form-control.
+     Un input dans une barre de commandes, notamment, ne doit pas hériter
+     d'un cadre bleu autour de sa zone de texte. */
+  a:focus-visible,
+  button:focus-visible,
+  [role="button"]:focus-visible,
+  summary:focus-visible {
     outline: 2px solid var(--ed-bleu);
     outline-offset: 2px;
     border-radius: 0.375rem;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
   }
 
   /* Respect de prefers-reduced-motion */
@@ -1855,15 +1868,7 @@ body.ed-ech-open { overflow: hidden; }
    ========================================================================== */
 body.ed-cmdk-open { overflow: hidden; }
 
-.ed-cmdk-overlay {
-  position: fixed; inset: 0; z-index: 1095;
-  display: flex; align-items: flex-start; justify-content: center;
-  padding: 10vh 1rem 1rem;
-  background: rgba(11, 11, 12, .45);
-  backdrop-filter: blur(2px);
-  animation: edFadeIn .12s ease-out;
-}
-.ed-cmdk-overlay[hidden] { display: none; }
+
 
 .ed-cmdk-type {
   margin-left: auto; flex: 0 0 auto;
@@ -1945,3 +1950,86 @@ body.ed-cmdk-open { overflow: hidden; }
 .ed-keys-trigger:hover, .ed-keys-trigger:focus-visible {
   color: #822A40; border-color: #E9C3CD; background: #FBEDF1;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PALETTE DE COMMANDES (Ctrl+K) — version finale
+   Placée en fin de feuille : ses règles priment sur les définitions
+   antérieures de même spécificité (ancienne palette limitée à 640 px).
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Voile de la palette. `min-height: 0` sur les enfants flexibles est ce qui
+   permet à la liste de défiler au lieu de pousser le panneau hors écran. */
+.ed-cmdk-overlay {
+  position: fixed; inset: 0; z-index: 1095;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 7vh 1rem 1.5rem;
+  background: rgba(11, 11, 12, .45);
+  backdrop-filter: blur(2px);
+  animation: edFadeIn .12s ease-out;
+}
+.ed-cmdk-overlay[hidden] { display: none; }
+
+.ed-cmdk-panel {
+  width: 100%; max-width: 780px;
+  max-height: min(82vh, 44rem);
+  display: flex; flex-direction: column;
+  background: #fff; border: 1px solid var(--ed-ligne);
+  border-radius: 1rem; overflow: hidden;
+  box-shadow: 0 28px 80px rgba(11, 11, 12, .32);
+  animation: edModalIn .18s cubic-bezier(.22, 1, .36, 1);
+}
+
+/* En-tête : la barre de saisie. Plus de bordure bleue de focus : c'est le
+   panneau qui porte la bordure, le champ reste sans contour. */
+.ed-cmdk-head {
+  display: flex; align-items: center; gap: .75rem;
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--ed-ligne);
+  background: #FCFCFD;
+  flex: 0 0 auto;
+}
+.ed-cmdk-head > i { font-size: 1.2rem; color: #822A40; flex: 0 0 auto; }
+.ed-cmdk-head input,
+.ed-cmdk-head input:focus,
+.ed-cmdk-head input:focus-visible {
+  flex: 1 1 auto; min-width: 0;
+  border: 0; outline: 0; box-shadow: none; background: transparent;
+  font-size: 1rem; line-height: 1.5; color: #0B0B0C; font-family: inherit;
+  padding: .1rem 0; -webkit-appearance: none; appearance: none;
+}
+.ed-cmdk-head input::placeholder { color: #A3A6AC; }
+.ed-cmdk-head kbd {
+  flex: 0 0 auto;
+  display: inline-grid; place-items: center;
+  min-width: 1.5rem; height: 1.45rem; padding: 0 .4rem;
+  font-size: .63rem; font-weight: 700; font-family: inherit;
+  color: #5C5F66; background: #fff;
+  border: 1px solid var(--ed-ligne); border-bottom-width: 2px;
+  border-radius: .35rem;
+}
+
+/* Liste : seule zone qui défile. */
+.ed-cmdk-list {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: .4rem;
+  scrollbar-width: thin;
+  scrollbar-color: #D3D3DA transparent;
+}
+.ed-cmdk-list::-webkit-scrollbar { width: 10px; }
+.ed-cmdk-list::-webkit-scrollbar-thumb {
+  background: #D3D3DA; border-radius: 99px; border: 3px solid #fff;
+}
+.ed-cmdk-list::-webkit-scrollbar-thumb:hover { background: #B9B9C2; }
+
+.ed-cmdk-txt { flex: 1 1 auto; min-width: 0; display: block; }
+.ed-cmdk-title {
+  display: block; font-size: .875rem; font-weight: 600; color: #0B0B0C;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ed-cmdk-sub {
+  display: block; font-size: .72rem; color: #8A8D94; margin-top: .05rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.ed-cmdk-item.is-active .ed-cmdk-title { color: #6B2435; }
+.ed-cmdk-item.is-active .ed-cmdk-type { background: #fff; }

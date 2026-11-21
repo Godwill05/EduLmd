@@ -103,7 +103,7 @@
     el.hidden = true;
 
     el.innerHTML =
-      '<div class="ed-cmdk-panel">' +
+      '<div class="ed-cmdk-panel" style="width:min(780px,100%)">' +
         '<div class="ed-cmdk-head">' +
           '<i class="ri-search-line"></i>' +
           '<input type="text" id="edCmdkInput2" placeholder="Étudiant, écran, action…" ' +
@@ -129,6 +129,7 @@
     }
     palette.hidden = false;
     document.body.classList.add('ed-cmdk-open');
+    bornerListe();
 
     var champ = palette.querySelector('#edCmdkInput2');
     champ.value = premierMot || '';
@@ -136,6 +137,24 @@
     champ.setSelectionRange(champ.value.length, champ.value.length);
 
     rechercher(champ.value);
+  }
+
+  /**
+   * Donne à la liste une hauteur maximale calculée : certains moteurs
+   * n'appliquent pas `min-height: 0` aux enfants flex, et la liste
+   * débordait alors sans barre de défilement.
+   */
+  function bornerListe() {
+    var panneau = palette.querySelector('.ed-cmdk-panel');
+    var liste = palette.querySelector('#edCmdkList2');
+    var tete = palette.querySelector('.ed-cmdk-head');
+    var pied = palette.querySelector('.ed-cmdk-foot');
+    if (!panneau || !liste) return;
+
+    var dispo = window.innerHeight * 0.82;                       /* panneau */
+    var occupe = (tete ? tete.offsetHeight : 0) + (pied ? pied.offsetHeight : 0);
+    liste.style.maxHeight = Math.max(160, Math.round(dispo - occupe - 8)) + 'px';
+    liste.style.overflowY = 'auto';
   }
 
   function fermerPalette() {
@@ -189,6 +208,8 @@
     etat.items = items;
     etat.actif = 0;
     rendrePalette();
+    var zone = palette.querySelector('#edCmdkList2');
+    if (zone) zone.scrollTop = 0;
     chercherEtudiants(etat.filtre);
   }
 
@@ -293,6 +314,11 @@
       return;
     }
 
+    /* La liste est la seule zone défilante du panneau : on garantit que
+       le conteneur a une hauteur bornée, sinon un grand nombre de résultats
+       pousserait le panneau hors de l'écran. */
+    liste.style.overflowY = 'auto';
+
     liste.innerHTML = etat.items.map(function (item, i) {
       var actif = i === etat.actif ? ' is-active' : '';
       var badge = item.type === 'etudiant'
@@ -315,6 +341,10 @@
       var n = etat.items.filter(function (x) { return x.type === 'etudiant'; }).length;
       compteur.textContent = etat.items.length + ' résultat(s)' + (n ? ' · ' + n + ' étudiant(s)' : '');
     }
+
+    /* Le nombre de lignes change : on recalcule la hauteur maximale pour que
+       la barre de défilement reste cohérente avec le contenu. */
+    if (palette && !palette.hidden) bornerListe();
   }
 
   function deplacer(pas) {
@@ -501,6 +531,11 @@
     }
     return formulaires[0] || null;
   }
+
+  /* Le panneau suit la fenêtre si elle est redimensionnée pendant l'usage. */
+  window.addEventListener('resize', function () {
+    if (palette && !palette.hidden) bornerListe();
+  });
 
   /* Déclencheurs : barre de recherche → palette, bouton « ? » → aide. */
   document.addEventListener('click', function (e) {

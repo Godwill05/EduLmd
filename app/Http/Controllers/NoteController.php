@@ -23,19 +23,67 @@ class NoteController extends Controller
             return view('notes',compact('evaluations'));
         }
     }
-    public function insererNotes()
+    /**
+     * Enregistrement des notes saisies dans la modale.
+     *
+     * Renvoie une réponse JSON : le script de la page attend un succès pour
+     * fermer la modale et confirmer. Sans cela, le navigateur recevait une
+     * page vide et l'utilisateur ne savait pas si la saisie avait été prise.
+     */
+    public function insererNotes(Request $request)
     {
-        $_notes=request()->except('_token','numeroEvaluation');
-        foreach ($_notes as $numeroInscription => $note) {
-            if($note){
-                Note::updateOrCreate([
-                    'numeroEval'=>intval(request()->numeroEvaluation),
-                    'numeroInscription'=>$numeroInscription
-                ],[
-                    'Note'=>$note,
-                    'login'=>Auth::user()->login
-                ]);
+        $donnees = $request->validate([
+            'numeroEvaluation' => 'required|integer',
+        ]);
+
+        $numeroEval = (int) $donnees['numeroEvaluation'];
+
+        /* Toutes les entrées sauf les champs techniques sont des
+           « matricule => note ». On ignore les valeurs vides et on refuse
+           une note hors de l'échelle 0–20 plutôt que de l'enregistrer. */
+        $notes = $request->except(['_token', '_method', 'numeroEvaluation']);
+
+        $enregistrees = 0;
+        $ignorees = 0;
+
+        foreach ($notes as $numeroInscription => $note) {
+            if ($note === null || $note === '' || !is_numeric($note)) {
+                $ignorees++;
+                continue;
             }
+
+            $valeur = round((float) $note, 2);
+            if ($valeur < 0 || $valeur > 20) {
+                $ignorees++;
+                continue;
+            }
+
+            Note::updateOrCreate(
+                [
+                    'numeroEval' => $numeroEval,
+                    'numeroInscription' => $numeroInscription,
+                ],
+                [
+                    'Note' => $valeur,
+                    'login' => Auth::user()->login,
+                    'loginupdate' => Auth::user()->login,
+                    'momentupdate' => now(),
+                ]
+            );
+
+            $enregistrees++;
         }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'enregistrees' => $enregistrees,
+                'ignorees' => $ignorees,
+                'message' => $enregistrees.' note(s) enregistrée(s)'
+                    .($ignorees ? ', '.$ignorees.' valeur(s) ignorée(s)' : '').'.',
+            ]);
+        }
+
+        return back()->with('succes', $enregistrees.' note(s) enregistrée(s).');
     }
 }
