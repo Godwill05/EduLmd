@@ -83,10 +83,25 @@ Fiche étudiant
       <h1 class="text-[1.35rem] font-extrabold tracking-tight text-encre leading-tight">Fiche étudiant</h1>
       <p class="text-[0.82rem] text-encre-muted mt-1">Identité, parcours et situation financière.</p>
     </div>
-    <div class="flex gap-2">
+    <div class="flex gap-2 flex-wrap">
       <a href="{{ route('etudiants.index') }}" class="ed-btn ed-btn-secondary ed-btn-sm">
         <i class="ri-arrow-left-line"></i>Tous les étudiants
       </a>
+      @if ($inscriptionCourante)
+        <a href="{{ route('engagement.imprimer', ['matricule' => $etudiant->MATRICULE, 'annee' => $inscriptionCourante->Id_Annee, 'filiere' => $inscriptionCourante->ID_FILIERE]) }}"
+           target="_blank" rel="noopener"
+           class="ed-btn ed-btn-secondary ed-btn-sm"
+           title="Imprimer la fiche d'engagement (PDF)">
+          <i class="ri-file-paper-2-line"></i>Fiche d'engagement
+        </a>
+        <button type="button" class="ed-btn ed-btn-secondary ed-btn-sm"
+                data-ed-echeancier="{{ $etudiant->MATRICULE }}"
+                data-annee="{{ $inscriptionCourante->Id_Annee }}"
+                data-filiere="{{ $inscriptionCourante->ID_FILIERE }}"
+                title="Gérer les prévisions de paiement">
+          <i class="ri-calendar-check-line"></i>Prévisions
+        </button>
+      @endif
       @if (!$solde)
         <button type="button" class="ed-btn ed-btn-primary ed-btn-sm" data-ed-pay="{{ $etudiant->MATRICULE }}">
           <i class="ri-hand-coin-line"></i>Encaisser
@@ -184,10 +199,22 @@ Fiche étudiant
             <span class="badge {{ $ins->solde ? 'ok' : 'warn' }}">
               {{ $ins->solde ? 'Soldé' : 'Reste à payer' }}
             </span>
-            <span class="fe-actions">
+            <span class="fe-actions flex gap-1">
               <a class="ed-pay-btn" href="{{ route('paiements.index') }}?matricule={{ urlencode($etudiant->MATRICULE) }}">
                 <i class="ri-file-list-3-line"></i>Paiements
               </a>
+              <a class="ed-pay-btn"
+                 href="{{ route('engagement.imprimer', ['matricule' => $etudiant->MATRICULE, 'annee' => $ins->Id_Annee, 'filiere' => $ins->ID_FILIERE]) }}"
+                 target="_blank" rel="noopener" title="Fiche d'engagement de cette année">
+                <i class="ri-file-paper-2-line"></i>Engagement
+              </a>
+              <button type="button" class="ed-pay-btn"
+                      data-ed-echeancier="{{ $etudiant->MATRICULE }}"
+                      data-annee="{{ $ins->Id_Annee }}"
+                      data-filiere="{{ $ins->ID_FILIERE }}"
+                      title="Prévisions de paiement de cette année">
+                <i class="ri-calendar-check-line"></i>Prévisions
+              </button>
             </span>
           </div>
           <div class="fe-ins-nums">

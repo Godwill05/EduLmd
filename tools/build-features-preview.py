@@ -1035,11 +1035,11 @@ def ctx_fiche():
     )
 
     inscriptions = [
-        Obj(Libelle_AnEtude='Licence 2', ID_FILIERE='L2', ANNEE_ACAD='2025-2026',
+        Obj(Id_Annee='3', Libelle_AnEtude='Licence 2', ID_FILIERE='L2', ANNEE_ACAD='2025-2026',
             LibStatut='Inscrit', attendu=250000, total_paye=150000, reste=100000,
             nb_paiements=2, frais_paye=250000, reste_paye=100000,
             taux=60, solde=False),
-        Obj(Libelle_AnEtude='Licence 1', ID_FILIERE='L1', ANNEE_ACAD='2024-2025',
+        Obj(Id_Annee='2', Libelle_AnEtude='Licence 1', ID_FILIERE='L1', ANNEE_ACAD='2024-2025',
             LibStatut='Admis', attendu=220000, total_paye=220000, reste=0,
             nb_paiements=3, frais_paye=220000, reste_paye=0,
             taux=100, solde=True),
@@ -1057,6 +1057,7 @@ def ctx_fiche():
         derniersPaiements=paiements,
         totalAttendu=470000, totalPaye=370000, totalReste=100000, solde=False,
         initiales='BR', tauxGlobal=79,
+        inscriptionCourante=inscriptions[0],
     )
 
 

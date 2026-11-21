@@ -317,10 +317,25 @@
       <h1 class="text-[1.35rem] font-extrabold tracking-tight text-encre leading-tight">Fiche étudiant</h1>
       <p class="text-[0.82rem] text-encre-muted mt-1">Identité, parcours et situation financière.</p>
     </div>
-    <div class="flex gap-2">
+    <div class="flex gap-2 flex-wrap">
       <a href="#" class="ed-btn ed-btn-secondary ed-btn-sm">
         <i class="ri-arrow-left-line"></i>Tous les étudiants
       </a>
+      
+        <a href="#"
+           target="_blank" rel="noopener"
+           class="ed-btn ed-btn-secondary ed-btn-sm"
+           title="Imprimer la fiche d'engagement (PDF)">
+          <i class="ri-file-paper-2-line"></i>Fiche d'engagement
+        </a>
+        <button type="button" class="ed-btn ed-btn-secondary ed-btn-sm"
+                data-ed-echeancier="20240052"
+                data-annee="3"
+                data-filiere="L2"
+                title="Gérer les prévisions de paiement">
+          <i class="ri-calendar-check-line"></i>Prévisions
+        </button>
+      
       
     </div>
   </div>
@@ -408,10 +423,22 @@
             <span class="badge warn">
               Reste à payer
             </span>
-            <span class="fe-actions">
+            <span class="fe-actions flex gap-1">
               <a class="ed-pay-btn" href="#?matricule=20240052">
                 <i class="ri-file-list-3-line"></i>Paiements
               </a>
+              <a class="ed-pay-btn"
+                 href="#"
+                 target="_blank" rel="noopener" title="Fiche d'engagement de cette année">
+                <i class="ri-file-paper-2-line"></i>Engagement
+              </a>
+              <button type="button" class="ed-pay-btn"
+                      data-ed-echeancier="20240052"
+                      data-annee="3"
+                      data-filiere="L2"
+                      title="Prévisions de paiement de cette année">
+                <i class="ri-calendar-check-line"></i>Prévisions
+              </button>
             </span>
           </div>
           <div class="fe-ins-nums">
@@ -434,10 +461,22 @@
             <span class="badge ok">
               Soldé
             </span>
-            <span class="fe-actions">
+            <span class="fe-actions flex gap-1">
               <a class="ed-pay-btn" href="#?matricule=20240052">
                 <i class="ri-file-list-3-line"></i>Paiements
               </a>
+              <a class="ed-pay-btn"
+                 href="#"
+                 target="_blank" rel="noopener" title="Fiche d'engagement de cette année">
+                <i class="ri-file-paper-2-line"></i>Engagement
+              </a>
+              <button type="button" class="ed-pay-btn"
+                      data-ed-echeancier="20240052"
+                      data-annee="2"
+                      data-filiere="L1"
+                      title="Prévisions de paiement de cette année">
+                <i class="ri-calendar-check-line"></i>Prévisions
+              </button>
             </span>
           </div>
           <div class="fe-ins-nums">
@@ -551,6 +590,11 @@
     window.EDULMD_STATUTS = '{}';
   </script>
   <script src="/assets/js/edulmd-bulk.js"></script>
+  <script>
+    window.EDULMD_ECHEANCIER_URL = "#";
+    window.EDULMD_ECHEANCIER_SAVE = "#";
+  </script>
+  <script src="/assets/js/edulmd-previsions.js"></script>
 
   
   <script src="/assets/vendor/html2pdf/html2pdf.bundle.min.js"></script>

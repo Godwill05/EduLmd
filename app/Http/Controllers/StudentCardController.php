@@ -37,6 +37,7 @@ class StudentCardController extends Controller
             ->leftJoin('statut', 'inscriptions.codeStatut', '=', 'statut.codeStatut')
             ->where('inscriptions.MATRICULE', $matricule)
             ->orderByDesc('inscriptions.Id_Annee')
+            ->orderBy('inscriptions.ID_FILIERE')
             ->get([
                 'inscriptions.MATRICULE',
                 'inscriptions.Id_Annee',
@@ -105,6 +106,10 @@ class StudentCardController extends Controller
             . mb_substr((string) $etudiant->prenomsEtu, 0, 1)
         );
 
+        /* Inscription courante : la plus récente, celle que ciblent les
+           actions de premier niveau (engagement, prévisions). */
+        $inscriptionCourante = $inscriptions->first();
+
         /* Taux de couverture global. */
         $tauxGlobal = $totalAttendu > 0
             ? min(100, (int) round($totalPaye / $totalAttendu * 100))
@@ -119,7 +124,8 @@ class StudentCardController extends Controller
             'totalReste',
             'solde',
             'initiales',
-            'tauxGlobal'
+            'tauxGlobal',
+            'inscriptionCourante'
         ));
     }
 }

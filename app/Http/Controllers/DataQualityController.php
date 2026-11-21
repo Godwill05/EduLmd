@@ -27,12 +27,16 @@ class DataQualityController extends Controller
         // ── Statistiques de complétude (une seule passe) ────────────────
         $total = (int) Etudiant::count();
 
+        /* Attention aux types : `dateNaisEtu` est une colonne DATE.
+           La comparer à '' déclenche « Incorrect DATE value » en mode strict,
+           d'où le test NULL seul pour cette colonne. Les autres sont des
+           chaînes : NULL et '' doivent tous deux être comptés. */
         $completude = Etudiant::query()->selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN photo IS NULL OR photo = '' THEN 1 ELSE 0 END) as sans_photo,
             SUM(CASE WHEN telEtu IS NULL OR telEtu = '' THEN 1 ELSE 0 END) as sans_tel,
             SUM(CASE WHEN emailEtu IS NULL OR emailEtu = '' THEN 1 ELSE 0 END) as sans_email,
-            SUM(CASE WHEN dateNaisEtu IS NULL OR dateNaisEtu = '' THEN 1 ELSE 0 END) as sans_date,
+            SUM(CASE WHEN dateNaisEtu IS NULL THEN 1 ELSE 0 END) as sans_date,
             SUM(CASE WHEN sexeEtu IS NULL OR sexeEtu = '' THEN 1 ELSE 0 END) as sans_sexe
         ")->first();
 
@@ -121,9 +125,15 @@ class DataQualityController extends Controller
             $champ = 'photo';
         }
 
+        /* Même précaution : sur une colonne DATE, `= ''` est rejeté par MySQL. */
+        $colonneDate = $champ === 'dateNaisEtu';
+
         $incomplets = Etudiant::query()
-            ->where(function ($q) use ($champ) {
-                $q->whereNull($champ)->orWhere($champ, '');
+            ->where(function ($q) use ($champ, $colonneDate) {
+                $q->whereNull($champ);
+                if (!$colonneDate) {
+                    $q->orWhere($champ, '');
+                }
             })
             ->orderBy('nomEtu')
             ->paginate(25)

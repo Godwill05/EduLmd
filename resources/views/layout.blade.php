@@ -303,6 +303,11 @@
     window.EDULMD_STATUTS = @json($edStatuts);
   </script>
   <script src="{{ asset('/assets/js/edulmd-bulk.js') }}"></script>
+  <script>
+    window.EDULMD_ECHEANCIER_URL = "{{ route('previsions.etudiant-echeancier') }}";
+    window.EDULMD_ECHEANCIER_SAVE = "{{ route('previsions.enregistrer-echeancier') }}";
+  </script>
+  <script src="{{ asset('/assets/js/edulmd-previsions.js') }}"></script>
 
   {{-- html2pdf.js — copie locale --}}
   <script src="{{ asset('/assets/vendor/html2pdf/html2pdf.bundle.min.js') }}"></script>
