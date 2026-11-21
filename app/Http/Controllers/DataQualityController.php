@@ -57,13 +57,22 @@ class DataQualityController extends Controller
         // On regroupe sur (nom normalisé, prénoms normalisés) : deux étudiants
         // qui partagent exactement ces deux chaînes sont très probablement
         // une double saisie. On exclut les groupes d'une seule ligne.
+        /* GROUP_CONCAT(MATRICULE ORDER BY … SEPARATOR …) n'existe que chez
+           MySQL. SQLite n'accepte que group_concat(x, sep), et la clause
+           ORDER BY y est interdite : la requête portable diffère donc selon
+           le pilote. En production (MySQL) c'est la première forme qui part. */
+        $concat = DB::connection()->getDriverName() === 'sqlite'
+            ? "group_concat(MATRICULE, ', ') as matricules,
+               group_concat(COALESCE(dateNaisEtu, '—'), ' | ') as dates"
+            : "GROUP_CONCAT(MATRICULE ORDER BY MATRICULE SEPARATOR ', ') as matricules,
+               GROUP_CONCAT(COALESCE(dateNaisEtu, '—') ORDER BY MATRICULE SEPARATOR ' | ') as dates";
+
         $doublons = Etudiant::query()
             ->selectRaw("
                 UPPER(TRIM(nomEtu)) as nom_norm,
                 UPPER(TRIM(prenomsEtu)) as prenoms_norm,
                 COUNT(*) as occurrences,
-                GROUP_CONCAT(MATRICULE ORDER BY MATRICULE SEPARATOR ', ') as matricules,
-                GROUP_CONCAT(COALESCE(dateNaisEtu, '—') ORDER BY MATRICULE SEPARATOR ' | ') as dates
+                " . $concat . "
             ")
             ->whereNotNull('nomEtu')
             ->where('nomEtu', '!=', '')

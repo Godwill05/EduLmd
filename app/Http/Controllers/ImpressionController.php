@@ -844,14 +844,22 @@ class ImpressionController extends Controller
 
     public function impressionUesNonValidees()
     {
+        /* Les paramètres étaient lus dans $_GET sans vérification : ouvrir
+           /impression-ues-nv directement provoquait « Undefined array key »
+           (erreur 500). On valide d'abord, puis on interroge. */
+        $donnees = request()->validate([
+            'annee_acad_non_val' => 'required',
+            'annee_etude_non_val' => 'required',
+        ]);
+        $anneeAcad = $donnees['annee_acad_non_val'];
+        $anneeEtude = $donnees['annee_etude_non_val'];
+
         $univ = $this->convert_array(DB::select("SELECT * FROM `ufr`,universites where ufr.Univ=universites.id"));
         //sélectionner les étudiants
-        $etud = $this->convert_array(DB::select("SELECT recap_annuel.MATRICULE as MATRICULE, etudiant.nomEtu as nomEtu, etudiant.prenomsEtu as prenomsEtu FROM recap_annuel, etudiant WHERE recap_annuel.MATRICULE=etudiant.MATRICULE AND recap_annuel.id_Annee_Acad=" . $_GET['annee_acad_non_val'] . " AND recap_annuel.Code_Annee_Etude='" . $_GET['annee_etude_non_val'] . "' AND recap_annuel.DecisionJury != 'V' ORDER BY nomEtu, prenomsEtu ASC;"));
+        $etud = $this->convert_array(DB::select("SELECT recap_annuel.MATRICULE as MATRICULE, etudiant.nomEtu as nomEtu, etudiant.prenomsEtu as prenomsEtu FROM recap_annuel, etudiant WHERE recap_annuel.MATRICULE=etudiant.MATRICULE AND recap_annuel.id_Annee_Acad=" . (int) $anneeAcad . " AND recap_annuel.Code_Annee_Etude='" . addslashes($anneeEtude) . "' AND recap_annuel.DecisionJury != 'V' ORDER BY nomEtu, prenomsEtu ASC;"));
 
-        if (!empty($_GET['annee_acad_non_val']) && (trim($_GET['annee_acad_non_val']) != "") && !empty($_GET['annee_etude_non_val']) && (trim($_GET['annee_etude_non_val']) != "")) {
-            $temp1 = $this->convert_array(DB::select("SELECT Libelle_AnEtude FROM annee_etude WHERE Code_Annee_Etude='" . $_GET['annee_etude_non_val'] . "';"));
-            $temp2 = $this->convert_array(DB::select("SELECT ANNEE_ACAD FROM anneeacademique WHERE id_Annee_Acad=" . $_GET['annee_acad_non_val'] . ";"));
-        }
+        $temp1 = $this->convert_array(DB::select("SELECT Libelle_AnEtude FROM annee_etude WHERE Code_Annee_Etude='" . addslashes($anneeEtude) . "';"));
+        $temp2 = $this->convert_array(DB::select("SELECT ANNEE_ACAD FROM anneeacademique WHERE id_Annee_Acad=" . (int) $anneeAcad . ";"));
 
         ob_start();
         ini_set('max_execution_time', 600);
@@ -873,7 +881,7 @@ class ImpressionController extends Controller
                             <?php echo UTF8_encode(UTF8_encode(strtoupper($univ[0]['Ecol_Ufr']))) ?><br>
                             ----*----*----*---*---<br>
                             UE non validées pour
-                            <?php echo ($_GET['annee_etude_non_val'] . " | " . $temp2[0]["ANNEE_ACAD"]); ?><br>
+                            <?php echo ($anneeEtude . " | " . $temp2[0]["ANNEE_ACAD"]); ?><br>
                             ----*----*----*---*---<br><br><br>
                         </td>
                         <td style="width: 25%;vertical-align: middle; text-align: left"><img style="width: 150px; height: 150px"
@@ -912,7 +920,7 @@ class ImpressionController extends Controller
                     <?php
                     for ($i = 0; $i < count($etud); $i++) {
                         //sélectionner les IdUE non validées précise et leurs moyennes
-                        $idue = $this->convert_array(DB::select("SELECT Id_Attr_ue_Sem, Moyenne_UE FROM recap_ue WHERE MATRICULE=" . $etud[$i]["MATRICULE"] . " AND Code_Annee_Etude='" . $_GET['annee_etude_non_val'] . "' AND Etat_UE!='V';"));
+                        $idue = $this->convert_array(DB::select("SELECT Id_Attr_ue_Sem, Moyenne_UE FROM recap_ue WHERE MATRICULE=" . $etud[$i]["MATRICULE"] . " AND Code_Annee_Etude='" . $anneeEtude . "' AND Etat_UE!='V';"));
 
                         $nbr = count($idue);
                     ?>
@@ -926,7 +934,7 @@ class ImpressionController extends Controller
                                         <td style="width: 300px;">
                                             <?php
                                             //sélectionner le libelleUe de chaque IdUE non validées
-                                            $libel = $this->convert_array(DB::select("SELECT ue.libelleUe as libelleUe FROM attr_ue_classe, ue WHERE Id_Attr_ue_Sem=" . $idue[$j]["Id_Attr_ue_Sem"] . " AND id_Annee_Acad=" . $_GET['annee_acad_non_val'] . " AND ue.codeUe=attr_ue_classe.codeUe ;"));
+                                            $libel = $this->convert_array(DB::select("SELECT ue.libelleUe as libelleUe FROM attr_ue_classe, ue WHERE Id_Attr_ue_Sem=" . $idue[$j]["Id_Attr_ue_Sem"] . " AND id_Annee_Acad=" . $anneeAcad . " AND ue.codeUe=attr_ue_classe.codeUe ;"));
 
                                             $semUE = $this->convert_array(DB::select("SELECT classe.Nom_Classe as semestre FROM recap_ue, attr_ue_classe, classe WHERE recap_ue.Id_Attr_ue_Sem=" . $idue[$j]["Id_Attr_ue_Sem"] . " AND recap_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem AND attr_ue_classe.id_S_Gr_Spe=classe.id_S_Gr_Spe ;"));
 
@@ -943,7 +951,7 @@ class ImpressionController extends Controller
                                 <td style="width: 300px;">
                                     <?php
                                     //sélectionner le libelleUe de chaque IdUE non validées
-                                    $libel = $this->convert_array(DB::select("SELECT ue.libelleUe as libelleUe FROM attr_ue_classe, ue WHERE Id_Attr_ue_Sem=" . $idue[0]["Id_Attr_ue_Sem"] . " AND id_Annee_Acad=" . $_GET['annee_acad_non_val'] . " AND ue.codeUe=attr_ue_classe.codeUe ;"));
+                                    $libel = $this->convert_array(DB::select("SELECT ue.libelleUe as libelleUe FROM attr_ue_classe, ue WHERE Id_Attr_ue_Sem=" . $idue[0]["Id_Attr_ue_Sem"] . " AND id_Annee_Acad=" . $anneeAcad . " AND ue.codeUe=attr_ue_classe.codeUe ;"));
                                     $semUE = $this->convert_array(DB::select("SELECT classe.Nom_Classe as semestre FROM recap_ue, attr_ue_classe, classe WHERE recap_ue.Id_Attr_ue_Sem=" . $idue[0]["Id_Attr_ue_Sem"] . " AND recap_ue.Id_Attr_ue_Sem=attr_ue_classe.Id_Attr_ue_Sem AND attr_ue_classe.id_S_Gr_Spe=classe.id_S_Gr_Spe ;"));
 
                                     echo $libel[0]["libelleUe"] . " (<b>" . $semUE[0]['semestre'] . "</b>)";

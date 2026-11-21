@@ -50,9 +50,17 @@ class EtudiantController extends Controller
             'typeEtudiant'=>'required',
             'nationalite'=>'required',
         ]);
-        $photo=$request->file('photo');
-        $extension=$photo->extension();
-        $photo->storeAs('public/assets/img/etudiants',$mat.'.'.$extension);
+        /* La photo n'est pas un champ obligatoire du formulaire : sans ce
+           test, créer un étudiant sans photo provoquait
+           « Call to a member function extension() on null » (erreur 500). */
+        $photo = $request->file('photo');
+        $nomPhoto = null;
+        if ($photo && $photo->isValid()) {
+            $extension = $photo->extension() ?: 'jpg';
+            $nomPhoto = $mat . '.' . $extension;
+            $photo->storeAs('public/assets/img/etudiants', $nomPhoto);
+        }
+
         Etudiant::create([
             'MATRICULE'=>$mat,
             'nomEtu'=>$request->nom,
@@ -65,7 +73,7 @@ class EtudiantController extends Controller
             'Observation'=>($request->observations??'Aucune'),
             'codeTypeEtu'=>$request->typeEtudiant,
             'codeNationalite'=>$request->nationalite,
-            'photo'=>$mat.'.'.$extension,
+            'photo'=>$nomPhoto,
             'Auteur'=>Auth::user()->login
         ]);
         return to_route('etudiants.index')->with('succes','Etudiant enregistré !');

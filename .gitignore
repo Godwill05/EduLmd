@@ -20,3 +20,7 @@ yarn-error.log
 # Python (outils de prévisualisation)
 __pycache__/
 *.pyc
+
+# Données personnelles : ne doivent jamais être servies par public/
+/public/memoire.csv
+/public/modeles/

@@ -194,7 +194,8 @@ Route::middleware('auth')->group(function(){
     Route::resource('/specialites',SpecialiteController::class)->except(['create','edit']);
     Route::resource('/grades',GradeController::class)->except(['create','edit']);
     Route::resource('/semestres',SemestreController::class)->except(['create','edit']);
-    Route::resource('/constantes',ConstanteController::class)->except(['create','edit']);
+    // Écran en lecture seule : aucun store/update/destroy n'existe
+    Route::resource('/constantes',ConstanteController::class)->only(['index']);
     Route::resource('/annees-etudes',AnneeEtudeController::class)->except(['create','edit']);
     Route::resource('/filieres',FiliereCompletesController::class)->except(['create','edit']);
     Route::resource('/utilisateurs',UserController::class)->except(['create','edit'])->middleware('can:Gérer les utilisateurs');
@@ -216,8 +217,8 @@ Route::middleware('auth')->group(function(){
 
     })->name('utilisateurs.permissions_post')->middleware('can:Gérer les utilisateurs');
     Route::resource('/permissions',PermissionController::class)->except(['create','edit'])->middleware('can:Gérer les utilisateurs');
-    Route::resource('/semestres-etudes',SemestresEtudesController::class)->except(['create','edit']);
-    Route::resource('/attribuer-semestres-anneeEtude',SemestresAnneeEtudeController::class)->except(['create','edit','update','show']);
+    Route::resource('/semestres-etudes',SemestresEtudesController::class)->except(['create','edit','show']);
+    Route::resource('/attribuer-semestres-anneeEtude',SemestresAnneeEtudeController::class)->only(['index','store']);
     Route::resource('/attribuer-ue-semestre',AttribuerUeSemestreController::class)->except(['create','edit','show']);
     Route::get('/modifier-attribution-ue/{ue}',[AttribuerUeSemestreController::class,'edit'])->name('attribuer-ue-semestre.edit');
     Route::resource('/attribuer-ecue-ue',AttribuerEcueUeController::class)->except(['create','edit','show','destroy','update']);
@@ -243,12 +244,14 @@ Route::middleware('auth')->group(function(){
         }
         return view('afficherECUESemestre');
     })->name('afficherECUEsSemestre');
-    Route::resource('/annees-academiques',AnneeAcademiqueController::class);
+    // create/show/edit n'ont pas de méthode : le formulaire d'ajout est une modale
+    Route::resource('/annees-academiques',AnneeAcademiqueController::class)->except(['create','show','edit']);
     Route::get('/passage-promotion', [PassagePromotionController::class, 'index'])->name('passage-promotion.index');
     Route::post('/passage-promotion/transferer', [PassagePromotionController::class, 'transferer'])->name('passage-promotion.transferer');
     Route::post('/passage-promotion/reconduire-ues', [PassagePromotionController::class, 'reconduireUesAction'])->name('passage-promotion.reconduire-ues');
     Route::post('/passage-promotion/annuler', [PassagePromotionController::class, 'annuler'])->name('passage-promotion.annuler');
-    Route::resource('/salles',SalleController::class);
+    // Pas de formulaire dédié : l'ajout se fait dans la modale de la liste
+    Route::resource('/salles',SalleController::class)->except(['create','show','edit']);
     Route::resource('/ue',UEController::class);
     Route::resource('/universites',UniversiteController::class)->middleware('can:Gérer les universités');
     Route::post('/manage-logo_univ/{id}',[UniversiteController::class,'manageLogo'])->name('manageLogo_univ')->middleware('can:Gérer les universités');
@@ -384,14 +387,16 @@ Route::middleware('auth')->group(function(){
         $previsions=Prevision::whereBetween('echeance',[\Carbon\Carbon::parse(request()->dateDebut)->format('Y-m-d'),\Carbon\Carbon::parse(request()->dateFin)->format('Y-m-d')])->get();
         return view('displayPrevisions',compact('previsions'));
     });
-    Route::resource('/inscriptions',InscriptionController::class)->except(['show','destroy','update','edit']);
+    Route::resource('/inscriptions',InscriptionController::class)->except(['show','destroy','update','edit','create']);
     Route::post('/situation-paiements-echeance', [PaiementController::class, 'situationEcheance'])->name('situation-echeance.display');
     Route::post('/journal-encaissement', [PaiementController::class, 'journalEncaissement'])->name('journal-encaissement.display');
     Route::resource('/paiements',PaiementController::class);
     Route::post('/previsions/generer-classe', [PrevisionController::class, 'genererClasse'])->name('previsions.generer-classe');
     Route::get('/previsions/etudiant-echeancier', [PrevisionController::class, 'getEcheancierEtudiant'])->name('previsions.etudiant-echeancier');
     Route::post('/previsions/enregistrer-echeancier', [PrevisionController::class, 'enregistrerEcheancierEtudiant'])->name('previsions.enregistrer-echeancier');
-    Route::resource('/previsions',PrevisionController::class);
+    // create/store/show/edit n'existent pas : l'échéancier passe par les
+    // routes previsions.etudiant-echeancier / previsions.enregistrer-echeancier
+    Route::resource('/previsions',PrevisionController::class)->only(['index','destroy']);
     Route::view('/afficher-previsions', 'afficher-previsions')->name('afficher-previsions');
     Route::get('/fiches-engagement', [EngagementController::class, 'index'])->name('engagement.index');
     Route::get('/fiche-engagement/{matricule}/{annee}/{filiere}', [EngagementController::class, 'imprimer'])->name('engagement.imprimer');
@@ -409,7 +414,26 @@ Route::middleware('auth')->group(function(){
             return redirect()->back()->with(['succes'=>'Données importées','erreurs'=>$import->erreurs]);
     })->name('import-notes');
     Route::get('/export-notes',function(){
-        return Excel::download(new NotesExport(request('id_annee'),request('id_an_etude'),request('id_eval')),'notes_'.request('id_an_etude').'_'.Evaluation::find(request('id_eval'))->codeEcu.'_'.request('id_annee').'.xlsx');
+        /* Sans les trois paramètres, la route plantait en 500 :
+           Evaluation::find(null) renvoie null et ->codeEcu échouait.
+           On répond désormais 400 avec un message explicite. */
+        $donnees = request()->validate([
+            'id_annee'    => 'required',
+            'id_an_etude' => 'required',
+            'id_eval'     => 'required',
+        ]);
+
+        $evaluation = Evaluation::find($donnees['id_eval']);
+        if (!$evaluation) {
+            abort(404, "Évaluation introuvable pour l'identifiant fourni.");
+        }
+
+        $nom = 'notes_' . $donnees['id_an_etude'] . '_' . $evaluation->codeEcu . '_' . $donnees['id_annee'] . '.xlsx';
+
+        return Excel::download(
+            new NotesExport($donnees['id_annee'], $donnees['id_an_etude'], $donnees['id_eval']),
+            $nom
+        );
     })->name('export-notes');
     Route::post('/import-ue',function(){
         Excel::import(new UEImport, request()->file('csv'));

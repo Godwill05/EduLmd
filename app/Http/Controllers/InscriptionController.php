@@ -58,9 +58,19 @@ class InscriptionController extends Controller
 
     public function edit()
     {
-        return view('modifInscription',['item'=>Inscription::where('MATRICULE',request()->m)
-        ->where('Id_Annee',request()->aa)
-        ->where('ID_FILIERE',request()->ae)->first()]);
+        /* Sans les trois identifiants (m / aa / ae), la requête renvoyait null
+           et la vue plantait sur $item->MATRICULE (erreur 500).
+           On répond désormais 404 avec un message explicite. */
+        $item = Inscription::where('MATRICULE', request()->m)
+            ->where('Id_Annee', request()->aa)
+            ->where('ID_FILIERE', request()->ae)
+            ->first();
+
+        if (!$item) {
+            abort(404, "Inscription introuvable : précisez m (matricule), aa (année) et ae (filière).");
+        }
+
+        return view('modifInscription', ['item' => $item]);
     }
 
     /**

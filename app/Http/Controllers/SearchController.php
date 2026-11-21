@@ -24,8 +24,17 @@ class SearchController extends Controller
     {
         $q = trim((string) $request->input('q', ''));
 
+        /* Un seul caractère renvoyait une liste vide *avec le statut 200* :
+           l'interface affichait « aucun étudiant » alors que la recherche
+           n'avait pas été faite. On répond désormais explicitement. */
         if (mb_strlen($q) < 2) {
-            return response()->json(['query' => $q, 'results' => []]);
+            return response()->json([
+                'query' => $q,
+                'count' => 0,
+                'results' => [],
+                'min_length' => 2,
+                'message' => 'Saisissez au moins deux caractères.',
+            ]);
         }
 
         // On échappe les jokers SQL pour éviter un LIKE involontairement large
@@ -43,7 +52,7 @@ class SearchController extends Controller
             ->get(['MATRICULE', 'nomEtu', 'prenomsEtu', 'photo', 'sexeEtu', 'telEtu', 'emailEtu']);
 
         if ($etudiants->isEmpty()) {
-            return response()->json(['query' => $q, 'results' => []]);
+            return response()->json(['query' => $q, 'count' => 0, 'results' => []]);
         }
 
         // Dernière inscription de chaque étudiant (une seule requête)

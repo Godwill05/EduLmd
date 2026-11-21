@@ -24,8 +24,9 @@ class StudentCardController extends Controller
         $etudiant = Etudiant::find($matricule);
 
         if (!$etudiant) {
-            return redirect()->route('etudiants.index')
-                ->with('echec', "Aucun étudiant ne porte le matricule « {$matricule} ».");
+            /* Un matricule inconnu doit répondre 404 : une redirection
+               silencieuse masquait l'erreur et cassait les liens partagés. */
+            abort(404, "Aucun étudiant ne porte le matricule « {$matricule} ».");
         }
 
         /* Inscriptions, enrichies de l'année académique et de l'année d'étude.
