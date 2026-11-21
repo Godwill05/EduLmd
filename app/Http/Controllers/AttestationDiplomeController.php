@@ -25,13 +25,14 @@ class AttestationDiplomeController extends Controller
     private const COULEUR_REF        = '#666666'; // Référence / mentions grises (#666666)
     private const COULEUR_LIEN       = '#0d6efd'; // E-mail / site web
 
-    /* Hauteur du cadre vert de l'attestation (A4 paysage : 210 mm de haut).
-       Réserve de place pour les marges hautes/basses et pour le pied de page
-       collé au bas de la feuille (<page_footer>, réserve « backbottom »).
-       Mesuré sur le contenu réel (mesure bissectée) : à 160 mm le document
-       tient sur une page, à 165 mm Html2Pdf ajoute une page fantôme portant
-       le pied de page. 158 mm garde ~7 mm de sécurité sous le seuil. */
-    private const HAUTEUR_CADRE_ATTESTATION = '158mm';
+    /* Largeur du cadre de l'attestation, calée sur la page.
+       Page A4 paysage = 297 mm, marges de 8,5 mm de chaque côté, soit 280 mm
+       de zone utile. Le cadre démarre à 8,5 mm : pour être CENTRÉ il doit
+       mesurer 253 mm (bord droit à 288,2 mm, centre à 148,4 mm).
+       Mesuré sur le PDF : 259 mm donnait un bord droit à 294 mm, donc un
+       cadre décentré de 2,75 mm vers la droite (le padding s'ajoute à la
+       largeur déclarée). Au-delà de 262 mm la bordure sort de la page. */
+    private const LARGEUR_CADRE = '253mm';
 
     /**
      * Page principale : sélection de l'année, de la filière et personnalisation des champs.
@@ -353,23 +354,20 @@ class AttestationDiplomeController extends Controller
         $cNomSign = self::COULEUR_NOM_SIGN;
         $cRef     = self::COULEUR_REF;
         $cLien    = self::COULEUR_LIEN;
-        $hCadre   = self::HAUTEUR_CADRE_ATTESTATION;
 
         ob_start();
         ?>
-        <page orientation="paysage" format="A4" backtop="8mm" backbottom="14mm">
-            <!-- PIED DE PAGE — <page_footer> colle le bloc au bas de la feuille
-                 (un div en position:absolute débordait du cadre et n'était pas centré) -->
-            <page_footer>
-                <div style="text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35;">
-                    <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
-                </div>
-            </page_footer>
-
-            <div style="border: 2.5px solid <?= $cCadre ?>; width: 267mm; height: <?= $hCadre ?>; padding: 4mm 6mm; font-family: freeserif;">
+        <page orientation="paysage" format="A4" backtop="6mm" backbottom="0mm">
+            <!-- MISE EN PAGE — mesurée sur le PDF produit, ne pas improviser.
+                 Cadre : 253 mm de large. Page 297 mm, marges 8,5 mm. À 259 mm
+                 le bord droit tombait à 294 mm et le cadre était décentré de
+                 2,6 mm ; au-delà de 262 mm la bordure sort de la page.
+                 Pas de hauteur fixe : le cadre se referme sur son contenu.
+                 Pied de page : bloc de largeur EXPLICITE, voir plus bas. -->
+            <div style="border: 2.5px solid <?= $cCadre ?>; width: <?= self::LARGEUR_CADRE ?>; padding: 4mm 6mm; font-family: freeserif;">
 
                 <!-- EN-TETE — tailles relevées de 2 pt par rapport au modèle d'origine -->
-                <table style="width: 266mm; border-collapse: collapse;">
+                <table style="width: 100%; border-collapse: collapse;">
                     <tr>
                         <td style="width: 14%; text-align: left; vertical-align: middle;">
                             <img src="<?= $logoUniv ?>" style="width: 78px; height: 78px;" alt="Logo Univ">
@@ -390,7 +388,7 @@ class AttestationDiplomeController extends Controller
                 </table>
 
                 <!-- REFERENCE (les « ––– » ont été retirés : ils faisaient tache à gauche) -->
-                <table style="width: 266mm; border-collapse: collapse; margin-top: 2mm;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 2mm;">
                     <tr>
                         <td style="text-align: right; font-size: 11.5pt; font-weight: bold; color: <?= $cRef ?>;">
                             <?= htmlspecialchars($etu['reference']) ?>
@@ -406,7 +404,7 @@ class AttestationDiplomeController extends Controller
                 </div>
 
                 <!-- CORPS — police relevée à 11 pt (9 pt auparavant) -->
-                <table style="width: 266mm; border-collapse: collapse; font-size: 11pt; line-height: 1.5;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 11pt; line-height: 1.5;">
                     <tr>
                         <!-- GAUCHE -->
                         <td style="width: 48%; vertical-align: top; padding-right: 12px; text-align: justify;">
@@ -433,7 +431,7 @@ class AttestationDiplomeController extends Controller
                 </table>
 
                 <!-- SIGNATURES -->
-                <table style="width: 266mm; border-collapse: collapse; margin-top: 5mm;">
+                <table style="width: 100%; border-collapse: collapse; margin-top: 5mm;">
                     <tr>
                         <td style="width: 50%; text-align: center; vertical-align: top;">
                             <span style="color: <?= $cSign ?>; font-weight: bold; font-size: 11.5pt;">
@@ -457,6 +455,15 @@ class AttestationDiplomeController extends Controller
                     </tr>
                 </table>
 
+            </div>
+
+            <!-- PIED DE PAGE — sous le cadre, centré sur la page.
+                 LARGEUR EXPLICITE 280 mm OBLIGATOIRE : sans elle, html2pdf se
+                 cale sur la largeur du contenu précédent et le texte part à
+                 gauche (mesuré : centre à 66 mm au lieu de 148,5). Un tableau,
+                 même à 100 %, donne le même décalage : ne pas en remettre. -->
+            <div style="width: 280mm; text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35; margin-top: 14mm;">
+                <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
             </div>
         </page>
         <?php
@@ -491,13 +498,7 @@ class AttestationDiplomeController extends Controller
 
         ob_start();
         ?>
-        <page orientation="portrait" format="A4" backtop="8mm" backbottom="14mm">
-            <page_footer>
-                <div style="text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35;">
-                    <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
-                </div>
-            </page_footer>
-
+        <page orientation="portrait" format="A4" backtop="6mm" backbottom="0mm">
             <div style="font-family: freeserif;">
                 
                 <!-- EN-TETE -->
@@ -596,7 +597,13 @@ class AttestationDiplomeController extends Controller
                 </table>
 
             </div>
-        </page>
+        
+            <!-- PIED DE PAGE du certificat — largeur explicite 193 mm =
+                 210 - 2 x 8,5 de marges : même mécanisme que l'attestation. -->
+            <div style="width: 193mm; text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35; margin-top: 6mm;">
+                <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
+            </div>
+</page>
         <?php
         return ob_get_clean();
     }

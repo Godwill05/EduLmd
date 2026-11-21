@@ -219,13 +219,29 @@ class AuditTest extends TestCase
             $attestation,
             'Le titre doit être centré et agrandi.'
         );
-        $this->assertStringContainsString('page_footer', $attestation,
-            'Les coordonnées doivent être en pied de page.');
+        // Coordonnées en pied : un bloc de largeur EXPLICITE est indispensable.
+        // Sans largeur, html2pdf cale le texte sur la largeur du contenu qui
+        // précède et le pied part à gauche (mesuré : centre 66 mm au lieu de
+        // 148,5). Un tableau, même à 100 %, donne le même décalage.
+        $this->assertMatchesRegularExpression(
+            '/<div style="width: 280mm; text-align: center;[^"]*">\s*<b>Tél/',
+            $attestation,
+            'Le pied de page doit être un bloc de largeur explicite pour être centré.'
+        );
         // Les « ––– » ne doivent plus être rendus (il n'en reste qu'un commentaire HTML).
         $this->assertDoesNotMatchRegularExpression(
             '/<td[^>]*>\s*–––\s*<\/td>/',
             $attestation,
             'Le tiret au-dessus du titre a été retiré.'
+        );
+
+        // Le cadre de l'attestation doit être centré sur la page paysage.
+        // Page 297 mm, marges 8,5 mm : un cadre de 259 mm finit à 294 mm,
+        // soit 2,6 mm trop à droite. 253 mm le ramène à un centre de 148,5.
+        $this->assertMatchesRegularExpression(
+            '/width: 253mm/',
+            $attestation,
+            'Le cadre doit mesurer 253 mm pour être centré sur la page.'
         );
 
         // Les deux documents réunis ne doivent produire qu'une page chacun.
