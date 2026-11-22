@@ -25,22 +25,22 @@
    sur un écran 4K. */
 #main {
   /* Laisse la place à la sidebar quand elle est ouverte.
-     !important nécessaire car le CSS compilé définit
-     #main{margin:0!important;padding:0!important} qui écrase tout. */
-  margin-left: 280px !important;
-  margin-left: var(--ed-sidebar-w, 280px) !important;
-  transition: margin-left 0.28s cubic-bezier(.22,1,.36,1);
+     padding-left (et non margin-left) pour que le contenu occupe
+     toute la largeur restante sans être centré sur toute la fenêtre. */
+  padding-left: 280px !important;
+  padding-left: var(--ed-sidebar-w, 280px) !important;
+  transition: padding-left 0.28s cubic-bezier(.22,1,.36,1);
 }
 
 body.toggle-sidebar #main {
   /* Sidebar fermé : on récupère la place. */
-  margin-left: 4rem !important;
+  padding-left: 4rem !important;
 }
 
 #main > .container-fluid {
   padding-inline: clamp(1.25rem, 2.6vw, 2.75rem);
-  max-width: 1680px;
-  margin-inline: auto;
+  max-width: none; /* Pas de max-width : occupe toute la largeur disponible */
+  margin-inline: 0; /* Pas de centrage : le padding-left de #main gère l'espace sidebar */
   width: 100%;
 }
 
