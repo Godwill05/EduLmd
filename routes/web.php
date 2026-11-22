@@ -181,6 +181,17 @@ Route::post('/',function(Request $rq){
     return back()->with('errorCredentials' , 'Email ou mot de passe invalide')->onlyInput('email');
 })->name('login.post');
 Route::middleware('auth')->group(function(){
+    /* ─── Pilotage : les indicateurs qui aident à décider ────────────────
+       Distinct du tableau de bord : celui-ci décrit, celui-là met en
+       évidence ce sur quoi agir (filière qui recouvre mal, UE en échec,
+       trajectoire). Calculé à la demande, aucune table d'agrégat. */
+    Route::get('/pilotage', [\App\Http\Controllers\PilotageController::class, 'index'])
+        ->middleware('can:Audit')
+        ->name('pilotage');
+    Route::get('/pilotage/export', [\App\Http\Controllers\PilotageController::class, 'export'])
+        ->middleware('can:Audit')
+        ->name('pilotage.export');
+
     /* La page « À propos » porte les constantes système : elle lit la
        table parametres_systeme et l'enregistre sur place. */
     Route::get('/about-us', function () {

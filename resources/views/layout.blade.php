@@ -130,6 +130,16 @@
         </a>
       </li>
 
+      {{-- Pilotage : réservé à ceux qui consultent le journal (permission Audit),
+           car il expose les chiffres financiers et les taux de réussite. --}}
+      @can('Audit')
+      <li class="nav-item">
+        <a class="nav-link {{ $routeName === 'pilotage' ? 'active' : '' }}" href="{{ route('pilotage') }}" title="Pilotage">
+          <i class="ri-line-chart-line"></i><span>Pilotage</span>
+        </a>
+      </li>
+      @endcan
+
       <li class="nav-heading">Paramétrage</li>
 
       <li class="nav-item">
