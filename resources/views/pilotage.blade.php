@@ -140,7 +140,9 @@ Pilotage
           <span class="valeur {{ $synthese['ue_en_difficulte'] === 0 ? 'bon' : ($synthese['ue_en_difficulte'] <= 20 ? 'moyen' : 'faible') }}">
             {{ $synthese['ue_en_difficulte'] }}
           </span>
-          <span class="detail">Moins de la moitié des inscrits valident (min. 5 inscrits)</span>
+          <span class="detail">
+            Moins de la moitié des inscrits valident (min. 5 inscrits), sur cette année
+          </span>
         </div>
 
       </div>
@@ -273,7 +275,7 @@ Pilotage
       <div class="ed-card mt-4">
         <div class="ed-card-head">
           <h2 class="ed-card-title m-0">UE les plus difficiles</h2>
-          <span class="pi-legende m-0">Taux de validation le plus bas, minimum 5 inscrits</span>
+          <span class="pi-legende m-0">Taux de validation le plus bas, minimum 5 inscrits, année choisie</span>
         </div>
         @if (count($ueDifficiles) === 0)
           <div class="pi-vide">Pas assez de résultats enregistrés pour dégager une tendance.</div>

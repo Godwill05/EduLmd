@@ -46,7 +46,7 @@ class PilotageController extends Controller
             'reussitesParAnnee' => $reussitesParAnnee,
             'recouvrement' => Pilotage::recouvrementParFiliere($anneeChoisie),
             'impayes' => Pilotage::impayesLesPlusLourds($anneeChoisie),
-            'ueDifficiles' => Pilotage::ueLesPlusDifficiles(null, 5, 10),
+            'ueDifficiles' => Pilotage::ueLesPlusDifficiles(null, 5, 10, $anneeChoisie),
         ]);
     }
 
@@ -83,7 +83,7 @@ class PilotageController extends Controller
         $lignes[] = [];
         $lignes[] = ['UE', 'Code', 'Inscrits', 'Validée', 'Moyenne', 'Taux (%)'];
 
-        foreach (Pilotage::ueLesPlusDifficiles(null, 5, 100) as $r) {
+        foreach (Pilotage::ueLesPlusDifficiles(null, 5, 100, $anneeAcad) as $r) {
             $lignes[] = [$r['ue'], $r['code'], $r['presents'], $r['reussis'], $r['moyenne'], $r['taux']];
         }
 

@@ -72,6 +72,34 @@ class PilotageTest extends TestCase
         }
     }
 
+    /**
+     * Les UE en difficulté sont comptées sur l'année demandée, pas sur
+     * toutes les promotions confondues.
+     *
+     * Sans ce filtre, le compteur additionnait quatre années académiques :
+     * il annonçait 61 UE en difficulté là où l'année en cours en compte 36.
+     * Un chiffre faux d'un facteur deux dans un tableau de bord est pire
+     * qu'une absence de chiffre.
+     */
+    public function test_les_ue_en_difficulte_suivent_l_annee(): void
+    {
+        $annee = \Illuminate\Support\Facades\DB::table('anneeacademique')
+            ->orderByDesc('id_Annee_Acad')->value('id_Annee_Acad');
+
+        if (! $annee) {
+            $this->markTestSkipped('Aucune année académique en base.');
+        }
+
+        $toutes = Pilotage::synthese(null);
+        $uneAnnee = Pilotage::synthese((int) $annee);
+
+        $this->assertLessThanOrEqual(
+            $toutes['ue_en_difficulte'],
+            $uneAnnee['ue_en_difficulte'],
+            'Le compteur d\'une seule année ne peut pas dépasser le total toutes années.'
+        );
+    }
+
     /** Les UE difficiles respectent le seuil d'effectif. */
     public function test_les_ue_difficiles_respectent_le_seuil(): void
     {

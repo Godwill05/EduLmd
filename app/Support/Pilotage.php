@@ -77,13 +77,26 @@ class Pilotage
      *
      * `recap_ue.Etat_UE` vaut « V » (validée) ou « NV » (non validée).
      *
+     * Deux précautions qui changent le sens du chiffre :
+     *
+     *  - `$anneeAcad` filtre sur l'année académique. `recap_ue` ne la
+     *    porte pas directement, mais `Id_Attr_ue_Sem` désigne une
+     *    affectation UE-classe propre à une année : on passe donc par
+     *    `attr_ue_classe.id_Annee_Acad`. Sans ce filtre, un « 0 % sur
+     *    UEDPU » additionne des promotions qui n'ont rien à voir et le
+     *    taux est faux.
+     *  - `$anneeEtude` restreint à un niveau (LP1, LP2…). Les mêmes
+     *    libellés d'UE reviennent d'un niveau à l'autre avec des
+     *    exigences différentes.
+     *
      * @return array<int, array{ue: string, code: string, presents: int, reussis: int, taux: float, moyenne: float}>
      */
-    public static function ueLesPlusDifficiles(?string $anneeEtude = null, int $minInscrits = 5, int $limite = 10): array
+    public static function ueLesPlusDifficiles(?string $anneeEtude = null, int $minInscrits = 5, int $limite = 10, ?int $anneeAcad = null): array
     {
         $lignes = DB::table('recap_ue')
             ->join('attr_ue_classe', 'recap_ue.Id_Attr_ue_Sem', '=', 'attr_ue_classe.Id_Attr_ue_Sem')
             ->join('ue', 'attr_ue_classe.codeUe', '=', 'ue.codeUe')
+            ->when($anneeAcad, fn ($q) => $q->where('attr_ue_classe.id_Annee_Acad', $anneeAcad))
             ->when($anneeEtude, fn ($q) => $q->where('recap_ue.Code_Annee_Etude', $anneeEtude))
             ->groupBy('ue.codeUe', 'ue.libelleUe')
             ->havingRaw('COUNT(*) >= ?', [$minInscrits])
@@ -248,12 +261,18 @@ class Pilotage
         $totalJury = (int) ($jury->total ?? 0);
         $reussis = (int) ($jury->reussis ?? 0);
 
-        // UE réellement en difficulté (moins de la moitié de réussite).
+        /* UE réellement en difficulté (moins de la moitié de réussite).
+           `recap_ue` ne porte pas l'année académique : on la retrouve via
+           `attr_ue_classe`, sans quoi le compteur additionnerait quatre
+           promotions et annoncerait « 61 UE en difficulté » là où l'année
+           en cours n'en compte qu'une poignée. */
         $ueDifficiles = DB::table('recap_ue')
-            ->groupBy('Id_Attr_ue_Sem')
+            ->join('attr_ue_classe', 'recap_ue.Id_Attr_ue_Sem', '=', 'attr_ue_classe.Id_Attr_ue_Sem')
+            ->when($anneeAcad, fn ($q) => $q->where('attr_ue_classe.id_Annee_Acad', $anneeAcad))
+            ->groupBy('recap_ue.Id_Attr_ue_Sem')
             ->havingRaw('COUNT(*) >= 5')
-            ->havingRaw('SUM(CASE WHEN Etat_UE = \'V\' THEN 1 ELSE 0 END) * 2 < COUNT(*)')
-            ->selectRaw('Id_Attr_ue_Sem')
+            ->havingRaw('SUM(CASE WHEN recap_ue.Etat_UE = \'V\' THEN 1 ELSE 0 END) * 2 < COUNT(*)')
+            ->selectRaw('recap_ue.Id_Attr_ue_Sem')
             ->get()
             ->count();
 
