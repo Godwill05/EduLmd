@@ -199,6 +199,19 @@ Route::post('/verifier', [\App\Http\Controllers\VerificationDocumentController::
     ->middleware('throttle:30,1')
     ->name('verification.recherche');
 
+/* Un visiteur qui tape « /verifier » sans code — cas courant, le QR est
+   abîmé et la personne recopie l'adresse à la main — tombait sur une
+   erreur 405 (« méthode non autorisée »), illisible pour un non-technicien.
+   On lui sert le formulaire de saisie, qui est déjà présent sur chaque
+   page de vérification. */
+Route::get('/verifier', fn () => view('verification-document', [
+    'document' => null,
+    'code' => '',
+    'saisie' => null,
+]))
+    ->middleware('throttle:30,1')
+    ->name('verification.sans-code');
+
 Route::view('/not-found', 'errors.not-found')->name('not-found');
 Route::view('/','login')->name('login')->middleware('guest');
 Route::post('/',function(Request $rq){

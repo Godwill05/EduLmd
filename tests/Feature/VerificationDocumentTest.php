@@ -189,4 +189,21 @@ class VerificationDocumentTest extends TestCase
             $this->assertStringNotContainsString('href="' . url($lien) . '"', $html);
         }
     }
+
+    /**
+     * Un visiteur qui tape « /verifier » sans code tombe sur le
+     * formulaire, pas sur une erreur 405.
+     *
+     * Cas courant : le QR est abîmé, la personne recopie l'adresse à la
+     * main en oubliant le code. « Méthode non autorisée » ne veut rien
+     * dire pour elle.
+     */
+    public function test_la_page_sans_code_affiche_le_formulaire(): void
+    {
+        $reponse = $this->get('/verifier');
+
+        $reponse->assertOk();
+        $reponse->assertSee('Vérifier un autre document');
+        $reponse->assertSee('Code inconnu');
+    }
 }
