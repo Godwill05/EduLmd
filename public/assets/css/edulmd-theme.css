@@ -448,3 +448,68 @@ html[data-theme="dark"] .text-success { color: var(--ed-succes) !important; }
 html[data-theme="dark"] .text-warning { color: var(--ed-alerte) !important; }
 html[data-theme="dark"] .text-info { color: var(--ed-bleu) !important; }
 html[data-theme="dark"] .text-dark { color: var(--ed-noir) !important; }
+
+/* ==========================================================================
+   Surcharges mode sombre — canvas (graphiques)
+   --------------------------------------------------------------------------
+   Le canvas a un fond blanc par défaut. En mode sombre, il devient sombre
+   pour ne pas faire de tache blanche au milieu des graphiques.
+   ========================================================================== */
+html[data-theme="dark"] canvas {
+  background: var(--ed-surface-1);
+}
+
+/* ==========================================================================
+   Surcharges mode sombre — fiche étudiant (.fe-*)
+   --------------------------------------------------------------------------
+   La vue fiche-etudiant.blade.php définit ses propres styles dans <style>
+   avec des couleurs en dur. Ces règles les surchargent en mode sombre.
+   ========================================================================== */
+html[data-theme="dark"] .fe-hero,
+html[data-theme="dark"] .fe-kpi,
+html[data-theme="dark"] .fe-card {
+  background: var(--ed-surface-1) !important;
+  border-color: var(--ed-ligne) !important;
+}
+html[data-theme="dark"] .fe-avatar {
+  background: var(--ed-surface-2) !important;
+  color: var(--ed-bordeaux-clair) !important;
+  border-color: var(--ed-ligne) !important;
+}
+html[data-theme="dark"] .fe-avatar-btn:hover,
+html[data-theme="dark"] .fe-avatar-btn:focus-visible {
+  border-color: var(--ed-bordeaux-clair) !important;
+  box-shadow: 0 0 0 3px rgba(130,42,64,.12) !important;
+}
+html[data-theme="dark"] .fe-avatar-voile {
+  background: rgba(242,242,247,.55) !important;
+}
+html[data-theme="dark"] .fe-mat {
+  background: var(--ed-surface-2) !important;
+  color: var(--ed-texte-doux) !important;
+}
+html[data-theme="dark"] .fe-meta { color: var(--ed-texte-faible) !important; }
+html[data-theme="dark"] .fe-head { background: var(--ed-surface-2) !important; }
+html[data-theme="dark"] .fe-head .n {
+  background: var(--ed-surface-3) !important;
+  color: var(--ed-texte-faible) !important;
+}
+html[data-theme="dark"] .fe-ins-t .badge {
+  background: var(--ed-surface-2) !important;
+  color: var(--ed-texte-faible) !important;
+}
+html[data-theme="dark"] .fe-ins-t .badge.ok { background: var(--ed-succes-clair) !important; color: var(--ed-succes-fonce) !important; }
+html[data-theme="dark"] .fe-ins-t .badge.warn { background: var(--ed-alerte-clair) !important; color: var(--ed-alerte-fonce) !important; }
+html[data-theme="dark"] .fe-ins-nums b { color: var(--ed-noir) !important; }
+html[data-theme="dark"] .fe-ins-nums { color: var(--ed-texte-doux) !important; }
+html[data-theme="dark"] .fe-barre { background: var(--ed-ligne) !important; }
+html[data-theme="dark"] .fe-dl dd { color: var(--ed-noir) !important; }
+html[data-theme="dark"] .fe-dl dt { color: var(--ed-texte-faible) !important; }
+html[data-theme="dark"] .fe-vide { color: var(--ed-texte-faible) !important; }
+html[data-theme="dark"] .fe-statut.ok { background: var(--ed-succes-clair) !important; color: var(--ed-succes-fonce) !important; }
+html[data-theme="dark"] .fe-statut.warn { background: var(--ed-alerte-clair) !important; color: var(--ed-alerte-fonce) !important; }
+html[data-theme="dark"] .fe-kpi.ok .v { color: var(--ed-succes) !important; }
+html[data-theme="dark"] .fe-kpi.warn .v { color: var(--ed-alerte) !important; }
+html[data-theme="dark"] .fe-kpi.bad .v { color: var(--ed-erreur) !important; }
+/* Icônes couleur d'accent sur la fiche */
+html[data-theme="dark"] .text-\\[\\#822A40\\] { color: var(--ed-bordeaux) !important; }
