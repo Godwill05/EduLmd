@@ -435,10 +435,7 @@ class PaiementController extends Controller
 
         $annee = AnneeAcademique::find($anneeAcademique);
 
-        $query = Paiement::with(['inscription' => function ($q) {
-                // Pas de relation Eloquent standard — on charge via scope
-            }])
-            ->where('Id_Annee', $anneeAcademique)
+        $query = Paiement::where('Id_Annee', $anneeAcademique)
             ->whereBetween('datePaiement', [$dateDebut, $dateFin])
             ->orderBy('datePaiement')
             ->orderBy('MATRICULE');

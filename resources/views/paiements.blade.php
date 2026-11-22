@@ -255,6 +255,24 @@ Paiements
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Raccourcis de période -->
+                        <div class="col-12 mt-3">
+                            <label class="form-label fw-bold small text-muted mb-2">Raccourcis de période :</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="today"><i class="ri-calendar-today-line me-1"></i>Aujourd'hui</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="this_week"><i class="ri-calendar-week-line me-1"></i>Cette semaine</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="last_week"><i class="ri-calendar-line me-1"></i>La semaine dernière</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="this_month"><i class="ri-calendar-month-line me-1"></i>Ce mois</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="last_month"><i class="ri-calendar-line me-1"></i>Le mois dernier</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="this_year"><i class="ri-calendar-full-line me-1"></i>Cette année</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="last_year"><i class="ri-calendar-line me-1"></i>L'an dernier</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="minus_3_days"><i class="ri-history-line me-1"></i>3 derniers jours</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm raccourci-periode" data-code="minus_7_days"><i class="ri-history-line me-1"></i>7 derniers jours</button>
+                            </div>
+                            <small class="text-muted mt-2 d-block">Cliquez sur un raccourci pour remplir automatiquement les dates « Du » et « Au ».</small>
+                        </div>
+
                     </form>
                 </div>
             </div>
@@ -312,6 +330,72 @@ Paiements
                 $('.displaySituationEcheance').html('<div class="alert alert-danger"><i class=" ri-alert-line me-2"></i>' + err + '</div>');
             }
         });
+    });
+
+    /* ========================================================================
+       Raccourcis de période — Journal d'encaissement
+       ------------------------------------------------------------------------
+       Remplit automatiquement les champs « Du » et « Au » selon la période
+       choisie (semaine, mois, année, derniers jours…).
+       ======================================================================== */
+    function appliquerRaccourci(code) {
+        const today = new Date();
+        const yy = today.getFullYear();
+        const mm = today.getMonth();
+        const dd = today.getDate();
+        const fmt = (d) => d.toISOString().split('T')[0]; // YYYY-MM-DD
+
+        let debut, fin;
+
+        switch (code) {
+            case 'today':
+                debut = fin = today;
+                break;
+            case 'this_week':   // lundi → aujourd'hui
+                debut = new Date(today);
+                debut.setDate(dd - ((today.getDay() + 6) % 7));
+                fin = today;
+                break;
+            case 'last_week':   // lundi → dimanche de la semaine passée
+                debut = new Date(today);
+                debut.setDate(dd - ((today.getDay() + 6) % 7) - 7);
+                fin = new Date(debut);
+                fin.setDate(debut.getDate() + 6);
+                break;
+            case 'this_month':  // 1er → aujourd'hui
+                debut = new Date(yy, mm, 1);
+                fin = today;
+                break;
+            case 'last_month':  // 1er → dernier jour du mois passé
+                debut = new Date(yy, mm - 1, 1);
+                fin = new Date(yy, mm, 0);
+                break;
+            case 'this_year':   // 1er janv → aujourd'hui
+                debut = new Date(yy, 0, 1);
+                fin = today;
+                break;
+            case 'last_year':   // 1er janv → 31 déc de l'année passée
+                debut = new Date(yy - 1, 0, 1);
+                fin = new Date(yy - 1, 11, 31);
+                break;
+            case 'minus_3_days': // il y a 3 jours → aujourd'hui
+                debut = new Date(today);
+                debut.setDate(dd - 2);
+                fin = today;
+                break;
+            case 'minus_7_days': // 7 derniers jours → aujourd'hui
+                debut = new Date(today);
+                debut.setDate(dd - 6);
+                fin = today;
+                break;
+        }
+
+        $('#journalDateDebut').val(fmt(debut));
+        $('#journalDateFin').val(fmt(fin));
+    }
+
+    $('.raccourci-periode').on('click', function () {
+        appliquerRaccourci($(this).data('code'));
     });
 
     // Onglet 3 : Journal d'encaissement
