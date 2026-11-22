@@ -26,6 +26,36 @@
   <link rel="stylesheet" href="{{ asset('/assets/vanillajs-datepicker/datepicker-edulmd.min.css') }}">
   <link rel="stylesheet" href="{{ asset('/assets/jstree/dist/themes/default/style.min.css') }}">
 
+  {{-- Thèmes, accents et densité — chargés après la feuille compilée :
+       ils n'ajoutent que des variables, aucun composant n'est redéfini. --}}
+  <link href="{{ asset('/assets/css/edulmd-theme.css') }}" rel="stylesheet">
+  <link href="{{ asset('/assets/css/edulmd-layout.css') }}" rel="stylesheet">
+
+  {{-- Amorçage de l'apparence, AVANT le rendu du <body>.
+       Sans ce script en ligne, chaque page s'afficherait en clair pendant
+       une fraction de seconde puis basculerait en sombre : le « flash »
+       est très visible la nuit. Il ne lit qu'une clé de localStorage et
+       pose trois attributs sur <html>. --}}
+  <script>
+    (function () {
+      try {
+        var e = JSON.parse(localStorage.getItem('edulmd.apparence') || '{}');
+        var mode = e.mode || 'auto';
+        var sombre = mode === 'dark' ||
+          (mode === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var r = document.documentElement;
+        r.setAttribute('data-theme', sombre ? 'dark' : 'light');
+        r.setAttribute('data-theme-mode', mode);
+        r.setAttribute('data-accent', e.accent || 'bordeaux');
+        r.setAttribute('data-density', e.density || 'confortable');
+      } catch (err) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.setAttribute('data-accent', 'bordeaux');
+        document.documentElement.setAttribute('data-density', 'confortable');
+      }
+    })();
+  </script>
+
   <script src="{{ asset('/assets/js/jquery-3.7.0.js') }}"></script>
   <script src="{{ asset('/assets/tom-select/tom-select.complete.js') }}"></script>
   <script src="{{ asset('/assets/vanillajs-datepicker/datepicker-full.min.js') }}"></script>
@@ -73,6 +103,13 @@
             <i class="ri-search-line"></i>
             <span class="ed-search-label">Rechercher ou aller à…</span>
             <kbd>Ctrl K</kbd>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" class="ed-apparence-trigger" data-ed-apparence
+                  aria-label="Apparence : thème et couleurs" aria-expanded="false"
+                  title="Apparence — thème, couleur, densité (Maj+D)">
+            <i class="ri-palette-line"></i>
           </button>
         </li>
         <li class="nav-item">
@@ -301,6 +338,7 @@
 
   <!-- Comportements de l'application -->
   <script src="{{ asset('/assets/js/edulmd-shell.js') }}"></script>
+  <script src="{{ asset('/assets/js/edulmd-apparence.js') }}"></script>
   <script>
     window.EDULMD_SEARCH_URL = "{{ route('recherche.etudiants') }}";
   </script>

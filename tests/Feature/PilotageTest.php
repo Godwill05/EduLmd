@@ -193,4 +193,73 @@ class PilotageTest extends TestCase
         $this->assertStringContainsString('Taux de recouvrement', $contenu);
         $this->assertStringContainsString(';', $contenu);
     }
+
+    /**
+     * La page porte de vrais graphiques, pas seulement des tableaux.
+     *
+     * L'audit initial le notait : « le pilotage il reste des graphe » —
+     * c'est-à-dire qu'il n'y en avait aucun. Trois canvas sont attendus :
+     * évolution, recouvrement par filière, UE les plus difficiles.
+     */
+    public function test_la_page_porte_des_graphiques(): void
+    {
+        $reponse = $this->actingAs($this->utilisateur())->get('/pilotage');
+
+        $html = $reponse->getContent();
+
+        $this->assertStringContainsString('chart.umd.js', $html, 'Chart.js doit être chargé (copie locale).');
+        $this->assertStringContainsString('id="chartEvolution"', $html);
+        $this->assertStringContainsString('id="chartFilieres"', $html);
+        $this->assertStringContainsString('id="chartUe"', $html);
+    }
+
+    /** Les données des graphiques sont injectées en JSON valide. */
+    public function test_les_donnees_des_graphiques_sont_injectees(): void
+    {
+        $html = $this->actingAs($this->utilisateur())->get('/pilotage')->getContent();
+
+        foreach (['evolution', 'recouvrement', 'ueDifficiles'] as $variable) {
+            $this->assertMatchesRegularExpression(
+                '/var\s+' . $variable . '\s*=\s*[\[{]/',
+                $html,
+                "Les données `{$variable}` doivent être injectées pour les graphiques."
+            );
+        }
+
+        $this->assertMatchesRegularExpression('/var\s+reussites\s*=\s*\{/', $html);
+    }
+
+    /** Chaque graphique a une vue tableau, pour vérifier les nombres. */
+    public function test_chaque_graphique_a_une_vue_tableau(): void
+    {
+        $html = $this->actingAs($this->utilisateur())->get('/pilotage')->getContent();
+
+        // Trois cibles × deux vues = six boutons et six panneaux.
+        $this->assertSame(6, substr_count($html, 'data-vue="'));
+        $this->assertSame(6, substr_count($html, 'data-vue-panneau="'));
+    }
+
+    /** Une année absente de la base est signalée, pas affichée à zéro. */
+    public function test_une_annee_inconnue_est_signalee(): void
+    {
+        $reponse = $this->actingAs($this->utilisateur())->get('/pilotage?annee=12');
+
+        $reponse->assertOk();
+        $reponse->assertSee("n'existe pas encore", false);
+        $reponse->assertSee('année la plus récente');
+    }
+
+    /** Une année existante n'affiche pas le bandeau. */
+    public function test_une_annee_existante_n_affiche_pas_le_bandeau(): void
+    {
+        $annee = \Illuminate\Support\Facades\DB::table('anneeacademique')
+            ->orderByDesc('id_Annee_Acad')->value('id_Annee_Acad');
+
+        if (! $annee) $this->markTestSkipped('Aucune année en base.');
+
+        $reponse = $this->actingAs($this->utilisateur())->get('/pilotage?annee=' . $annee);
+
+        $reponse->assertOk();
+        $reponse->assertDontSee("n'existe pas encore", false);
+    }
 }

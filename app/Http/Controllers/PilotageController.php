@@ -28,9 +28,15 @@ class PilotageController extends Controller
             ? (int) $request->input('annee')
             : optional($annees->first())->id_Annee_Acad;
 
-        // Un identifiant d'année qui ne correspond à rien retombe sur l'année
-        // la plus récente : l'écran ne doit jamais être vide par accident.
+        /* Un identifiant d'année absent de la base (lien périmé, favori
+           pointant sur 2026-2027 avant sa création) ne doit pas produire
+           un écran de zéros : on retombe sur l'année la plus récente et
+           on le dit à l'utilisateur, sinon il croit à une panne. */
+        $anneeDemandee = $anneeChoisie;
+        $anneeInconnue = false;
+
         if (! $annees->contains('id_Annee_Acad', $anneeChoisie)) {
+            $anneeInconnue = $anneeChoisie !== null;
             $anneeChoisie = optional($annees->first())->id_Annee_Acad;
         }
 
@@ -47,6 +53,8 @@ class PilotageController extends Controller
             'recouvrement' => Pilotage::recouvrementParFiliere($anneeChoisie),
             'impayes' => Pilotage::impayesLesPlusLourds($anneeChoisie),
             'ueDifficiles' => Pilotage::ueLesPlusDifficiles(null, 5, 10, $anneeChoisie),
+            'anneeInconnue' => $anneeInconnue,
+            'anneeDemandee' => $anneeDemandee,
         ]);
     }
 

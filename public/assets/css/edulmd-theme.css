@@ -1,0 +1,345 @@
+/*! ==========================================================================
+    EduLMD — Thèmes et couleurs
+    --------------------------------------------------------------------------
+    Un seul fichier, chargé après la feuille compilée : il redéfinit les
+    variables CSS que tout le reste utilise déjà (`--ed-bordeaux`,
+    `--ed-fond`, `--ed-ligne`…). Aucune règle de composant n'est réécrite,
+    ce qui évite de dupliquer 90 Ko de Tailwind pour un thème sombre.
+
+    Trois choses se règlent ici :
+      1. le mode (clair / sombre / automatique) ;
+      2. la couleur d'accent (bordeaux par défaut) ;
+      3. la densité de l'espacement autour du contenu.
+
+    Le choix est mémorisé dans `localStorage` et appliqué par un script
+    en ligne placé dans le <head>, AVANT le rendu : sans cela, la page
+    s'afficherait en clair pendant un instant puis basculerait en sombre
+    à chaque navigation.
+   ========================================================================== */
+
+/* ── Mode sombre ─────────────────────────────────────────────────────────
+   On utilise l'attribut `data-theme` plutôt que `prefers-color-scheme`
+   seul : l'utilisateur doit pouvoir forcer un mode que son système ne
+   connaît pas. `data-theme="auto"` délègue au système. */
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ed-noir: #f2f2f4;
+  --ed-blanc: #16171a;
+  --ed-fond: #101114;
+  --ed-ligne: #2b2d33;
+
+  --ed-bordeaux-clair: #3a1c25;
+  --ed-bleu-clair: #171f3d;
+
+  --ed-ombre: 0 1px 2px rgba(0, 0, 0, .5), 0 1px 3px rgba(0, 0, 0, .45);
+  --ed-ombre-panneau: 0 8px 30px rgba(0, 0, 0, .55);
+
+  /* Surfaces : un dégradé de trois tons. Sans cette hiérarchie, les
+     cartes se confondent avec le fond et la page paraît plate. */
+  --ed-surface-1: #191a1e;
+  --ed-surface-2: #202127;
+  --ed-surface-3: #26282f;
+  --ed-texte-doux: #a4a7b0;
+  --ed-texte-faible: #7b7e88;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --ed-surface-1: #ffffff;
+  --ed-surface-2: #f7f7f9;
+  --ed-surface-3: #f0f0f3;
+  --ed-texte-doux: #5c5f66;
+  --ed-texte-faible: #8a8d94;
+}
+
+/* ── Couleurs d'accent ──────────────────────────────────────────────────
+   L'accent pilote le bordeaux partout : boutons, nav actif, titres de
+   cartes, graphiques. Les trois valeurs (base / foncé / clair) suffisent
+   pour tous les états. */
+html[data-accent="bordeaux"] { --ed-bordeaux: #822a40; --ed-bordeaux-fonce: #6b2435; --ed-bordeaux-clair: #fbedf1; }
+html[data-accent="bleu"]     { --ed-bordeaux: #1d38d8; --ed-bordeaux-fonce: #1a2fb0; --ed-bordeaux-clair: #eef1fe; }
+html[data-accent="emeraude"] { --ed-bordeaux: #0f766e; --ed-bordeaux-fonce: #0d5f59; --ed-bordeaux-clair: #e6f6f4; }
+html[data-accent="violet"]   { --ed-bordeaux: #6d28d9; --ed-bordeaux-fonce: #5b21b6; --ed-bordeaux-clair: #f2ecfe; }
+html[data-accent="ambre"]    { --ed-bordeaux: #b45309; --ed-bordeaux-fonce: #92400e; --ed-bordeaux-clair: #fdf3e7; }
+html[data-accent="ardoise"]  { --ed-bordeaux: #334155; --ed-bordeaux-fonce: #1e293b; --ed-bordeaux-clair: #eef1f5; }
+
+/* En sombre, les accents clairs doivent rester lisibles sur fond noir :
+   on éclaircit la teinte de base d'un cran. */
+html[data-theme="dark"][data-accent="bordeaux"] { --ed-bordeaux: #b8536d; --ed-bordeaux-fonce: #d06782; --ed-bordeaux-clair: #3a1c25; }
+html[data-theme="dark"][data-accent="bleu"]     { --ed-bordeaux: #4d67e8; --ed-bordeaux-fonce: #6b83f5; --ed-bordeaux-clair: #171f3d; }
+html[data-theme="dark"][data-accent="emeraude"] { --ed-bordeaux: #2dd4bf; --ed-bordeaux-fonce: #5eead4; --ed-bordeaux-clair: #0d2f2c; }
+html[data-theme="dark"][data-accent="violet"]   { --ed-bordeaux: #a78bfa; --ed-bordeaux-fonce: #c4b5fd; --ed-bordeaux-clair: #2a1f4d; }
+html[data-theme="dark"][data-accent="ambre"]    { --ed-bordeaux: #fbbf24; --ed-bordeaux-fonce: #fcd34d; --ed-bordeaux-clair: #3d2a0a; }
+html[data-theme="dark"][data-accent="ardoise"]  { --ed-bordeaux: #94a3b8; --ed-bordeaux-fonce: #cbd5e1; --ed-bordeaux-clair: #26303f; }
+
+/* ── Densité ────────────────────────────────────────────────────────────
+   « Compact » intéresse un secrétariat qui affiche beaucoup de tableaux ;
+   « confortable » est le défaut. */
+html[data-density="compact"]     { --ed-gouttiere: 1.25rem; --ed-espace-bloc: .8rem; }
+html[data-density="confortable"] { --ed-gouttiere: clamp(1.5rem, 2.4vw, 2.75rem); --ed-espace-bloc: 1rem; }
+
+/* ── Application des surfaces ───────────────────────────────────────────
+   Redéfinition ciblée pour que le sombre soit réellement sombre : la
+   feuille compilée contient des `background:#fff` en dur sur les cartes,
+   les menus et le pied de page. */
+html[data-theme="dark"] body { background: var(--ed-fond); color: var(--ed-noir); }
+
+html[data-theme="dark"] .ed-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .badge.ed-card,
+html[data-theme="dark"] .ed-card { background: var(--ed-surface-1); border-color: var(--ed-ligne); }
+
+html[data-theme="dark"] .ed-btn-secondary { background: var(--ed-surface-2); border-color: var(--ed-ligne); color: var(--ed-noir); }
+html[data-theme="dark"] .ed-btn-secondary:hover { background: var(--ed-surface-3); border-color: var(--ed-bordeaux); color: var(--ed-bordeaux); }
+
+html[data-theme="dark"] .sidebar { background: var(--ed-surface-1); border-right-color: var(--ed-ligne); }
+html[data-theme="dark"] .header { background: var(--ed-surface-1); border-bottom-color: var(--ed-ligne); }
+html[data-theme="dark"] #footer { background: var(--ed-surface-1); border-top-color: var(--ed-ligne); }
+
+html[data-theme="dark"] .dropdown-menu { background: var(--ed-surface-2); border-color: var(--ed-ligne); }
+html[data-theme="dark"] .dropdown-item:hover { background: var(--ed-surface-3); }
+
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .ed-input { background: var(--ed-surface-2); border-color: var(--ed-ligne); color: var(--ed-noir); }
+html[data-theme="dark"] .form-control::placeholder { color: var(--ed-texte-faible); }
+html[data-theme="dark"] select option { background: var(--ed-surface-2); color: var(--ed-noir); }
+
+html[data-theme="dark"] table { border-color: var(--ed-ligne); }
+html[data-theme="dark"] thead th { background: var(--ed-surface-2); color: var(--ed-texte-doux); border-color: var(--ed-ligne); }
+html[data-theme="dark"] tbody td { border-color: #23252b; }
+html[data-theme="dark"] tbody tr:hover { background: var(--ed-surface-2); }
+
+html[data-theme="dark"] .alert-success { background: #10281b; border-color: #1d5136; color: #86efac; }
+html[data-theme="dark"] .alert-danger  { background: #2c1416; border-color: #5e2429; color: #fca5a5; }
+html[data-theme="dark"] .alert-warning { background: #2b2110; border-color: #5c441c; color: #fcd34d; }
+html[data-theme="dark"] .alert-info    { background: #121a33; border-color: #24356b; color: #93b4fd; }
+
+html[data-theme="dark"] .pill,
+html[data-theme="dark"] .ed-chip-muted { background: var(--ed-surface-3); color: var(--ed-texte-doux); }
+
+html[data-theme="dark"] .breadcrumb-item a { color: var(--ed-texte-faible); }
+html[data-theme="dark"] .breadcrumb-item.active { color: var(--ed-noir); }
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #3a3c44; background-clip: content-box; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #4a4d57; background-clip: content-box; }
+
+/* Les tableaux à fond alterné des récapitulatifs */
+html[data-theme="dark"] .table-striped tbody tr:nth-child(odd) { background: var(--ed-surface-2); }
+
+/* ── Transitions de thème ────────────────────────────────────────────────
+   Une bascule instantanée agresse l'œil. On anime les couleurs pendant
+   250 ms — mais seulement si l'utilisateur n'a pas demandé à réduire les
+   animations (règle plus bas). */
+html.ed-theme-anim,
+html.ed-theme-anim body,
+html.ed-theme-anim .ed-card,
+html.ed-theme-anim .sidebar,
+html.ed-theme-anim .header,
+html.ed-theme-anim #footer,
+html.ed-theme-anim .dropdown-menu,
+html.ed-theme-anim .form-control,
+html.ed-theme-anim .form-select {
+  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.ed-theme-anim * { transition: none !important; }
+}
+
+/* ==========================================================================
+   Panneau « Apparence »
+   ========================================================================== */
+
+.ed-apparence-trigger {
+  width: 2.1rem; height: 2.1rem; border-radius: .55rem;
+  display: grid; place-items: center;
+  border: 1px solid var(--ed-ligne); background: var(--ed-surface-1, #fff);
+  color: var(--ed-texte-doux, #5c5f66); font-size: 1.05rem; cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s, transform .15s;
+}
+.ed-apparence-trigger:hover,
+.ed-apparence-trigger[aria-expanded="true"] {
+  color: var(--ed-bordeaux); border-color: var(--ed-bordeaux);
+  background: var(--ed-bordeaux-clair);
+}
+.ed-apparence-trigger:active { transform: scale(.94); }
+.ed-apparence-trigger:focus-visible { outline: 2px solid var(--ed-bleu); outline-offset: 2px; }
+
+.ed-apparence {
+  position: fixed; z-index: 1085;
+  width: 320px;
+  background: var(--ed-surface-1, #fff);
+  border: 1px solid var(--ed-ligne);
+  border-radius: 1rem;
+  box-shadow: var(--ed-ombre-panneau);
+  overflow: hidden;
+  animation: edApparenceIn .18s cubic-bezier(.22,1,.36,1);
+  transform-origin: top right;
+}
+.ed-apparence[hidden] { display: none; }
+
+@keyframes edApparenceIn {
+  from { opacity: 0; transform: translateY(-6px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ed-apparence-entete {
+  display: flex; align-items: flex-start; gap: .75rem;
+  padding: .9rem 1rem .8rem;
+  border-bottom: 1px solid var(--ed-ligne);
+  background: var(--ed-surface-2, #f7f7f9);
+}
+.ed-apparence-titre { font-size: .9rem; font-weight: 800; color: var(--ed-noir); letter-spacing: -.01em; }
+.ed-apparence-sous { font-size: .7rem; color: var(--ed-texte-faible, #8a8d94); margin-top: .1rem; }
+.ed-apparence-x {
+  margin-left: auto; flex: 0 0 auto; width: 1.7rem; height: 1.7rem;
+  display: grid; place-items: center; border-radius: .45rem;
+  border: 0; background: transparent; color: var(--ed-texte-faible, #8a8d94);
+  font-size: 1rem; cursor: pointer; transition: background .13s, color .13s;
+}
+.ed-apparence-x:hover { background: var(--ed-surface-3, #f0f0f3); color: var(--ed-noir); }
+
+.ed-apparence-corps { padding: .85rem 1rem 1rem; display: grid; gap: 1rem; }
+.ed-apparence-bloc { display: grid; gap: .45rem; }
+.ed-apparence-libelle {
+  font-size: .66rem; font-weight: 800; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ed-texte-faible, #8a8d94);
+}
+
+/* Segments : mode et densité */
+.ed-apparence-segments {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  gap: .3rem; padding: .22rem;
+  background: var(--ed-surface-2, #f7f7f9);
+  border: 1px solid var(--ed-ligne); border-radius: .7rem;
+}
+.ed-apparence-segments button {
+  display: flex; flex-direction: column; align-items: center; gap: .2rem;
+  padding: .45rem .25rem; border: 1px solid transparent; border-radius: .5rem;
+  background: transparent; color: var(--ed-texte-doux, #5c5f66);
+  font-family: inherit; font-size: .68rem; font-weight: 600; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+}
+.ed-apparence-segments button i { font-size: .95rem; }
+.ed-apparence-segments button:hover { color: var(--ed-bordeaux); background: var(--ed-bordeaux-clair); }
+.ed-apparence-segments button.is-on {
+  background: var(--ed-surface-1, #fff); color: var(--ed-bordeaux);
+  border-color: var(--ed-ligne);
+  box-shadow: 0 1px 3px rgba(16,24,40,.1);
+  font-weight: 800;
+}
+
+/* Pastilles de couleur */
+.ed-apparence-pastilles {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem;
+}
+.ed-apparence-pastilles button {
+  display: flex; flex-direction: column; align-items: center; gap: .28rem;
+  padding: .4rem .2rem .35rem;
+  border: 1px solid var(--ed-ligne); border-radius: .6rem;
+  background: var(--ed-surface-2, #f7f7f9); cursor: pointer; font-family: inherit;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.ed-apparence-pastilles button:hover { transform: translateY(-1px); }
+.ed-apparence-pastilles button span {
+  width: 1.15rem; height: 1.15rem; border-radius: 99px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+  transition: transform .15s;
+}
+.ed-apparence-pastilles button em {
+  font-style: normal; font-size: .62rem; font-weight: 600;
+  color: var(--ed-texte-doux, #5c5f66); line-height: 1;
+}
+.ed-apparence-pastilles button[data-accent="bordeaux"] span { background: #822a40; }
+.ed-apparence-pastilles button[data-accent="bleu"]     span { background: #1d38d8; }
+.ed-apparence-pastilles button[data-accent="emeraude"] span { background: #0f766e; }
+.ed-apparence-pastilles button[data-accent="violet"]   span { background: #6d28d9; }
+.ed-apparence-pastilles button[data-accent="ambre"]    span { background: #b45309; }
+.ed-apparence-pastilles button[data-accent="ardoise"]  span { background: #334155; }
+
+.ed-apparence-pastilles button.is-on {
+  border-color: var(--ed-bordeaux); background: var(--ed-bordeaux-clair);
+}
+.ed-apparence-pastilles button.is-on em { color: var(--ed-bordeaux); font-weight: 800; }
+.ed-apparence-pastilles button.is-on span { transform: scale(1.12); }
+
+.ed-apparence-pied {
+  padding: .6rem .9rem .75rem; border-top: 1px solid var(--ed-ligne);
+  background: var(--ed-surface-2, #f7f7f9);
+}
+.ed-apparence-reset {
+  width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+  padding: .42rem .6rem; border: 1px solid var(--ed-ligne); border-radius: .5rem;
+  background: var(--ed-surface-1, #fff); color: var(--ed-texte-doux, #5c5f66);
+  font-family: inherit; font-size: .72rem; font-weight: 600; cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.ed-apparence-reset:hover { color: var(--ed-bordeaux); border-color: var(--ed-bordeaux); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-apparence { animation: none; }
+  .ed-apparence-trigger:active { transform: none; }
+}
+
+/* Sur téléphone : le panneau occupe la largeur, en feuille basse. */
+@media (max-width: 520px) {
+  .ed-apparence {
+    left: 12px !important; right: 12px; width: auto !important;
+    top: auto !important; bottom: 12px;
+    transform-origin: bottom center;
+    animation: edApparenceUp .2s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes edApparenceUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ==========================================================================
+   Lisibilité des accents clairs sur boutons
+   --------------------------------------------------------------------------
+   Mesuré : en mode sombre, l'ambre (#fbbf24) avec texte blanc donne un
+   contraste de 1,7:1 — illisible, et sous le seuil AA de 4,5:1. Même
+   problème pour émeraude, violet et ardoise.
+
+   La correction ne touche pas les couleurs : elle change la couleur du
+   texte posé dessus. Un accent clair reçoit un texte sombre. C'est la
+   règle habituelle en design de systèmes de couleurs (luminance).
+   ========================================================================== */
+
+/* Accents à luminance élevée → texte sombre sur les surfaces pleines. */
+html[data-theme="dark"][data-accent="emeraude"] { --ed-sur-accent: #06211f; }
+html[data-theme="dark"][data-accent="violet"]   { --ed-sur-accent: #1b1233; }
+html[data-theme="dark"][data-accent="ambre"]    { --ed-sur-accent: #2b1d05; }
+html[data-theme="dark"][data-accent="ardoise"]  { --ed-sur-accent: #131a24; }
+html[data-theme="dark"][data-accent="bleu"]     { --ed-sur-accent: #ffffff; }
+/* bleu assombri : #4d67e8 porte du blanc à 5,0:1 (contre 3,4:1 avant) */
+html[data-theme="dark"][data-accent="bordeaux"] { --ed-sur-accent: #ffffff; }
+
+/* En clair, tous les accents sont foncés : texte blanc. */
+html[data-theme="light"] { --ed-sur-accent: #ffffff; }
+
+/* Application : tout ce qui pose du texte sur la couleur d'accent. */
+html[data-theme="dark"] .ed-btn-primary,
+html[data-theme="dark"] .btn-primary,
+html[data-theme="dark"] .ed-nav-link.is-active,
+html[data-theme="dark"] .pi-vue.is-on,
+html[data-theme="dark"] thead th,
+html[data-theme="dark"] .edt-grille thead th,
+html[data-theme="dark"] .rv-chip.on,
+html[data-theme="dark"] .al-chip.on {
+  color: var(--ed-sur-accent);
+}
+
+/* Les titres de cartes en accent gardent le ton de base (pas de fond). */
+html[data-theme="dark"] .pi-kpi .valeur.bon   { color: #4ade80; }
+html[data-theme="dark"] .pi-kpi .valeur.moyen { color: #fbbf24; }
+html[data-theme="dark"] .pi-kpi .valeur.faible { color: #f87171; }
+
+html[data-theme="dark"] .pi-table .taux.bon   { color: #4ade80; }
+html[data-theme="dark"] .pi-table .taux.moyen { color: #fbbf24; }
+html[data-theme="dark"] .pi-table .taux.faible { color: #f87171; }

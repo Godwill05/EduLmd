@@ -48,6 +48,12 @@
 
     @page { size: A4 landscape; margin: 8mm; }
 
+    /* L'impression est autonome : elle n'hérite pas du thème de
+       l'application. C'est voulu — un emploi du temps s'imprime sur
+       papier blanc, quel que soit le réglage d'écran de l'utilisateur.
+       On force donc explicitement le fond clair, au cas où. */
+    html { background: #fff; color-scheme: light; }
+
     /* À l'impression : on coupe les éléments d'interface, on garde les
        bordures (par défaut, les navigateurs les suppriment). */
     @media print {
