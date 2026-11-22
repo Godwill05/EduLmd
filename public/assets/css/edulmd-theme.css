@@ -50,6 +50,17 @@ html[data-theme="dark"] {
   --ed-entete-fond: rgba(25, 26, 30, .92);
   --ed-texte-menu: #c9cbd2;
   --ed-texte-menu-faible: #8f929b;
+
+  /* Couleurs sémantiques — mode sombre (tons clairs pour rester lisibles) */
+  --ed-succes: #4ade80;
+  --ed-succes-fonce: #15803d;
+  --ed-succes-clair: #064e3b;
+  --ed-erreur: #f87171;
+  --ed-erreur-fonce: #dc2626;
+  --ed-erreur-clair: #450a0a;
+  --ed-alerte: #fbbf24;
+  --ed-alerte-fonce: #d97706;
+  --ed-alerte-clair: #451a03;
 }
 
 html[data-theme="light"] {
@@ -63,6 +74,17 @@ html[data-theme="light"] {
   --ed-entete-fond: rgba(255, 255, 255, .92);
   --ed-texte-menu: #3f4147;
   --ed-texte-menu-faible: #7c7f87;
+
+  /* Couleurs sémantiques — mode clair */
+  --ed-succes: #15803d;
+  --ed-succes-fonce: #14532d;
+  --ed-succes-clair: #f0fdf4;
+  --ed-erreur: #dc2626;
+  --ed-erreur-fonce: #b91c1c;
+  --ed-erreur-clair: #fef2f2;
+  --ed-alerte: #d97706;
+  --ed-alerte-fonce: #92400e;
+  --ed-alerte-clair: #fffbeb;
 }
 
 /* ── Couleurs d'accent ──────────────────────────────────────────────────
@@ -353,3 +375,76 @@ html[data-theme="dark"] .pi-kpi .valeur.faible { color: #f87171; }
 html[data-theme="dark"] .pi-table .taux.bon   { color: #4ade80; }
 html[data-theme="dark"] .pi-table .taux.moyen { color: #fbbf24; }
 html[data-theme="dark"] .pi-table .taux.faible { color: #f87171; }
+
+/* ==========================================================================
+   Surcharges du mode sombre pour les classes utilitaires Bootstrap/Tailwind
+   --------------------------------------------------------------------------
+   Le CSS compilé contient des couleurs en dur (text-dark #212529, bg-white
+   #fff, bg-light #f8f9fa, etc.) que les variables ne couvrent pas toutes.
+   Ces règles forcent le bon rendu en mode sombre. Elles sont placées dans
+   edulmd-theme.css (chargé après edulmd.css) et préfixées par
+   html[data-theme="dark"], donc elles gagnent sur la cascade sans !important.
+   ========================================================================== */
+
+/* --- Texte : en sombre, le texte "dark" devient clair --- */
+html[data-theme="dark"] .text-dark,
+html[data-theme="dark"] .text-body { color: var(--ed-noir) !important; }
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .text-body-secondary { color: var(--ed-texte-faible) !important; }
+html[data-theme="dark"] .text-body-tertiary { color: var(--ed-texte-faible) !important; }
+
+/* --- Fonds : en sombre, le blanc devient surface sombre --- */
+html[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-light,
+html[data-theme="dark"] .bg-light-subtle,
+html[data-theme="dark"] .bg-gray-100,
+html[data-theme="dark"] .card { background: var(--ed-surface-1) !important; }
+html[data-theme="dark"] .bg-secondary-subtle { background: var(--ed-surface-2) !important; }
+
+/* --- Bordures --- */
+html[data-theme="dark"] .border-primary { border-color: var(--ed-bordeaux) !important; }
+html[data-theme="dark"] .border-secondary { border-color: var(--ed-texte-faible) !important; }
+html[data-theme="dark"] .border-success { border-color: var(--ed-succes) !important; }
+html[data-theme="dark"] .border-danger { border-color: var(--ed-erreur) !important; }
+html[data-theme="dark"] .border-warning { border-color: var(--ed-alerte) !important; }
+html[data-theme="dark"] .border-info { border-color: var(--ed-bleu) !important; }
+
+/* --- Alertes : fond sombre + texte adapté --- */
+html[data-theme="dark"] .alert-success { background: var(--ed-succes-clair); color: var(--ed-succes-fonce); }
+html[data-theme="dark"] .alert-danger { background: var(--ed-erreur-clair); color: var(--ed-erreur-fonce); }
+html[data-theme="dark"] .alert-warning { background: var(--ed-alerte-clair); color: var(--ed-alerte-fonce); }
+html[data-theme="dark"] .alert-info { background: var(--ed-bleu-clair); color: var(--ed-bleu); }
+html[data-theme="dark"] .alert-primary { background: var(--ed-bordeaux-clair); color: var(--ed-bordeaux-fonce); }
+
+/* --- Tableaux : en sombre, fond de surface --- */
+html[data-theme="dark"] .table { color: var(--ed-noir); }
+html[data-theme="dark"] .table-dark { background: var(--ed-surface-2); color: var(--ed-blanc); }
+html[data-theme="dark"] .table-dark th,
+html[data-theme="dark"] .table-dark td { border-color: var(--ed-ligne); }
+
+/* --- Badges : texte sur fond d'accent --- */
+html[data-theme="dark"] .badge.bg-primary { color: var(--ed-sur-accent); }
+html[data-theme="dark"] .badge.bg-danger { color: var(--ed-sur-accent); }
+html[data-theme="dark"] .badge.bg-success { color: var(--ed-sur-accent); }
+html[data-theme="dark"] .badge.bg-warning { color: var(--ed-sur-accent); }
+html[data-theme="dark"] .badge.bg-info { color: var(--ed-sur-accent); }
+
+/* --- Formulaires : texte des labels en sombre --- */
+html[data-theme="dark"] .form-label { color: var(--ed-noir); }
+html[data-theme="dark"] .form-control,
+html[data-theme="dark"] .form-select { background: var(--ed-surface-1); color: var(--ed-noir); border-color: var(--ed-ligne); }
+
+/* --- Boutons outline : bordure et texte en accent --- */
+html[data-theme="dark"] .btn-outline-primary { color: var(--ed-bordeaux); border-color: var(--ed-bordeaux); }
+html[data-theme="dark"] .btn-outline-danger { color: var(--ed-erreur); border-color: var(--ed-erreur); }
+html[data-theme="dark"] .btn-outline-success { color: var(--ed-succes); border-color: var(--ed-succes); }
+html[data-theme="dark"] .btn-outline-warning { color: var(--ed-alerte); border-color: var(--ed-alerte); }
+html[data-theme="dark"] .btn-outline-info { color: var(--ed-bleu); border-color: var(--ed-bleu); }
+
+/* --- Texte de couleur (Bootstrap text-*) : adapté en sombre --- */
+html[data-theme="dark"] .text-primary { color: var(--ed-bleu) !important; }
+html[data-theme="dark"] .text-danger { color: var(--ed-erreur) !important; }
+html[data-theme="dark"] .text-success { color: var(--ed-succes) !important; }
+html[data-theme="dark"] .text-warning { color: var(--ed-alerte) !important; }
+html[data-theme="dark"] .text-info { color: var(--ed-bleu) !important; }
+html[data-theme="dark"] .text-dark { color: var(--ed-noir) !important; }
