@@ -234,6 +234,7 @@
           <li><a class="{{ $isActive('passage-promotion') }}" href="{{ route('passage-promotion.index') }}">Passage de promotion</a></li>
           <li><a class="{{ $isActive('paiements') }}" href="{{ route('paiements.index') }}">Paiements</a></li>
           <li><a class="{{ $isActive('previsions') }}" href="{{ route('previsions.index') }}">Prévisions</a></li>
+          <li><a class="{{ $isActive('previsions') }}" href="{{ route('previsions.echeances') }}">Échéances à traiter</a></li>
           <li><a class="{{ $isActive('engagement') }}" href="{{ route('engagement.index') }}">Fiches d'engagement</a></li>
           <li><a class="{{ $isActive('enseignants') }}" href="{{ route('enseignants.index') }}">Enseignants</a></li>
           <li><a class="{{ $isActive('listeEmargement') }}" href="{{ route('listeEmargement') }}">Liste d'émargement</a></li>

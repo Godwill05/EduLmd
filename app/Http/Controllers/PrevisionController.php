@@ -358,9 +358,7 @@ class PrevisionController extends Controller
         }
     }
 
-    /**
-     * Supprimer une prévision individuelle.
-     */
+    /** Supprimer une prévision individuelle. */
     public function destroy($id)
     {
         $prev = Prevision::find($id);
@@ -372,5 +370,97 @@ class PrevisionController extends Controller
             self::synchroniserPrevisions($mat, $an, $fil);
         }
         return back()->with('succes', 'Tranche supprimée !');
+    }
+
+    /**
+     * Tableau de bord "Échéances à traiter".
+     *
+     * Liste uniquement les tranches non payées, triées par urgence :
+     * 1. Échéances déjà passées et non payées (en retard, en rouge) ;
+     * 2. Échéances à venir (non payées, en gris).
+     */
+    public function echeancesATraiter(Request $request)
+    {
+        $aujourdhui = Carbon::today()->format('Y-m-d');
+
+        $query = Prevision::with(['etudiant', 'anneeacademique'])
+            ->where('paye', 0)
+            ->where('reste_a_payer', '>', 0);
+
+        // Filtres optionnels
+        if ($annee = $request->get('annee_academique')) {
+            $query->where('Id_Annee', $annee);
+        }
+        if ($filiere = $request->get('filiere')) {
+            $query->where('ID_FILIERE', $filiere);
+        }
+
+        $echeances = $query->orderByRaw("CASE WHEN echeance < ? THEN 0 ELSE 1 END", [$aujourdhui])
+            ->orderBy('echeance')
+            ->orderBy('id')
+            ->paginate(50)
+            ->appends(request()->query());
+
+        $annees = \App\Models\AnneeAcademique::orderBy('id_Annee_Acad', 'desc')->get();
+        $filieres = \App\Models\AnneeEtude::orderBy('Libelle_AnEtude')->get();
+
+        $stats = [
+            'total' => $echeances->total(),
+            'en_retard' => $echeances->filter(fn ($e) => $e->echeance < $aujourdhui)->count(),
+            'a_venir' => $echeances->filter(fn ($e) => $e->echeance >= $aujourdhui)->count(),
+            'montant_total' => $echeances->sum(fn ($e) => (int)$e->montant_a_payer),
+        ];
+
+        return view('echeances-a-traiter', compact(
+            'echeances', 'annees', 'filieres', 'stats', 'aujourdhui'
+        ));
+    }
+
+    /**
+     * Marque une tranche comme payée (sans créer de paiement détaillé).
+     */
+    public function marquerPayee(Request $request, $id)
+    {
+        $prev = Prevision::find($id);
+        if (!$prev) {
+            return response()->json(['success' => false, 'message' => 'Tranche introuvable.'], 404);
+        }
+
+        $prev->paye = 1;
+        $prev->reste_a_payer = 0;
+        $prev->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tranche marquée comme payée.',
+            'id' => $prev->id,
+        ]);
+    }
+
+    /**
+     * Marque plusieurs tranches comme payées en une seule fois (action en lot).
+     */
+    public function marquerToutesPayees(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'exists:previsions,id',
+        ]);
+
+        $count = 0;
+        foreach ($request->ids as $id) {
+            $prev = Prevision::find($id);
+            if ($prev && !$prev->paye) {
+                $prev->paye = 1;
+                $prev->reste_a_payer = 0;
+                $prev->save();
+                $count++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} tranche(s) marquée(s) comme payée(s).",
+        ]);
     }
 }
