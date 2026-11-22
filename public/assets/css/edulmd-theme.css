@@ -43,6 +43,13 @@ html[data-theme="dark"] {
   --ed-surface-3: #26282f;
   --ed-texte-doux: #a4a7b0;
   --ed-texte-faible: #7b7e88;
+
+  /* En-tête et menu. Le blanc translucide de l'en-tête devenait une barre
+     éclatante sur fond sombre — c'était l'un des défauts signalés
+     (« le changement de thème ne change pas la navbar »). */
+  --ed-entete-fond: rgba(25, 26, 30, .92);
+  --ed-texte-menu: #c9cbd2;
+  --ed-texte-menu-faible: #8f929b;
 }
 
 html[data-theme="light"] {
@@ -53,6 +60,9 @@ html[data-theme="light"] {
   --ed-surface-3: #f0f0f3;
   --ed-texte-doux: #5c5f66;
   --ed-texte-faible: #8a8d94;
+  --ed-entete-fond: rgba(255, 255, 255, .92);
+  --ed-texte-menu: #3f4147;
+  --ed-texte-menu-faible: #7c7f87;
 }
 
 /* ── Couleurs d'accent ──────────────────────────────────────────────────
