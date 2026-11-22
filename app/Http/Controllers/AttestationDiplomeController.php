@@ -6,6 +6,8 @@ use App\Models\AnneeAcademique;
 use App\Models\AnneeEtude;
 use App\Models\Etudiant;
 use App\Models\Inscription;
+use App\Support\DocumentsVerifiables;
+use App\Support\QrDocument;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -139,13 +141,29 @@ class AttestationDiplomeController extends Controller
         }
 
         $htmlPages = [];
+        $qrs = [];
+
         foreach ($studentsData as $data) {
+            /* On enregistre le document AVANT de construire le HTML : le
+               code doit être connu pour être imprimé en clair sous le pied.
+               Réimprimer réutilise le même code (même diplôme). */
+            $code = DocumentsVerifiables::enregistrer($data, 'attestation', self::infosEtablissement($univ));
+            $data['code_verif'] = $code;
+
             $htmlPages[] = self::buildAttestationPageHtml($data, $univ);
+
+            if ($code) {
+                // Un étudiant = une page paysage. QR en bas à droite, dans le
+                // cadre (bord droit 288,2 mm, bas 210 - 4 de marge = 206).
+                $qrs[] = ['code' => $code, 'positions' => [['x' => 262, 'y' => 156]]];
+            }
         }
 
         $filename = 'Attestation_Diplome_' . ($request->anneeEtude ?? 'L3') . '_' . date('Ymd_His') . '.pdf';
 
-        return self::genererPdf(implode("\n", $htmlPages), 'L', [8.5, 8.5, 8.5, 8.5], $filename);
+        /* Les positions des QR sont relatives à chaque page : on les aplatit
+           dans l'ordre où Html2Pdf produit les pages. */
+        return self::genererPdf(implode("\n", $htmlPages), 'L', [8.5, 8.5, 8.5, 8.5], $filename, self::aplatirQrs($qrs));
     }
 
     /**
@@ -161,13 +179,23 @@ class AttestationDiplomeController extends Controller
         }
 
         $htmlPages = [];
+        $qrs = [];
+
         foreach ($studentsData as $data) {
+            $code = DocumentsVerifiables::enregistrer($data, 'certificat', self::infosEtablissement($univ));
+            $data['code_verif'] = $code;
+
             $htmlPages[] = self::buildCertificatPageHtml($data, $univ);
+
+            if ($code) {
+                // Portrait : page 210 mm de large, marges 14/12. QR en bas à droite.
+                $qrs[] = ['code' => $code, 'positions' => [['x' => 175, 'y' => 272]]];
+            }
         }
 
         $filename = 'Certificat_Authenticite_' . ($request->anneeEtude ?? 'L3') . '_' . date('Ymd_His') . '.pdf';
 
-        return self::genererPdf(implode("\n", $htmlPages), 'P', [14, 12, 14, 10], $filename);
+        return self::genererPdf(implode("\n", $htmlPages), 'P', [14, 12, 14, 10], $filename, self::aplatirQrs($qrs));
     }
 
     /**
@@ -183,24 +211,38 @@ class AttestationDiplomeController extends Controller
         }
 
         $htmlPages = [];
+        $qrs = [];
+
         foreach ($studentsData as $data) {
+            /* Un seul enregistrement pour les deux documents : le pack
+               décrit un diplôme, avec un seul code de vérification. */
+            $code = DocumentsVerifiables::enregistrer($data, 'attestation', self::infosEtablissement($univ));
+            $data['code_verif'] = $code;
+
             // Page 1 : Attestation Paysage
             $htmlPages[] = self::buildAttestationPageHtml($data, $univ);
             // Page 2 : Certificat Portrait
             $htmlPages[] = self::buildCertificatPageHtml($data, $univ);
+
+            if ($code) {
+                $qrs[] = ['code' => $code, 'positions' => [
+                    ['x' => 262, 'y' => 156],   // attestation (paysage)
+                    ['x' => 175, 'y' => 272],   // certificat (portrait)
+                ]];
+            }
         }
 
         $filename = 'Pack_Diplome_Authenticite_' . ($request->anneeEtude ?? 'L3') . '_' . date('Ymd_His') . '.pdf';
 
         // Html2Pdf gère les orientations mixtes via l'attribut orientation de chaque <page>
-        return self::genererPdf(implode("\n", $htmlPages), 'L', [8.5, 8.5, 8.5, 8.5], $filename);
+        return self::genererPdf(implode("\n", $htmlPages), 'L', [8.5, 8.5, 8.5, 8.5], $filename, self::aplatirQrs($qrs));
     }
 
     /**
      * Génère le PDF et le renvoie proprement comme réponse HTTP Laravel
      * (évite l'envoi direct de headers par Html2Pdf::Output en mode inline).
      */
-    protected static function genererPdf(string $html, string $orientation, array $marges, string $filename)
+    protected static function genererPdf(string $html, string $orientation, array $marges, string $filename, array $qrs = [])
     {
         try {
             $pdf = new Html2Pdf($orientation, 'A4', 'fr', true, 'UTF-8', $marges);
@@ -211,6 +253,14 @@ class AttestationDiplomeController extends Controller
                (vérifié : 3 pages au lieu de 1). Le contenu est donc passé
                tel quel, Html2Pdf l'enveloppe lui-même. */
             $pdf->writeHTML($html);
+
+            /* Les QR sont posés APRÈS le rendu HTML, à des coordonnées
+               absolues : ils ne participent pas à la mise en page et ne
+               peuvent donc pas faire déborder un document sur une 2e page. */
+            foreach ($qrs as $qr) {
+                QrDocument::poser($pdf, $qr['code'], $qr['positions']);
+            }
+
             $contenu = $pdf->Output($filename, 'S');
 
             return response($contenu, 200, [
@@ -220,6 +270,18 @@ class AttestationDiplomeController extends Controller
         } catch (\Throwable $e) {
             return back()->with('echec', 'Erreur lors de la génération du PDF : ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Aplatit les QR de plusieurs étudiants en une liste de placements
+     * ordonnés page par page, telle que l'attend QrDocument::poser().
+     *
+     * @param  array<int, array{code: string, positions: array<int, array{x: float, y: float}>}>  $qrs
+     * @return array<int, array{code: string, positions: array<int, array{x: float, y: float}>}>
+     */
+    private static function aplatirQrs(array $qrs): array
+    {
+        return $qrs;
     }
 
     /**
@@ -337,6 +399,17 @@ class AttestationDiplomeController extends Controller
      */
     public static function buildAttestationPageHtml(array $etu, array $univ): string
     {
+        /* Code de vérification : le même pour l'attestation et son certificat,
+           puisqu'ils décrivent le même diplôme. Imprimé en clair sous le pied
+           de page ; le QR correspondant est posé après le rendu HTML (voir
+           QrDocument), pour qu'il ne participe pas à la mise en page.
+
+           Le contrôleur transmet déjà le code (il a enregistré le document) :
+           on ne l'écrase pas, sinon le PDF et le registre pourraient diverger.
+           En l'absence de code fourni, on retrouve celui du diplôme. */
+        if (empty($etu['code_verif'])) {
+            $etu['code_verif'] = DocumentsVerifiables::codeDuDiplome($etu);
+        }
         $i = self::infosEtablissement($univ);
 
         $logoUniv = $i['logoUniv'];
@@ -465,6 +538,15 @@ class AttestationDiplomeController extends Controller
                     <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
                 </p>
 
+                <?php if (!empty($etu['code_verif'])): ?>
+                <!-- Code de vérification en clair : le QR est posé après le
+                     rendu (voir QrDocument). Le code reste ainsi exploitable
+                     même si le QR est abîmé ou si la page est photocopiée. -->
+                <p align="center" style="text-align: center; font-family: freeserif; font-size: 8pt; color: #444; line-height: 1.3; margin: 1.5mm 0 0 0;">
+                    Vérifiable sur <b><?= htmlspecialchars($siteWeb) ?>/verifier</b> — Code : <b><?= htmlspecialchars($etu['code_verif']) ?></b>
+                </p>
+                <?php endif; ?>
+
             </div>
         </page>
         <?php
@@ -476,6 +558,11 @@ class AttestationDiplomeController extends Controller
      */
     public static function buildCertificatPageHtml(array $etu, array $univ): string
     {
+        // Même code que l'attestation : c'est le même diplôme.
+        if (empty($etu['code_verif'])) {
+            $etu['code_verif'] = DocumentsVerifiables::codeDuDiplome($etu);
+        }
+
         $i = self::infosEtablissement($univ);
 
         $logoUniv = $i['logoUniv'];
@@ -604,6 +691,12 @@ class AttestationDiplomeController extends Controller
             <div style="width: 193mm; text-align: center; font-family: freeserif; font-size: 10.5pt; color: #111; line-height: 1.35; margin-top: 6mm;">
                 <b>Tél : <?= htmlspecialchars($tel) ?></b> &nbsp; E-mail : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($email) ?></span> / Site web : <span style="color: <?= $cLien ?>;"><?= htmlspecialchars($siteWeb) ?></span>
             </div>
+
+            <?php if (!empty($etu['code_verif'])): ?>
+            <div style="width: 193mm; text-align: center; font-family: freeserif; font-size: 8pt; color: #444; line-height: 1.3; margin-top: 1.5mm;">
+                Vérifiable sur <b><?= htmlspecialchars($siteWeb) ?>/verifier</b> — Code : <b><?= htmlspecialchars($etu['code_verif']) ?></b>
+            </div>
+            <?php endif; ?>
 </page>
         <?php
         return ob_get_clean();

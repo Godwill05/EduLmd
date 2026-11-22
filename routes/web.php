@@ -147,6 +147,25 @@ Route::get('/journal-activite', [ActivityLogController::class, 'index'])
 Route::get('/api/recherche', [SearchController::class, 'etudiants'])
     ->middleware('auth')
     ->name('recherche.etudiants');
+/* ─── Vérification publique d'un document ───────────────────────────────
+   Un employeur scanne le QR code de l'attestation : il doit pouvoir
+   vérifier sans compte. Ces deux routes sont donc HORS du groupe `auth`,
+   mais protégées autrement :
+
+   - `throttle:30,1` : 30 requêtes par minute et par adresse IP. Sans cela,
+     la page deviendrait un oracle permettant de balayer des codes ;
+   - le code fait 60 bits d'entropie, donc le balayage est de toute façon
+     hors de portée — le throttle protège surtout des scripts naïfs.
+
+   La page n'expose que ce qui est déjà imprimé sur le papier. */
+Route::get('/verifier/{code}', [\App\Http\Controllers\VerificationDocumentController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('verification.document');
+
+Route::post('/verifier', [\App\Http\Controllers\VerificationDocumentController::class, 'recherche'])
+    ->middleware('throttle:30,1')
+    ->name('verification.recherche');
+
 Route::view('/not-found', 'errors.not-found')->name('not-found');
 Route::view('/','login')->name('login')->middleware('guest');
 Route::post('/',function(Request $rq){
