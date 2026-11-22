@@ -143,6 +143,12 @@ Route::get('/journal-activite', [ActivityLogController::class, 'index'])
     ->middleware(['auth', 'can:Gérer les utilisateurs'])
     ->name('journal-activite.index');
 
+/* Export du journal filtré : en cas de contestation d'une note,
+   l'établissement doit pouvoir produire une trace datée. */
+Route::get('/journal-activite/export', [ActivityLogController::class, 'exporter'])
+    ->middleware(['auth', 'can:Gérer les utilisateurs'])
+    ->name('journal-activite.export');
+
 // Recherche globale (palette Ctrl+K) — JSON
 Route::get('/api/recherche', [SearchController::class, 'etudiants'])
     ->middleware('auth')

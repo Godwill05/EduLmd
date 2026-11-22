@@ -82,8 +82,9 @@ class ActivityLogController extends Controller
 
         $utilisateurs = User::query()
             ->whereIn('id', $userIds)
-            ->orderBy('name')
-            ->get(['id', 'name', 'email']);
+            ->orderBy('firstname')
+            ->orderBy('lastname')
+            ->get(['id', 'firstname', 'lastname', 'email']);
 
         // Résumé par événement (badges du haut)
         $resume = Audit::query()
@@ -112,6 +113,13 @@ class ActivityLogController extends Controller
             $a->user_nom = $a->user_id
                 ? optional(User::find($a->user_id))->name
                 : null;
+
+            /* Les notes forment 28 000 des 29 000 lignes du journal. Un
+               « Note #25114 » ne dit rien : on va chercher l'étudiant,
+               l'ECUE et le type d'évaluation pour que la ligne soit
+               lisible par un responsable pédagogique. */
+            $a->contexte = $this->contexteLisible($a);
+
             return $a;
         });
 
@@ -122,6 +130,163 @@ class ActivityLogController extends Controller
             'modeles' => self::MODELES,
             'evenements' => self::EVENEMENTS,
         ]);
+    }
+
+    /**
+     * Contexte métier d'une ligne du journal.
+     *
+     * Pour une note (`obtenir.idObtenir`), on remonte jusqu'à l'étudiant
+     * et l'évaluation : « FATIOU Alao · 1MAI1201 · Rattrapage ».
+     * Pour les autres objets, on renvoie null : leur identifiant suffit.
+     *
+     * Les requêtes sont mises en cache par page (une seule par
+     * identifiant distinct), et une note supprimée depuis ne provoque pas
+     * d'erreur : on affiche alors ce qu'on peut.
+     */
+    private function contexteLisible(Audit $audit): ?string
+    {
+        if ($audit->auditable_type !== 'App\\Models\\Note') {
+            return null;
+        }
+
+        $cache = $this->cacheContexte;
+
+        if (array_key_exists($audit->auditable_id, $cache)) {
+            return $cache[$audit->auditable_id];
+        }
+
+        $note = DB::table('obtenir')
+            ->where('idObtenir', $audit->auditable_id)
+            ->select('numeroInscription', 'numeroEval')
+            ->first();
+
+        if (! $note) {
+            return $cache[$audit->auditable_id] = null;
+        }
+
+        $etudiant = DB::table('etudiant')
+            ->where('MATRICULE', $note->numeroInscription)
+            ->select('nomEtu', 'prenomsEtu')
+            ->first();
+
+        $evaluation = DB::table('evaluation')
+            ->where('numeroEval', $note->numeroEval)
+            ->select('codeEcu', 'codTypEval')
+            ->first();
+
+        $parties = [];
+        if ($etudiant) {
+            $parties[] = trim($etudiant->nomEtu . ' ' . $etudiant->prenomsEtu);
+        } else {
+            $parties[] = $note->numeroInscription;
+        }
+        if ($evaluation && $evaluation->codeEcu) {
+            $parties[] = $evaluation->codeEcu;
+        }
+        if ($evaluation && $evaluation->codTypEval) {
+            $parties[] = $evaluation->codTypEval;
+        }
+
+        return $cache[$audit->auditable_id] = implode(' · ', $parties);
+    }
+
+    /** Cache du contexte, le temps d'une page. */
+    private array $cacheContexte = [];
+
+    /**
+     * Export CSV du journal filtré.
+     *
+     * Pourquoi c'est indispensable : en cas de contestation d'une note,
+     * l'établissement doit pouvoir produire une trace datée. Un écran
+     * paginé de 30 lignes ne suffit pas — il faut le fichier.
+     *
+     * Le même jeu de filtres que l'écran est appliqué, et la limite est
+     * haute mais bornée (50 000 lignes) pour ne pas faire tomber le
+     * serveur sur une année entière de saisie de notes.
+     */
+    public function exporter(Request $request)
+    {
+        $query = $this->requeteFiltree($request)->limit(50000);
+
+        $nom = 'journal-activite_' . date('Ymd_His') . '.csv';
+
+        return response()->streamDownload(function () use ($query) {
+            $sortie = fopen('php://output', 'w');
+
+            // BOM UTF-8 : sans lui, Excel français affiche « Ã© » pour « é ».
+            fwrite($sortie, "\xEF\xBB\xBF");
+
+            fputcsv($sortie, [
+                'Date', 'Utilisateur', 'Événement', 'Objet', 'Identifiant',
+                'Contexte', 'Champ', 'Avant', 'Après',
+            ], ';');
+
+            /* La table `users` de cette base n'a pas de colonne `name` :
+               le nom se compose de `firstname` et `lastname`. Utiliser
+               pluck('name') levait « Undefined property: name ». */
+            $noms = User::query()
+                ->get(['id', 'firstname', 'lastname'])
+                ->mapWithKeys(fn ($u) => [$u->id => trim($u->firstname . ' ' . $u->lastname)])
+                ->all();
+
+            $query->chunk(500, function ($lignes) use ($sortie, $noms) {
+                foreach ($lignes as $audit) {
+                    $evenement = self::EVENEMENTS[$audit->event][0] ?? $audit->event;
+                    $modele = self::MODELES[$audit->auditable_type] ?? class_basename($audit->auditable_type);
+                    $contexte = $this->contexteLisible($audit) ?? '';
+
+                    $diff = $this->construireDiff($audit);
+
+                    // Une ligne par champ modifié : c'est ce qu'un contrôle
+                    // veut lire (« la note est passée de 5 à 05 le 18/08 »).
+                    if (empty($diff)) {
+                        fputcsv($sortie, [
+                            $audit->created_at, $noms[$audit->user_id] ?? 'Système',
+                            $evenement, $modele, $audit->auditable_id,
+                            $contexte, '', '', '',
+                        ], ';');
+                        continue;
+                    }
+
+                    foreach ($diff as $champ) {
+                        fputcsv($sortie, [
+                            $audit->created_at, $noms[$audit->user_id] ?? 'Système',
+                            $evenement, $modele, $audit->auditable_id,
+                            $contexte, $champ['champ'], $champ['avant'], $champ['apres'],
+                        ], ';');
+                    }
+                }
+            });
+
+            fclose($sortie);
+        }, $nom, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    /** Applique les filtres de la requête, sans pagination. */
+    private function requeteFiltree(Request $request)
+    {
+        $userId = $request->filled('user') ? (int) $request->input('user') : null;
+        $event = $request->filled('event') ? $request->input('event') : null;
+        $modele = $request->filled('modele') ? $request->input('modele') : null;
+        $du = $request->filled('du') ? $request->input('du') : null;
+        $au = $request->filled('au') ? $request->input('au') : null;
+        $q = trim((string) $request->input('q', ''));
+
+        return Audit::query()
+            ->when($userId, fn ($query) => $query->where('user_id', $userId))
+            ->when($event && isset(self::EVENEMENTS[$event]), fn ($query) => $query->where('event', $event))
+            ->when($modele && isset(self::MODELES[$modele]), fn ($query) => $query->where('auditable_type', $modele))
+            ->when($du, fn ($query) => $query->whereDate('created_at', '>=', $du))
+            ->when($au, fn ($query) => $query->whereDate('created_at', '<=', $au))
+            ->when($q !== '', function ($query) use ($q) {
+                $term = '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $q) . '%';
+                $query->where(function ($sub) use ($term) {
+                    $sub->where('auditable_id', 'like', $term)
+                        ->orWhere('url', 'like', $term);
+                });
+            })
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
     }
 
     /**

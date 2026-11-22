@@ -64,9 +64,15 @@ Journal d'activité
         Qui a créé, modifié ou supprimé quoi, et quand — avec le détail des valeurs.
       </p>
     </div>
-    <a href="{{ route('home') }}" class="ed-btn ed-btn-secondary ed-btn-sm">
-      <i class="ri-arrow-left-line"></i>Tableau de bord
-    </a>
+    <div class="flex gap-2">
+      <a href="{{ route('journal-activite.export', request()->query()) }}"
+         class="ed-btn ed-btn-secondary ed-btn-sm" title="Exporter les lignes filtrées">
+        <i class="ri-download-2-line"></i>Exporter
+      </a>
+      <a href="{{ route('home') }}" class="ed-btn ed-btn-secondary ed-btn-sm">
+        <i class="ri-arrow-left-line"></i>Tableau de bord
+      </a>
+    </div>
   </div>
 
   {{-- Compteurs par événement, cliquables comme filtres --}}
@@ -94,7 +100,7 @@ Journal d'activité
           <select name="user" class="form-select form-select-sm">
             <option value="">Tous</option>
             @foreach ($utilisateurs as $u)
-              <option value="{{ $u->id }}" @selected($userId === (int) $u->id)>{{ $u->name }}</option>
+              <option value="{{ $u->id }}" @selected($userId === (int) $u->id)>{{ trim($u->firstname . ' ' . $u->lastname) }}</option>
             @endforeach
           </select>
         </div>
@@ -150,6 +156,13 @@ Journal d'activité
               <span class="text-encre-faint">#</span>{{ $a->auditable_id }}
             @endif
           </div>
+          {{-- Contexte métier : pour une note, « FATIOU Alao · 1MAI1201 ·
+               Rattrapage » vaut mieux qu'un numéro interne. --}}
+          @if ($a->contexte)
+            <div class="al-meta" style="margin-top:.25rem;">
+              <span><i class="ri-bookmark-line"></i> {{ $a->contexte }}</span>
+            </div>
+          @endif
           <div class="al-meta">
             <span><i class="ri-user-3-line"></i> {{ $a->user_nom ?: 'Système' }}</span>
             <span class="sep">|</span>
