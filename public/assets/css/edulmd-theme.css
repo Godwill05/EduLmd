@@ -513,3 +513,17 @@ html[data-theme="dark"] .fe-kpi.warn .v { color: var(--ed-alerte) !important; }
 html[data-theme="dark"] .fe-kpi.bad .v { color: var(--ed-erreur) !important; }
 /* Icônes couleur d'accent sur la fiche */
 html[data-theme="dark"] .text-\\[\\#822A40\\] { color: var(--ed-bordeaux) !important; }
+
+/* ==========================================================================
+   Ligne « en retard » — discrète : une bordure gauche et un fond très
+   léger, pas un bloc rouge qui envahit toute la ligne.
+   ========================================================================== */
+.en-retard {
+  border-left-color: var(--ed-erreur) !important;
+  background: #fef2f2 !important;
+}
+
+html[data-theme="dark"] .en-retard {
+  background: #3a0c0c !important;
+  border-left-color: var(--ed-erreur) !important;
+}

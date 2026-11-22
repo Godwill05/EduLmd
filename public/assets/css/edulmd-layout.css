@@ -23,6 +23,17 @@
 /* Le conteneur principal : une marge qui s'adapte à la largeur de
    l'écran, plus un maximum pour que les lignes de texte restent lisibles
    sur un écran 4K. */
+#main {
+  /* Laisse la place à la sidebar quand elle est ouverte. */
+  margin-left: var(--ed-sidebar-w);
+  transition: margin-left 0.28s cubic-bezier(.22,1,.36,1);
+}
+
+body.toggle-sidebar #main {
+  /* Sidebar fermé : on récupère la place. */
+  margin-left: 4rem;
+}
+
 #main > .container-fluid {
   padding-inline: clamp(1.25rem, 2.6vw, 2.75rem);
   max-width: 1680px;

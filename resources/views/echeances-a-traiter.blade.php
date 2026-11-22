@@ -144,7 +144,7 @@
                 </thead>
                 <tbody>
                     @foreach ($echeances as $e)
-                    <tr class="text-center {{ $e->echeance < $aujourdhui ? 'table-danger bg-danger bg-opacity-10' : '' }}" data-id="{{ $e->id }}">
+                    <tr class="text-center {{ $e->echeance < $aujourdhui ? 'border-start border-start-4 border-danger en-retard' : '' }}" data-id="{{ $e->id }}">
                         <td>
                             <input type="checkbox" class="form-check-input ligneSelect" value="{{ $e->id }}">
                         </td>

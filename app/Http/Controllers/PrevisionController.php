@@ -395,6 +395,20 @@ class PrevisionController extends Controller
             $query->where('ID_FILIERE', $filiere);
         }
 
+        /* Stats sur l'ensemble des résultats (pas seulement la page courante) */
+        $statsTotal   = clone $query;
+        $statsRetard  = clone $query;
+        $statsRetard->where('echeance', '<', $aujourdhui);
+        $statsAvenir  = clone $query;
+        $statsAvenir->where('echeance', '>=', $aujourdhui);
+
+        $stats = [
+            'total'        => $statsTotal->count(),
+            'en_retard'    => $statsRetard->count(),
+            'a_venir'      => $statsAvenir->count(),
+            'montant_total' => $statsTotal->sum('montant_a_payer'),
+        ];
+
         $echeances = $query->orderByRaw("CASE WHEN echeance < ? THEN 0 ELSE 1 END", [$aujourdhui])
             ->orderBy('echeance')
             ->orderBy('id')
@@ -403,13 +417,6 @@ class PrevisionController extends Controller
 
         $annees = \App\Models\AnneeAcademique::orderBy('id_Annee_Acad', 'desc')->get();
         $filieres = \App\Models\AnneeEtude::orderBy('Libelle_AnEtude')->get();
-
-        $stats = [
-            'total' => $echeances->total(),
-            'en_retard' => $echeances->filter(fn ($e) => $e->echeance < $aujourdhui)->count(),
-            'a_venir' => $echeances->filter(fn ($e) => $e->echeance >= $aujourdhui)->count(),
-            'montant_total' => $echeances->sum(fn ($e) => (int)$e->montant_a_payer),
-        ];
 
         return view('echeances-a-traiter', compact(
             'echeances', 'annees', 'filieres', 'stats', 'aujourdhui'
