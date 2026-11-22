@@ -8,6 +8,7 @@ use App\Http\Controllers\AttribuerUeSemestreController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ConstanteController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\EmploiDuTempsController;
 use App\Http\Controllers\RevocationDocumentController;
 use App\Http\Controllers\BulkActionController;
 use App\Http\Controllers\DashboardController;
@@ -162,6 +163,17 @@ Route::middleware(["auth", "niveau.1"])->group(function () {
         ->name('revocation.revoquer');
     Route::post('/revocation-documents/{id}/retablir', [RevocationDocumentController::class, 'retablir'])
         ->name('revocation.retablir');
+});
+
+/* ─── Emploi du temps ─────────────────────────────────────────────────
+   Grille hebdomadaire d'une classe, et sa version imprimable. Lecture
+   seule : la saisie des créneaux reste dans « Gestion des cours », qui
+   alimente `prog_cours`. */
+Route::middleware('auth')->group(function () {
+    Route::get('/emploi-du-temps', [EmploiDuTempsController::class, 'index'])
+        ->name('emploi-du-temps.index');
+    Route::get('/emploi-du-temps/imprimer', [EmploiDuTempsController::class, 'imprimer'])
+        ->name('emploi-du-temps.imprimer');
 });
 
 // Recherche globale (palette Ctrl+K) — JSON
