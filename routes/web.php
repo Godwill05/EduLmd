@@ -8,6 +8,7 @@ use App\Http\Controllers\AttribuerUeSemestreController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\ConstanteController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\RevocationDocumentController;
 use App\Http\Controllers\BulkActionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImportController;
@@ -148,6 +149,20 @@ Route::get('/journal-activite', [ActivityLogController::class, 'index'])
 Route::get('/journal-activite/export', [ActivityLogController::class, 'exporter'])
     ->middleware(['auth', 'can:Gérer les utilisateurs'])
     ->name('journal-activite.export');
+
+/* ─── Révocation de documents ─────────────────────────────────────────
+   Révoquer un diplôme engage l'établissement : réservé au niveau 1
+   (Super admin, garanti par le Gate::before d'AuthServiceProvider).
+   La révocation n'efface rien : le QR imprimé doit continuer de répondre,
+   et la décision doit rester motivée et datée. */
+Route::middleware(["auth", "niveau.1"])->group(function () {
+    Route::get('/revocation-documents', [RevocationDocumentController::class, 'index'])
+        ->name('revocation.index');
+    Route::post('/revocation-documents/{id}/revoquer', [RevocationDocumentController::class, 'revoquer'])
+        ->name('revocation.revoquer');
+    Route::post('/revocation-documents/{id}/retablir', [RevocationDocumentController::class, 'retablir'])
+        ->name('revocation.retablir');
+});
 
 // Recherche globale (palette Ctrl+K) — JSON
 Route::get('/api/recherche', [SearchController::class, 'etudiants'])

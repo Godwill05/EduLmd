@@ -39,7 +39,16 @@ class VerificationDocumentController extends Controller
 
         $document = null;
 
-        if ($normalise !== '' && CodeDocument::valide($normalise)) {
+        /* On interroge la base dès que la saisie contient de quoi former un
+           code, sans exiger qu'elle respecte l'alphabet de génération.
+           Raison : un document restauré depuis une ancienne sauvegarde, ou
+           saisi à la main lors d'une reprise de données, peut porter un
+           code contenant « I » ou « L ». Le refuser ici le rendrait
+           définitivement introuvable — alors que son QR est imprimé et
+           circule. Une requête indexée de plus ne coûte rien, et la
+           protection contre l'énumération reste assurée par le throttle
+           et par les 60 bits d'entropie des codes émis. */
+        if ($normalise !== '') {
             $document = DocumentVerification::where('code', $normalise)->first();
         }
 

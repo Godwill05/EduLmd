@@ -330,7 +330,7 @@
       @if (! $document->estValide())
         <div class="vf-alerte rouge">
           <strong>Ne pas accepter ce document.</strong>
-          Motif : {{ $document->motif_revocation ?: 'non précisé' }}.
+          Motif : {{ rtrim($document->motif_revocation ?: 'non précisé', '. ') }}.
           @if ($document->revoque_le)
             Révoqué le {{ $document->revoque_le->format('d/m/Y') }}.
           @endif

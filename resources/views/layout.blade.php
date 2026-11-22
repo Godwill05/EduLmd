@@ -242,6 +242,12 @@
           <li><a class="{{ $isActive('recapitulatifGrade') }}" href="{{ route('recapitulatifGrade') }}">Récapitulatif du Grade</a></li>
           <li><a class="{{ $isActive('releveNotes') }}" href="{{ route('releveNotes') }}">Relevés par Semestre</a></li>
           <li><a class="{{ $isActive('attestations-diplomes') }}" href="{{ route('attestations-diplomes.index') }}">Attestations &amp; Diplômes (L3)</a></li>
+          {{-- Révoquer un diplôme engage l'établissement : niveau 1 seulement.
+               La route le vérifie aussi ; le lien suit pour ne pas proposer
+               un écran qui répondrait 403. --}}
+          @if (\App\Support\Hierarchie::niveau(auth()->user()) === 1)
+          <li><a class="{{ $isActive('revocation-documents') }}" href="{{ route('revocation.index') }}">Révoquer un document</a></li>
+          @endif
         </ul>
       </li>
 
