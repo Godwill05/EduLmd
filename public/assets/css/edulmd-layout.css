@@ -25,16 +25,16 @@
    sur un écran 4K. */
 #main {
   /* Laisse la place à la sidebar quand elle est ouverte.
-     Valeur en dur en fallback si la variable CSS n'est pas encore chargée. */
-  margin-left: 280px;
-  margin-left: var(--ed-sidebar-w, 280px);
+     !important nécessaire car le CSS compilé définit
+     #main{margin:0!important;padding:0!important} qui écrase tout. */
+  margin-left: 280px !important;
+  margin-left: var(--ed-sidebar-w, 280px) !important;
   transition: margin-left 0.28s cubic-bezier(.22,1,.36,1);
 }
 
 body.toggle-sidebar #main {
   /* Sidebar fermé : on récupère la place. */
-  margin-left: 4rem;
-  margin-left: 4rem;
+  margin-left: 4rem !important;
 }
 
 #main > .container-fluid {
