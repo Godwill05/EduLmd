@@ -24,23 +24,14 @@
    l'écran, plus un maximum pour que les lignes de texte restent lisibles
    sur un écran 4K. */
 #main {
-  /* Laisse la place à la sidebar quand elle est ouverte.
-     padding-left (et non margin-left) pour que le contenu occupe
-     toute la largeur restante sans être centré sur toute la fenêtre. */
-  padding-left: 280px !important;
-  padding-left: var(--ed-sidebar-w, 280px) !important;
-  transition: padding-left 0.28s cubic-bezier(.22,1,.36,1);
-}
-
-body.toggle-sidebar #main {
-  /* Sidebar fermé : on récupère la place. */
-  padding-left: 4rem !important;
+  /* La marge à gauche de la sidebar est gérée par le CSS compilé.
+     Aucune surcharge ici pour éviter tout décalage sur les autres pages. */
 }
 
 #main > .container-fluid {
   padding-inline: clamp(1.25rem, 2.6vw, 2.75rem);
-  max-width: none; /* Pas de max-width : occupe toute la largeur disponible */
-  margin-inline: 0; /* Pas de centrage : le padding-left de #main gère l'espace sidebar */
+  max-width: 1680px;
+  margin-inline: auto;
   width: 100%;
 }
 
