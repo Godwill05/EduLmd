@@ -219,7 +219,7 @@ Paiements
                         <div class="row g-3 align-items-end">
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalAnnee">Année académique <span class="text-danger">*</span></label>
-                                <select name="anneeAcademique" id="journalAnnee" class="form-control form-control-sm form-select" required>
+                                <select name="anneeAcademique" id="journalAnnee" class="form-control form-control-sm form-select no-tomselect" required>
                                     <option value="">Sélectionner l'année...</option>
                                     @foreach (\App\Models\AnneeAcademique::orderBy('id_Annee_Acad','desc')->get() as $annee)
                                     <option value="{{ $annee->id_Annee_Acad }}" {{ $annee->actif ?? false ? 'selected' : '' }}>{{ $annee->ANNEE_ACAD }}</option>
@@ -238,7 +238,7 @@ Paiements
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalFiliere">Filière (facultatif)</label>
-                                <select name="anneeEtude" id="journalFiliere" class="form-control form-control-sm form-select">
+                                <select name="anneeEtude" id="journalFiliere" class="form-control form-control-sm form-select no-tomselect">
                                     <option value="">Toutes les filières</option>
                                     @foreach (\App\Models\AnneeEtude::orderBy('Libelle_AnEtude')->get() as $ae)
                                     <option value="{{ $ae->Code_Annee_Etude }}">{{ $ae->Libelle_AnEtude }}</option>
@@ -252,7 +252,7 @@ Paiements
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalModePaiement">Mode de paiement</label>
-                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select">
+                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select no-tomselect">
                                     <option value="">Tous les modes</option>
                                     <option value="Espèces">Espèces</option>
                                     <option value="Chèque">Chèque</option>
