@@ -606,6 +606,9 @@ Route::middleware('auth')->group(function(){
     Route::get('/previsions/etudiant-echeancier', [PrevisionController::class, 'getEcheancierEtudiant'])->name('previsions.etudiant-echeancier');
     Route::post('/previsions/enregistrer-echeancier', [PrevisionController::class, 'enregistrerEcheancierEtudiant'])->name('previsions.enregistrer-echeancier');
 
+    /* Liste des étudiants en retard (tranchées non payées et échues). */
+    Route::get('/previsions/etudiants-en-retard', [PrevisionController::class, 'etudiantsEnRetard'])->name('previsions.etudiants-en-retard');
+
     // create/store/show/edit n'existent pas : l'échéancier passe par les
     // routes previsions.etudiant-echeancier / previsions.enregistrer-echeancier
     Route::resource('/previsions',PrevisionController::class)->only(['index','destroy']);

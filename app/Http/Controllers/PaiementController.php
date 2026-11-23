@@ -423,15 +423,19 @@ class PaiementController extends Controller
     public function journalEncaissement(Request $request)
     {
         $request->validate([
-            'anneeAcademique' => 'required',
-            'dateDebut'       => 'required|date',
-            'dateFin'         => 'required|date|after_or_equal:dateDebut',
+            'anneeAcademique'    => 'required',
+            'dateDebut'          => 'required|date',
+            'dateFin'            => 'required|date|after_or_equal:dateDebut',
+            'journalEtudiant'    => 'nullable|string',
+            'journalModePaiement'=> 'nullable|string',
         ]);
 
         $anneeAcademique = $request->anneeAcademique;
         $dateDebut       = Carbon::parse($request->dateDebut)->format('Y-m-d');
         $dateFin         = Carbon::parse($request->dateFin)->format('Y-m-d');
         $codeFiliere     = $request->anneeEtude ?: null;
+        $filtreEtudiant  = trim($request->journalEtudiant ?? '');
+        $filtreMode      = $request->journalModePaiement ?: null;
 
         $annee = AnneeAcademique::find($anneeAcademique);
 
@@ -442,6 +446,27 @@ class PaiementController extends Controller
 
         if ($codeFiliere) {
             $query->where('ID_FILIERE', $codeFiliere);
+        }
+
+        // Filtre par mode de paiement (colonne directe sur Paiement)
+        if ($filtreMode) {
+            $query->where('modePaiement', $filtreMode);
+        }
+
+        // Filtre par étudiant : on récupère les matricules correspondants
+        // dans Inscription puis on filtre Paiement sur ces matricules.
+        $matriculesAutorises = null;
+        if ($filtreEtudiant !== '') {
+            $matriculesAutorises = Inscription::where('Id_Annee', $anneeAcademique)
+                ->where(function ($q) use ($filtreEtudiant) {
+                    $q->where('MATRICULE', 'like', '%' . $filtreEtudiant . '%')
+                      ->orWhereHas('etudiant', function ($eq) use ($filtreEtudiant) {
+                          $eq->where('nomEtu', 'like', '%' . $filtreEtudiant . '%')
+                             ->orWhere('prenomsEtu', 'like', '%' . $filtreEtudiant . '%');
+                      });
+                })
+                ->pluck('MATRICULE');
+            $query->whereIn('MATRICULE', $matriculesAutorises);
         }
 
         $paiements = $query->get();

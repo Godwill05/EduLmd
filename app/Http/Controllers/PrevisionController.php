@@ -371,4 +371,84 @@ class PrevisionController extends Controller
         }
         return back()->with('succes', 'Tranche supprimée !');
     }
+
+    /**
+     * Liste des étudiants en retard : tranches non payées et échues.
+     *
+     * Regroupe par étudiant avec le montant total dû et le nombre de tranches en retard.
+     */
+    public function etudiantsEnRetard(Request $request)
+    {
+        $aujourdhui = Carbon::today()->format('Y-m-d');
+
+        $anneeFiltre = $request->get('annee_academique');
+        $filiereFiltre = $request->get('filiere');
+
+        $query = Prevision::where('paye', 0)
+            ->where('reste_a_payer', '>', 0)
+            ->where('echeance', '<', $aujourdhui)
+            ->orderBy('echeance')
+            ->orderBy('MATRICULE');
+
+        if ($anneeFiltre) {
+            $query->where('Id_Annee', $anneeFiltre);
+        }
+        if ($filiereFiltre) {
+            $query->where('ID_FILIERE', $filiereFiltre);
+        }
+
+        $enRetard = $query->get();
+
+        // Regrouper par étudiant
+        $etudiants = [];
+        foreach ($enRetard as $p) {
+            $mat = $p->MATRICULE;
+            if (!isset($etudiants[$mat])) {
+                $ins = Inscription::with('etudiant', 'anneeacademique', 'anneeEtude')
+                    ->where('MATRICULE', $mat)
+                    ->where('Id_Annee', $p->Id_Annee)
+                    ->where('ID_FILIERE', $p->ID_FILIERE)
+                    ->first();
+
+                $etudiants[$mat] = [
+                    'matricule'  => $mat,
+                    'nom'        => $ins && $ins->etudiant ? $ins->etudiant->nomEtu : '—',
+                    'prenoms'    => $ins && $ins->etudiant ? $ins->etudiant->prenomsEtu : '',
+                    'filiere'    => $ins && $ins->anneeEtude ? $ins->anneeEtude->Libelle_AnEtude : $p->ID_FILIERE,
+                    'annee_acad' => $ins && $ins->anneeacademique ? $ins->anneeacademique->ANNEE_ACAD : '—',
+                    'nb_tranches' => 0,
+                    'montant_total' => 0,
+                    'plus_vieux_retard' => null,
+                ];
+            }
+
+            $etudiants[$mat]['nb_tranches']++;
+            $etudiants[$mat]['montant_total'] += (int) $p->reste_a_payer;
+
+            if ($etudiants[$mat]['plus_vieux_retard'] === null ||
+                $p->echeance < $etudiants[$mat]['plus_vieux_retard']) {
+                $etudiants[$mat]['plus_vieux_retard'] = $p->echeance;
+            }
+        }
+
+        // Trier par montant total dû décroissant
+        usort($etudiants, function ($a, $b) {
+            return $b['montant_total'] <=> $a['montant_total'];
+        });
+
+        $etudiants = array_values($etudiants);
+
+        $annees = \App\Models\AnneeAcademique::orderBy('id_Annee_Acad', 'desc')->get();
+        $filieres = \App\Models\AnneeEtude::orderBy('Libelle_AnEtude')->get();
+
+        $stats = [
+            'nb_etudiants' => count($etudiants),
+            'nb_tranches'  => $enRetard->count(),
+            'montant_total' => array_sum(array_column($etudiants, 'montant_total')),
+        ];
+
+        return view('etudiants-en-retard', compact(
+            'etudiants', 'annees', 'filieres', 'stats', 'anneeFiltre', 'filiereFiltre'
+        ));
+    }
 }

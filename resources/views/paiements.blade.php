@@ -244,6 +244,21 @@ Paiements
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-lg-2 col-md-6">
+                                <label class="form-label fw-bold" for="journalEtudiant">Étudiant (facultatif)</label>
+                                <input type="text" name="journalEtudiant" id="journalEtudiant" class="form-control form-control-sm"
+                                    placeholder="Nom ou matricule">
+                            </div>
+                            <div class="col-lg-2 col-md-6">
+                                <label class="form-label fw-bold" for="journalModePaiement">Mode de paiement</label>
+                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select">
+                                    <option value="">Tous les modes</option>
+                                    <option value="Espèces">Espèces</option>
+                                    <option value="Chèque">Chèque</option>
+                                    <option value="Virement">Virement</option>
+                                    <option value="Mobile Money">Mobile Money</option>
+                                </select>
+                            </div>
                             <div class="col-lg-2 col-md-12">
                                 <div class="d-flex gap-2">
                                     <button type="button" class="btn btn-outline-success btn-sm flex-fill" id="btnAfficherJournal">

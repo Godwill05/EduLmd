@@ -318,6 +318,15 @@ Gestion des Échéances & Prévisions
                 </form>
             </div>
 
+            <!-- Recherche rapide -->
+            <div class="card p-3 shadow-sm border-0 mb-3">
+                <div class="d-flex align-items-center">
+                    <i class="ri-search-line text-muted me-2"></i>
+                    <input type="text" id="recherchePrevisions" class="form-control form-control-sm" placeholder="Rechercher par matricule, nom, filière ou année...">
+                </div>
+                <small class="text-muted mt-1 d-block">Filtre les lignes du tableau en temps réel (matricule, nom, filière, année).</small>
+            </div>
+
             <div class="card p-4 shadow-sm border-0">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0"><i class=" ri-table-line me-2 text-secondary"></i>Liste des tranches enregistrées en base</h5>
@@ -325,7 +334,7 @@ Gestion des Échéances & Prévisions
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle">
+                    <table class="table table-hover table-bordered align-middle" id="tableauPrevisions">
                         <thead class="table-dark text-center small">
                             <tr>
                                 <th>Matricule</th>
@@ -959,6 +968,53 @@ $(document).ready(function() {
     function formatNombre(n) {
         return (n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
+
+    /* ========================================================================
+       Recherche rapide — Prévisions (onglet 3)
+       ------------------------------------------------------------------------
+       Filtre les lignes du tableau en temps réel selon le texte saisi :
+       matricule, nom, filière ou année académique.
+       ======================================================================== */
+    (function () {
+        var input = document.getElementById('recherchePrevisions');
+        var table = document.getElementById('tableauPrevisions');
+
+        if (!input || !table) return;
+
+        var lignes = table.querySelectorAll('tbody tr');
+
+        input.addEventListener('input', function () {
+            var q = input.value.toLowerCase().trim();
+            var visible = 0;
+
+            lignes.forEach(function (ligne) {
+                var texte = ligne.textContent.toLowerCase();
+                if (texte.indexOf(q) >= 0) {
+                    ligne.style.display = '';
+                    visible++;
+                } else {
+                    ligne.style.display = 'none';
+                }
+            });
+
+            // Afficher/masquer le message "aucune résultat"
+            var vide = table.querySelector('.texte-aucun-resultat');
+            if (!vide && visible === 0 && q !== '') {
+                var tr = document.createElement('tr');
+                tr.className = 'texte-aucun-resultat';
+                tr.innerHTML = '<td colspan="8" class="text-center text-muted py-4"><i class="ri-inbox-line fs-3 d-block mb-1"></i>Aucune prévision ne correspond à cette recherche.</td>';
+                table.querySelector('tbody').appendChild(tr);
+            } else if (vide) {
+                vide.remove();
+                if (visible === 0 && q !== '') {
+                    var tr = document.createElement('tr');
+                    tr.className = 'texte-aucun-resultat';
+                    tr.innerHTML = '<td colspan="8" class="text-center text-muted py-4"><i class="ri-inbox-line fs-3 d-block mb-1"></i>Aucune prévision ne correspond à cette recherche.</td>';
+                    table.querySelector('tbody').appendChild(tr);
+                }
+            }
+        });
+    })();
 });
 </script>
 @endsection
