@@ -215,9 +215,10 @@ Paiements
                     <hr class="my-3">
                     <form id="journalForm">
                         @csrf
-                        <!-- Rangée 1 : Filtres principaux -->
+                        <!-- Filtres principaux sur une seule rangée pour éviter
+                             tout conflit de superposition avec les dropdowns Tom Select -->
                         <div class="row g-3 align-items-end">
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-lg-3 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalAnnee">Année académique <span class="text-danger">*</span></label>
                                 <select name="anneeAcademique" id="journalAnnee" class="form-control form-control-sm form-select" required>
                                     <option value="">Sélectionner l'année...</option>
@@ -226,7 +227,17 @@ Paiements
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-lg-2 col-md-6 col-sm-12">
+                                <label class="form-label fw-bold" for="journalDateDebut">Du <span class="text-danger">*</span></label>
+                                <input type="date" name="dateDebut" id="journalDateDebut" class="form-control form-control-sm"
+                                    value="{{ now()->format('Y-m-d') }}" required>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-12">
+                                <label class="form-label fw-bold" for="journalDateFin">Au <span class="text-danger">*</span></label>
+                                <input type="date" name="dateFin" id="journalDateFin" class="form-control form-control-sm"
+                                    value="{{ now()->format('Y-m-d') }}" required>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalFiliere">Filière (facultatif)</label>
                                 <select name="anneeEtude" id="journalFiliere" class="form-control form-control-sm form-select">
                                     <option value="">Toutes les filières</option>
@@ -235,47 +246,20 @@ Paiements
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalEtudiant">Étudiant (facultatif)</label>
                                 <input type="text" name="journalEtudiant" id="journalEtudiant" class="form-control form-control-sm"
                                     placeholder="Nom ou matricule">
                             </div>
-                            <div class="col-md-3 col-sm-6">
-                                <label class="form-label fw-bold" for="journalModePaiement">Mode de paiement</label>
-                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select">
-                                    <option value="">Tous les modes</option>
-                                    <option value="Espèces">Espèces</option>
-                                    <option value="Chèque">Chèque</option>
-                                    <option value="Virement">Virement</option>
-                                    <option value="Mobile Money">Mobile Money</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Rangée 2 : Dates et actions -->
-                        <div class="row g-3 align-items-end mt-2">
-                            <div class="col-md-2 col-sm-6">
-                                <label class="form-label fw-bold" for="journalDateDebut">Du <span class="text-danger">*</span></label>
-                                <input type="date" name="dateDebut" id="journalDateDebut" class="form-control form-control-sm"
-                                    value="{{ now()->format('Y-m-d') }}" required>
-                            </div>
-                            <div class="col-md-2 col-sm-6">
-                                <label class="form-label fw-bold" for="journalDateFin">Au <span class="text-danger">*</span></label>
-                                <input type="date" name="dateFin" id="journalDateFin" class="form-control form-control-sm"
-                                    value="{{ now()->format('Y-m-d') }}" required>
-                            </div>
-                            <div class="col-md-2 col-sm-6 d-grid">
+                            <div class="col-lg-1 col-md-3 col-sm-12 d-flex align-items-end">
                                 <button type="button" class="btn btn-outline-success btn-sm w-100" id="btnAfficherJournal">
                                     <i class="ri-eye-line me-1"></i>Afficher
                                 </button>
                             </div>
-                            <div class="col-md-2 col-sm-6 d-grid">
+                            <div class="col-lg-1 col-md-3 col-sm-12 d-flex align-items-end">
                                 <button type="button" class="btn btn-success btn-sm w-100" id="btnImprimerJournal">
                                     <i class="ri-printer-line me-1"></i>Imprimer
                                 </button>
-                            </div>
-                            <div class="col-md-4 col-sm-6 d-flex align-items-end">
-                                <span class="text-muted small">Tous les filtres sont appliqués automatiquement dès la sélection.</span>
                             </div>
                         </div>
 
