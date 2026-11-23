@@ -215,10 +215,9 @@ Paiements
                     <hr class="my-3">
                     <form id="journalForm">
                         @csrf
-                        <!-- Filtres principaux sur une seule rangée pour éviter
-                             tout conflit de superposition avec les dropdowns Tom Select -->
+                        <!-- Filtres principaux : une seule rangée, chaque filtre prend 1/6 de la largeur -->
                         <div class="row g-3 align-items-end">
-                            <div class="col-lg-3 col-md-6 col-sm-12">
+                            <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalAnnee">Année académique <span class="text-danger">*</span></label>
                                 <select name="anneeAcademique" id="journalAnnee" class="form-control form-control-sm form-select" required>
                                     <option value="">Sélectionner l'année...</option>
@@ -251,13 +250,25 @@ Paiements
                                 <input type="text" name="journalEtudiant" id="journalEtudiant" class="form-control form-control-sm"
                                     placeholder="Nom ou matricule">
                             </div>
-                            <div class="col-lg-1 col-md-3 col-sm-12 d-flex align-items-end">
-                                <button type="button" class="btn btn-outline-success btn-sm w-100" id="btnAfficherJournal">
+                            <div class="col-lg-2 col-md-6 col-sm-12">
+                                <label class="form-label fw-bold" for="journalModePaiement">Mode de paiement</label>
+                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select">
+                                    <option value="">Tous les modes</option>
+                                    <option value="Espèces">Espèces</option>
+                                    <option value="Chèque">Chèque</option>
+                                    <option value="Virement">Virement</option>
+                                    <option value="Mobile Money">Mobile Money</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action : rangée séparée, alignés à droite -->
+                        <div class="row g-3 align-items-end mt-2">
+                            <div class="col-lg-12 text-end">
+                                <button type="button" class="btn btn-outline-success btn-sm" id="btnAfficherJournal">
                                     <i class="ri-eye-line me-1"></i>Afficher
                                 </button>
-                            </div>
-                            <div class="col-lg-1 col-md-3 col-sm-12 d-flex align-items-end">
-                                <button type="button" class="btn btn-success btn-sm w-100" id="btnImprimerJournal">
+                                <button type="button" class="btn btn-success btn-sm" id="btnImprimerJournal">
                                     <i class="ri-printer-line me-1"></i>Imprimer
                                 </button>
                             </div>
