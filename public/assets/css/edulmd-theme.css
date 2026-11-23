@@ -527,3 +527,38 @@ html[data-theme="dark"] .en-retard {
   background: #3a0c0c !important;
   border-left-color: var(--ed-erreur) !important;
 }
+
+/* ==========================================================================
+   Dropdowns Tom Select : s'affichent toujours au-dessus des autres éléments
+   --------------------------------------------------------------------------
+   Corrige le problème où le dropdown de l'année académique (ou tout autre
+   sélecteur Tom Select) se cachait derrière le bouton "Afficher" ou tout
+   autre bouton adjacent.
+   ========================================================================== */
+
+.tom-select .dropdown,
+.ts-dropdown,
+.ts-control {
+  z-index: 1060 !important;
+}
+
+.tom-select .dropdown,
+.ts-dropdown {
+  position: absolute !important;
+  z-index: 1060 !important;
+}
+
+/* Le conteneur des filtres ne doit pas couper les dropdowns */
+#journalForm,
+#journalForm .row,
+#journalForm .col-lg-3,
+#journalForm .col-lg-2,
+#journalForm .col-lg-1 {
+  overflow: visible !important;
+}
+
+/* S'assurer que le bouton Afficher ne couvre pas le dropdown ouvert */
+#btnAfficherJournal {
+  z-index: 1050 !important;
+  position: relative !important;
+}
