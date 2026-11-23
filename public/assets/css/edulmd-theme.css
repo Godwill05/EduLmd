@@ -528,9 +528,3 @@ html[data-theme="dark"] .en-retard {
   border-left-color: var(--ed-erreur) !important;
 }
 
-/* Le contrôle Tom Select lui-même reste cliquable par-dessus tout. */
-.ts-control,
-.tom-select .ts-control {
-  z-index: 100 !important;
-  position: relative !important;
-}
