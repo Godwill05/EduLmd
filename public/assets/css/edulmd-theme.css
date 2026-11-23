@@ -537,28 +537,39 @@ html[data-theme="dark"] .en-retard {
    ========================================================================== */
 
 .tom-select .dropdown,
-.ts-dropdown,
-.ts-control {
-  z-index: 1060 !important;
-}
-
-.tom-select .dropdown,
 .ts-dropdown {
   position: absolute !important;
-  z-index: 1060 !important;
+  z-index: 9999 !important;
 }
 
-/* Le conteneur des filtres ne doit pas couper les dropdowns */
+/* Le dropdown Tom Select ne doit jamais être coupé par un conteneur parent.
+   Forcer overflow visible sur toute la chaîne de parents jusqu'à #main. */
+#main,
+#main > .container-fluid,
+#main .card,
 #journalForm,
 #journalForm .row,
 #journalForm .col-lg-3,
 #journalForm .col-lg-2,
-#journalForm .col-lg-1 {
+#journalForm .col-lg-1,
+#journalForm .col-md-3,
+#journalForm .col-md-2,
+#journalForm .col-md-1,
+#journalForm .col-sm-12,
+#journalForm .col-sm-6 {
   overflow: visible !important;
 }
 
-/* S'assurer que le bouton Afficher ne couvre pas le dropdown ouvert */
-#btnAfficherJournal {
-  z-index: 1050 !important;
+/* Le bouton Afficher reste sous le dropdown (z-index inférieur). */
+#btnAfficherJournal,
+#btnImprimerJournal {
+  z-index: 100 !important;
+  position: relative !important;
+}
+
+/* Le contrôle Tom Select lui-même reste cliquable par-dessus tout. */
+.ts-control,
+.tom-select .ts-control {
+  z-index: 100 !important;
   position: relative !important;
 }
