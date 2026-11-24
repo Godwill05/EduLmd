@@ -699,7 +699,7 @@
           <label class="login-remember">
             <input type="checkbox" name="remember" value="true" id="rememberMe">
             <span>Se souvenir de moi</span>
-            <a href="{{ route('password.request') }}">Mot de passe oublié ?</a>
+            <a href="#" onclick="alert('Contactez l\'administrateur pour réinitialiser votre mot de passe.'); return false;">Mot de passe oublié ?</a>
           </label>
 
           <button class="btn btn-primary btn-login w-100" type="submit" id="btnLogin">
