@@ -31,11 +31,6 @@
     :root {
       --login-radius: 1.25rem;
       --login-shadow: 0 20px 50px -12px rgba(0, 0, 0, .35);
-      --login-transition: .65s cubic-bezier(.23, 1, .32, 1);
-    }
-
-    html {
-      scroll-behavior: smooth;
     }
 
     body {
@@ -232,7 +227,7 @@
       margin: 0;
     }
 
-    /* Alertes */
+    /* Alertes — uniquement si erreur réelle */
     .login-alert {
       margin-bottom: 1.5rem;
       padding: 1rem 1.25rem;
@@ -280,7 +275,7 @@
     }
     .login-alert .btn-close:hover { opacity: 1; }
 
-    /* Formulaire */
+    /* Formulaire — validation classique, pas de JS bloquant */
     .login-form {
       animation: formIn 1s .35s both;
     }
@@ -372,12 +367,17 @@
       box-shadow: 0 0 0 4px rgba(220, 38, 38, .15);
     }
 
+    /* Messages d'erreur uniquement affichés quand il y a une erreur */
     .invalid-feedback {
-      display: block;
+      display: none;
       font-size: .78rem;
       color: var(--ed-erreur, #dc2626);
       margin-top: .4rem;
-      height: 1rem;
+    }
+
+    .is-invalid ~ .invalid-feedback,
+    .was-validated .form-control:invalid ~ .invalid-feedback {
+      display: block;
     }
 
     /* Toggle mot de passe */
@@ -428,7 +428,7 @@
 
     .login-remember a:hover { text-decoration: underline; }
 
-    /* Bouton connexion */
+    /* Bouton connexion — submit classique, pas de spinner bloquant */
     .btn-login {
       width: 100%;
       padding: 1rem;
@@ -458,24 +458,6 @@
     }
 
     .btn-login i { font-size: 1.05rem; }
-
-    .btn-login:disabled {
-      opacity: .7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .login-spinner {
-      width: 1rem; height: 1rem;
-      border: 2px solid rgba(255,255,255,.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .75s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
 
     /* Pied de page */
     .login-foot {
@@ -570,7 +552,7 @@
       }
 
       .login-brand {
-        display: none; /* Masquer branding sur mobile pour se concentrer sur le formulaire */
+        display: none;
       }
 
       .login-panel {
@@ -589,7 +571,6 @@
       .login-header h2 { font-size: 1.35rem; }
     }
 
-    /* Réduction des animations si demandé */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .01ms !important;
@@ -668,7 +649,7 @@
         </div>
         @endif
 
-        <form class="login-form needs-validation" novalidate method="POST" action="{{ route('login.post') }}">
+        <form class="login-form" method="POST" action="{{ route('login.post') }}">
           @csrf
 
           <div class="login-field">
@@ -678,7 +659,9 @@
               <input type="text" name="email" class="form-control @error('email') is-invalid @enderror"
                 id="loginUsername" required value="{{ old('email') }}"
                 autocomplete="username" placeholder="ex: nom.prenom">
-              <div class="invalid-feedback">Entrez votre nom d'utilisateur s'il vous plaît.</div>
+              @error('email')
+              <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
             </div>
           </div>
 
@@ -692,7 +675,9 @@
                 aria-label="Afficher / masquer le mot de passe" title="Afficher / masquer">
                 <i class="ri-eye-line"></i>
               </button>
-              <div class="invalid-feedback">Entrez votre mot de passe s'il vous plaît !</div>
+              @error('password')
+              <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
             </div>
           </div>
 
@@ -704,7 +689,6 @@
 
           <button class="btn btn-primary btn-login w-100" type="submit" id="btnLogin">
             <span class="btn-text">Se connecter</span>
-            <span class="login-spinner" style="display:none;"></span>
           </button>
         </form>
 
@@ -727,30 +711,6 @@
           input.type = show ? 'text' : 'password';
           toggle.innerHTML = '<i class="ri-eye' + (show ? '-off' : '') + '-line"></i>';
           input.focus();
-        });
-      }
-
-      // Validation visuelle du formulaire
-      var forms = document.querySelectorAll('.needs-validation');
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          }
-          form.classList.add('was-validated');
-        }, false);
-      });
-
-      // État de chargement au clic sur connexion
-      var btn = document.getElementById('btnLogin');
-      if (btn) {
-        btn.addEventListener('click', function () {
-          var form = btn.closest('form');
-          if (!form.checkValidity()) return;
-          btn.disabled = true;
-          btn.querySelector('.btn-text').style.display = 'none';
-          btn.querySelector('.login-spinner').style.display = 'block';
         });
       }
 
