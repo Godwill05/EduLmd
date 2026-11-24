@@ -277,18 +277,27 @@
 
     /* Formulaire — validation classique, pas de JS bloquant */
     .login-form {
-      animation: formIn 1s .35s both;
+      animation: formIn .9s .25s both;
     }
 
+    /* === Animations séquentielles "waouh" ===
+       Chaque champ glisse depuis le bas, les uns après les autres,
+       puis le bouton apparaît en dernier avec un effet de rebond. */
     .login-field {
       margin-bottom: 1.25rem;
       position: relative;
-      animation: fieldIn .6s ease both;
+      opacity: 0;
+      animation: fieldReveal .7s cubic-bezier(.175, .885, .32, 1.275) both;
     }
 
-    .login-field:nth-child(1) { animation-delay: .45s; }
-    .login-field:nth-child(2) { animation-delay: .55s; }
-    .login-field:nth-child(3) { animation-delay: .65s; }
+    .login-field:nth-child(1) { animation-delay: 0.2s; }
+    .login-field:nth-child(2) { animation-delay: 0.45s; }
+    .login-field:nth-child(3) { animation-delay: 0.7s; }
+
+    .btn-login {
+      opacity: 0;
+      animation: btnReveal .8s cubic-bezier(.175, .885, .32, 1.275) both 1s;
+    }
 
     .login-field label {
       display: flex;
@@ -523,18 +532,22 @@
     }
 
     @keyframes formIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(15px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes fieldIn {
-      from { opacity: 0; transform: translateX(-15px); }
-      to { opacity: 1; transform: translateX(0); }
+    /* Champ qui glisse depuis le bas avec un léger rebond à l'arrivée */
+    @keyframes fieldReveal {
+      0%   { opacity: 0; transform: translateY(35px) scale(.96); }
+      60%  { opacity: .8; transform: translateY(-4px) scale(1.02); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    @keyframes btnIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Bouton qui apparaît en dernier avec un effet de rebond prononcé */
+    @keyframes btnReveal {
+      0%   { opacity: 0; transform: translateY(35px) scale(.9); }
+      50%  { opacity: .8; transform: translateY(-6px) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     /* ========================================================================
