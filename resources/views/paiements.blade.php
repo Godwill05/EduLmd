@@ -213,65 +213,77 @@ Paiements
                         </div>
                     </div>
                     <hr class="my-3">
-                    <form id="journalForm">
+                    <form id="journalForm" novalidate>
                         @csrf
-                        <!-- Filtres principaux : une seule rangée, chaque filtre prend 1/6 de la largeur -->
-                        <div class="row g-3 align-items-end">
+                        <!-- Filtres principaux : rangée adaptative (6 sur desktop, 2x3 sur mobile) -->
+                        <div class="row g-3 align-items-end journal-filters-row">
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalAnnee">Année académique <span class="text-danger">*</span></label>
-                                <select name="anneeAcademique" id="journalAnnee" class="form-control form-control-sm form-select no-tomselect" required>
+                                <select name="anneeAcademique" id="journalAnnee" class="form-control form-control-sm form-select no-tomselect" required aria-required="true" aria-describedby="hint-journalAnnee">
                                     <option value="">Sélectionner l'année...</option>
                                     @foreach (\App\Models\AnneeAcademique::orderBy('id_Annee_Acad','desc')->get() as $annee)
                                     <option value="{{ $annee->id_Annee_Acad }}" {{ $annee->actif ?? false ? 'selected' : '' }}>{{ $annee->ANNEE_ACAD }}</option>
                                     @endforeach
                                 </select>
+                                <small id="hint-journalAnnee" class="form-text text-muted">Obligatoire pour filtrer le journal.</small>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalDateDebut">Du <span class="text-danger">*</span></label>
                                 <input type="date" name="dateDebut" id="journalDateDebut" class="form-control form-control-sm"
-                                    value="{{ now()->format('Y-m-d') }}" required>
+                                    value="{{ now()->format('Y-m-d') }}" required aria-required="true" aria-describedby="hint-journalDateDebut">
+                                <small id="hint-journalDateDebut" class="form-text text-muted">Date de début de la période.</small>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalDateFin">Au <span class="text-danger">*</span></label>
                                 <input type="date" name="dateFin" id="journalDateFin" class="form-control form-control-sm"
-                                    value="{{ now()->format('Y-m-d') }}" required>
+                                    value="{{ now()->format('Y-m-d') }}" required aria-required="true" aria-describedby="hint-journalDateFin">
+                                <small id="hint-journalDateFin" class="form-text text-muted">Date de fin de la période.</small>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalFiliere">Filière (facultatif)</label>
-                                <select name="anneeEtude" id="journalFiliere" class="form-control form-control-sm form-select no-tomselect">
+                                <select name="anneeEtude" id="journalFiliere" class="form-control form-control-sm form-select no-tomselect" aria-describedby="hint-journalFiliere">
                                     <option value="">Toutes les filières</option>
                                     @foreach (\App\Models\AnneeEtude::orderBy('Libelle_AnEtude')->get() as $ae)
                                     <option value="{{ $ae->Code_Annee_Etude }}">{{ $ae->Libelle_AnEtude }}</option>
                                     @endforeach
                                 </select>
+                                <small id="hint-journalFiliere" class="form-text text-muted">Laissez vide pour toutes les filières.</small>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalEtudiant">Étudiant (facultatif)</label>
                                 <input type="text" name="journalEtudiant" id="journalEtudiant" class="form-control form-control-sm"
-                                    placeholder="Nom ou matricule">
+                                    placeholder="Nom ou matricule" aria-describedby="hint-journalEtudiant">
+                                <small id="hint-journalEtudiant" class="form-text text-muted">Nom, prénoms ou matricule de l'étudiant.</small>
                             </div>
                             <div class="col-lg-2 col-md-6 col-sm-12">
                                 <label class="form-label fw-bold" for="journalModePaiement">Mode de paiement</label>
-                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select no-tomselect">
+                                <select name="journalModePaiement" id="journalModePaiement" class="form-control form-control-sm form-select no-tomselect" aria-describedby="hint-journalModePaiement">
                                     <option value="">Tous les modes</option>
                                     <option value="Espèces">Espèces</option>
                                     <option value="Chèque">Chèque</option>
                                     <option value="Virement">Virement</option>
                                     <option value="Mobile Money">Mobile Money</option>
                                 </select>
+                                <small id="hint-journalModePaiement" class="form-text text-muted">Filtrer par mode de règlement.</small>
                             </div>
                         </div>
 
                         <!-- Boutons d'action : rangée séparée, alignés à droite -->
-                        <div class="row g-3 align-items-end mt-2">
+                        <div class="row g-3 align-items-end mt-2 journal-actions-row">
                             <div class="col-lg-12 text-end">
-                                <button type="button" class="btn btn-outline-success btn-sm" id="btnAfficherJournal">
+                                <button type="button" class="btn btn-outline-success btn-sm" id="btnAfficherJournal" aria-label="Afficher le journal d'encaissement">
                                     <i class="ri-eye-line me-1"></i>Afficher
                                 </button>
-                                <button type="button" class="btn btn-success btn-sm" id="btnImprimerJournal">
+                                <button type="button" class="btn btn-success btn-sm" id="btnImprimerJournal" aria-label="Imprimer le journal d'encaissement en PDF">
                                     <i class="ri-printer-line me-1"></i>Imprimer
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Message quand aucun résultat -->
+                        <div id="journalEmpty" class="mt-3 text-center py-4" style="display:none;">
+                            <i class="ri-information-line fs-4 text-muted me-1"></i>
+                            <span class="text-muted small">Aucun paiement trouvé pour cette période et ces filtres.</span>
                         </div>
 
                         <!-- Raccourcis de période -->
@@ -416,6 +428,43 @@ Paiements
         appliquerRaccourci($(this).data('code'));
     });
 
+    /* ========================================================================
+       Journal d'encaissement — Mémorisation des filtres (localStorage)
+       ------------------------------------------------------------------------
+       Restaure les filtres à la visite suivante et les sauvegarde
+       à chaque changement.
+       ======================================================================== */
+    const LS_KEY_JOURNAL = 'edulmd.journal.filtres';
+    const filtresSelecteurs = [
+        '#journalAnnee',
+        '#journalDateDebut',
+        '#journalDateFin',
+        '#journalFiliere',
+        '#journalEtudiant',
+        '#journalModePaiement',
+    ];
+
+    function restaurerFiltresJournal() {
+        try {
+            const saves = JSON.parse(localStorage.getItem(LS_KEY_JOURNAL) || '{}');
+            filtresSelecteurs.forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el && saves[sel] !== undefined) {
+                    el.value = saves[sel];
+                }
+            });
+        } catch (e) { /* ignore */ }
+    }
+
+    function memoriserFiltresJournal() {
+        const obj = {};
+        filtresSelecteurs.forEach(sel => {
+            const el = document.querySelector(sel);
+            if (el) obj[sel] = el.value;
+        });
+        try { localStorage.setItem(LS_KEY_JOURNAL, JSON.stringify(obj)); } catch (e) { /* ignore */ }
+    }
+
     // Onglet 3 : Journal d'encaissement
     function chargerJournal() {
         const annee = $('#journalAnnee').val();
@@ -426,52 +475,72 @@ Paiements
         }
         $('.displayJournalEncaissement').addClass('card p-3 shadow-sm border-0');
         $('.displayJournalEncaissement').html('<div class="text-center py-4"><span class="spinner-border spinner-border-sm text-success me-2"></span>Chargement du journal...</div>');
+        $('#journalEmpty').hide();
         $.ajax({
             url: '{{ route("journal-encaissement.display") }}',
             method: 'POST',
             data: $('#journalForm').serialize(),
             success: function(response) {
                 $('.displayJournalEncaissement').html(response);
+                // Détection "aucun résultat" : si le tableau est vide ou contient un message d'absence
+                const contenu = $('.displayJournalEncaissement').html() || '';
+                const vide = !contenu || contenu.includes('Aucun') || contenu.includes('aucun') || contenu.includes('Aucun paiement');
+                $('#journalEmpty').toggle(vide && !contenu.includes('<table'));
             },
             error: function(xhr) {
                 let err = 'Erreur lors du chargement du journal.';
                 if (xhr.responseJSON && xhr.responseJSON.message) err = xhr.responseJSON.message;
                 $('.displayJournalEncaissement').html('<div class="alert alert-danger"><i class=" ri-alert-line me-2"></i>' + err + '</div>');
+                $('#journalEmpty').hide();
             }
         });
     }
 
     $('#btnAfficherJournal').on('click', function(e) {
         e.preventDefault();
+        memoriserFiltresJournal();
         chargerJournal();
     });
 
     $('#btnImprimerJournal').on('click', function(e) {
         e.preventDefault();
         const annee = $('#journalAnnee').val();
-        if (!annee) { alert('Veuillez sélectionner une année académique.'); return; }
-        // Soumettre comme un vrai formulaire POST pour PDF dans un nouvel onglet
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("impression.journal-encaissement") }}';
-        form.target = '_blank';
-        const fields = $('#journalForm').serializeArray();
-        fields.forEach(function(f) {
-            const inp = document.createElement('input');
-            inp.type = 'hidden';
-            inp.name = f.name;
-            inp.value = f.value;
-            form.appendChild(inp);
+        if (!annee) { alert('Veuillez sélectionner une année académique.'); $('#journalAnnee').focus(); return; }
+
+        // Confirmation avant impression (Point 1)
+        confirmAction({
+            title: 'Imprimer le journal',
+            message: 'Voulez-vous vraiment imprimer le journal d\'encaissement pour la période sélectionnée ?',
+            icon: 'ri-printer-line',
+            gradient: 'linear-gradient(135deg,#15803d,#14532d)',
+            confirmText: 'Oui, imprimer',
+            confirmClass: 'btn-success',
+            confirmIcon: 'ri-printer-line',
+            onConfirm: function() {
+                memoriserFiltresJournal();
+                // Soumettre comme un vrai formulaire POST pour PDF dans un nouvel onglet
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("impression.journal-encaissement") }}';
+                form.target = '_blank';
+                const fields = $('#journalForm').serializeArray();
+                fields.forEach(function(f) {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = f.name;
+                    inp.value = f.value;
+                    form.appendChild(inp);
+                });
+                const btnInput = document.createElement('input');
+                btnInput.type = 'hidden';
+                btnInput.name = 'btn';
+                btnInput.value = 'Imprimer';
+                form.appendChild(btnInput);
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+            }
         });
-        // Ajouter le btn caché
-        const btnInput = document.createElement('input');
-        btnInput.type = 'hidden';
-        btnInput.name = 'btn';
-        btnInput.value = 'Imprimer';
-        form.appendChild(btnInput);
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
     });
 
     /* ========================================================================
@@ -480,23 +549,23 @@ Paiements
        Recharge automatiquement le journal dès qu'un filtre change,
        sans avoir à cliquer sur le bouton "Afficher".
        ======================================================================== */
-    const filtresJournal = [
-        '#journalAnnee',
-        '#journalFiliere',
-        '#journalEtudiant',
-        '#journalModePaiement',
-        '#journalDateDebut',
-        '#journalDateFin',
-    ];
-
-    filtresJournal.forEach(function (selector) {
+    filtresSelecteurs.forEach(function (selector) {
         const el = document.querySelector(selector);
         if (el) {
             const eventType = el.tagName === 'INPUT' && el.type === 'text' ? 'input' : 'change';
             el.addEventListener(eventType, function () {
-                chargerJournal();
+                memoriserFiltresJournal();
+                // Rechargement automatique uniquement si l'année est déjà sélectionnée
+                if (selector === '#journalAnnee' || $('#journalAnnee').val()) {
+                    chargerJournal();
+                }
             });
         }
+    });
+
+    // Restaurer les filtres sauvegardés au chargement de l'onglet
+    $('#tab-journal-btn').on('click', function () {
+        restaurerFiltresJournal();
     });
 </script>
 @endsection

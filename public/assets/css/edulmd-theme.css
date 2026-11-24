@@ -528,3 +528,68 @@ html[data-theme="dark"] .en-retard {
   border-left-color: var(--ed-erreur) !important;
 }
 
+/* ==========================================================================
+   Journal d'encaissement — Résponsive, focus et animations
+   --------------------------------------------------------------------------
+   Point 4 : Responsive mobile — 6 filtres sur une rangée desktop,
+   2 rangées de 3 sur mobile.
+   Point 2 : Focus visible renforcé pour l'accessibilité clavier.
+   ========================================================================== */
+
+/* Sur mobile, passe de 6 colonnes sur une rangée à 2 rangées de 3 */
+@media (max-width: 767px) {
+  .journal-filters-row > .col-lg-2 {
+    flex: 0 0 auto;
+    width: 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+/* Focus visible renforcé sur les champs et boutons du journal */
+.journal-filters-row :focus-visible,
+.journal-actions-row :focus-visible {
+  outline: 3px solid var(--ed-bordeaux, #822a40);
+  outline-offset: 2px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 4px rgba(130, 42, 64, 0.15);
+}
+
+/* Animation d'apparition des filtres quand l'onglet Journal s'ouvre */
+.journal-filters-row > div {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: journalFiltreIn .35s ease forwards;
+}
+
+.journal-filters-row > div:nth-child(1) { animation-delay: .05s; }
+.journal-filters-row > div:nth-child(2) { animation-delay: .10s; }
+.journal-filters-row > div:nth-child(3) { animation-delay: .15s; }
+.journal-filters-row > div:nth-child(4) { animation-delay: .20s; }
+.journal-filters-row > div:nth-child(5) { animation-delay: .25s; }
+.journal-filters-row > div:nth-child(6) { animation-delay: .30s; }
+
+@keyframes journalFiltreIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Apparition du bouton d'action */
+.journal-actions-row {
+  opacity: 0;
+  animation: journalActionsIn .5s ease forwards .35s;
+}
+
+@keyframes journalActionsIn {
+  to { opacity: 1; }
+}
+
+/* Message "aucun résultat" */
+#journalEmpty {
+  border: 1px dashed var(--ed-ligne);
+  border-radius: .75rem;
+  background: var(--ed-surface-2, #f7f7f9);
+}
+html[data-theme="dark"] #journalEmpty {
+  background: var(--ed-surface-2);
+  border-color: var(--ed-ligne);
+}
+
