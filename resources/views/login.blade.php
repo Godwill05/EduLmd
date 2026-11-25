@@ -294,9 +294,31 @@
     .login-field:nth-child(2) { animation-delay: 0.45s; }
     .login-field:nth-child(3) { animation-delay: 0.7s; }
 
+    /* Bouton — état géré par JS (btn-hidden / btn-visible) */
     .btn-login {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: .9rem;
+      border: none;
+      background: var(--ed-bordeaux, #822a40);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      cursor: pointer;
+      transition: all .35s cubic-bezier(.175, .885, .32, 1.275);
       opacity: 0;
-      animation: btnReveal .8s cubic-bezier(.175, .885, .32, 1.275) both 1s;
+      pointer-events: none;
+      transform: scale(.92);
+    }
+
+    .btn-login.btn-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
     }
 
     .login-field label {
@@ -437,25 +459,7 @@
 
     .login-remember a:hover { text-decoration: underline; }
 
-    /* Bouton connexion — submit classique, pas de spinner bloquant */
-    .btn-login {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1rem;
-      font-weight: 700;
-      border-radius: .9rem;
-      border: none;
-      background: var(--ed-bordeaux, #822a40);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: .6rem;
-      cursor: pointer;
-      transition: all .3s ease;
-      animation: btnIn 1s .75s both;
-    }
-
+    /* Bouton connexion — état géré par JS (classes btn-hidden / btn-visible) */
     .btn-login:hover {
       background: var(--ed-bordeaux-fonce, #6b2435);
       transform: translateY(-2px);
@@ -543,12 +547,7 @@
       100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* Bouton qui apparaît en dernier avec un effet de rebond prononcé */
-    @keyframes btnReveal {
-      0%   { opacity: 0; transform: translateY(35px) scale(.9); }
-      50%  { opacity: .8; transform: translateY(-6px) scale(1.05); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
+
 
     /* ========================================================================
        Responsive
@@ -700,7 +699,7 @@
             <a href="#" onclick="alert('Contactez l\'administrateur pour réinitialiser votre mot de passe.'); return false;">Mot de passe oublié ?</a>
           </label>
 
-          <button class="btn btn-primary btn-login w-100" type="submit" id="btnLogin">
+          <button class="btn btn-primary btn-login w-100 btn-hidden" type="submit" id="btnLogin" disabled>
             <span class="btn-text">Se connecter</span>
           </button>
         </form>
@@ -725,6 +724,31 @@
           toggle.innerHTML = '<i class="ri-eye' + (show ? '-off' : '') + '-line"></i>';
           input.focus();
         });
+      }
+
+      // Bouton "Se connecter" : n'apparaît que si les 2 champs sont remplis
+      var username = document.getElementById('loginUsername');
+      var password = document.getElementById('loginPassword');
+      var btn = document.getElementById('btnLogin');
+
+      function verifierChamps() {
+        var rempli = username.value.trim() !== '' && password.value.trim() !== '';
+        if (rempli) {
+          btn.classList.remove('btn-hidden');
+          btn.classList.add('btn-visible');
+          btn.disabled = false;
+        } else {
+          btn.classList.remove('btn-visible');
+          btn.classList.add('btn-hidden');
+          btn.disabled = true;
+        }
+      }
+
+      if (username && password && btn) {
+        username.addEventListener('input', verifierChamps);
+        password.addEventListener('input', verifierChamps);
+        // Vérifier au chargement (champs pré-remplis via old())
+        verifierChamps();
       }
 
       // Focus automatique sur le premier champ après l'animation
